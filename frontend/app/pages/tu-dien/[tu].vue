@@ -109,7 +109,7 @@ const handleSaveVocab = () => {
     <div class="flex items-center justify-between">
       <NuxtLink
         to="/tu-dien"
-        class="inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
+        class="inline-flex items-center gap-1.5 min-h-[44px] text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
       >
         <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
         <span>Về trang tra cứu từ điển</span>
@@ -122,18 +122,17 @@ const handleSaveVocab = () => {
     </div>
 
     <!-- KHÔNG TÌM THẤY TỪ -->
-    <div v-if="!isLoading && !entry" class="p-8 text-center bg-surface rounded-brut border-2 border-line space-y-4">
-      <p class="font-black text-xl text-ink">Không tìm thấy từ "{{ wordParam }}"</p>
-      <p class="text-xs text-ink-soft max-w-md mx-auto">
-        Từ điển đang chạy chế độ Mock nội bộ an toàn bản quyền. Thử tra các từ mẫu có sẵn: <strong>pragmatic</strong>, <strong>resilient</strong>, <strong>ubiquitous</strong>, <strong>mitigate</strong>, <strong>融洽</strong>, <strong>妥協</strong>.
-      </p>
-      <NuxtLink
-        to="/tu-dien"
-        class="inline-flex items-center gap-1 px-4 py-2 rounded-brut border-2 border-line bg-warn text-on-tone font-black text-xs shadow-brut"
-      >
-        <span>Quay lại trang tra từ</span>
-      </NuxtLink>
-    </div>
+    <BaseEmptyState
+      v-if="!isLoading && !entry"
+      :title="`Không tìm thấy từ '${wordParam}'`"
+      description="Từ điển đang chạy chế độ Mock nội bộ an toàn bản quyền. Thử tra các từ mẫu có sẵn: pragmatic, resilient, ubiquitous, mitigate, 融洽, 妥協."
+    >
+      <template #action>
+        <BaseButton to="/tu-dien" variant="primary" size="sm">
+          Quay lại trang tra từ
+        </BaseButton>
+      </template>
+    </BaseEmptyState>
 
     <!-- NỘI DUNG TRA TỪ CHI TIẾT -->
     <div v-else-if="entry" class="space-y-6">
@@ -147,8 +146,9 @@ const handleSaveVocab = () => {
               </h1>
               <button
                 type="button"
-                class="p-2.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer transition-transform active:translate-y-0.5"
+                class="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer transition-transform active:translate-y-0.5"
                 title="Nghe phát âm"
+                aria-label="Nghe phát âm từ vựng"
                 @click="speak"
               >
                 <Volume2 class="w-5 h-5 text-accent stroke-[2.5]" />
@@ -169,7 +169,7 @@ const handleSaveVocab = () => {
           <div id="save-word-action-btn" class="flex items-center gap-2">
             <button
               type="button"
-              class="px-4 py-2.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs sm:text-sm shadow-brut cursor-pointer transition-transform active:translate-y-0.5 flex items-center gap-1.5"
+              class="px-4 py-2.5 min-h-[44px] rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs sm:text-sm shadow-brut cursor-pointer transition-transform active:translate-y-0.5 flex items-center gap-1.5"
               @click="handleSaveVocab"
             >
               <BookmarkPlus class="w-4 h-4 stroke-[2.5]" />

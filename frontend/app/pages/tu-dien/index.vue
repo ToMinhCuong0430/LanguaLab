@@ -303,7 +303,7 @@ const getNodeIcon = (iconName: string) => {
     <div id="dict-main-tabs" class="flex items-center gap-2 border-b-2 border-line pb-2">
       <button
         type="button"
-        class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+        class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
         :class="[
           activeTab === 'search'
             ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -317,7 +317,7 @@ const getNodeIcon = (iconName: string) => {
 
       <button
         type="button"
-        class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+        class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
         :class="[
           activeTab === 'roadmap'
             ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -368,7 +368,8 @@ const getNodeIcon = (iconName: string) => {
         <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
           <button
             type="button"
-            class="px-4 py-2.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
+            class="px-4 py-2.5 min-h-[44px] rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
+            aria-label="Nghe phát âm từ của hôm nay"
             @click="speakWord(wordOfTheDay.term)"
           >
             <Volume2 class="w-4 h-4 text-c-violet stroke-[2.5]" />
@@ -469,7 +470,7 @@ const getNodeIcon = (iconName: string) => {
             <button
               v-if="hearts < 5"
               type="button"
-              class="px-2.5 py-1 text-xs font-black rounded-brut border border-line bg-bad/15 text-bad hover:bg-bad hover:text-white cursor-pointer"
+              class="px-3 py-1.5 min-h-[44px] text-xs font-black rounded-brut border border-line bg-bad/15 text-bad hover:bg-bad hover:text-white cursor-pointer inline-flex items-center"
               @click="refillHearts"
             >
               Nạp đầy lại 5 tim ❤️
@@ -571,7 +572,7 @@ const getNodeIcon = (iconName: string) => {
               v-for="(opt, oIdx) in activeLessonNode.quiz[currentQuestionIdx].options"
               :key="oIdx"
               type="button"
-              class="w-full text-left p-3 rounded-brut border-2 font-bold text-xs transition-all cursor-pointer"
+              class="w-full text-left p-3 min-h-[44px] flex items-center rounded-brut border-2 font-bold text-xs transition-all cursor-pointer"
               :class="[
                 selectedOptionIdx === oIdx
                   ? 'border-line bg-warn text-on-tone font-black shadow-brut-sm'
