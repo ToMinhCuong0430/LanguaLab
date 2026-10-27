@@ -95,7 +95,7 @@ const handleGoogleSignIn = async () => {
             <label class="font-display font-bold text-sm text-ink">Mật khẩu</label>
             <NuxtLink
               to="/quen-mat-khau"
-              class="text-xs font-bold text-ink-soft underline hover:text-accent"
+              class="min-h-[44px] inline-flex items-center text-xs font-bold text-ink-soft underline hover:text-accent"
             >
               Quên mật khẩu?
             </NuxtLink>
@@ -140,7 +140,7 @@ const handleGoogleSignIn = async () => {
       <div>
         <button
           type="button"
-          class="flex w-full items-center justify-center gap-2.5 rounded-brut border-2 border-line bg-surface py-2.5 px-4 font-display text-sm font-bold text-ink shadow-brut-sm hover:bg-surface-2 brut-press disabled:opacity-50 cursor-pointer transition-all"
+          class="flex w-full min-h-[44px] items-center justify-center gap-2.5 rounded-brut border-2 border-line bg-surface py-2.5 px-4 font-display text-sm font-bold text-ink shadow-brut-sm hover:bg-surface-2 brut-press disabled:opacity-50 cursor-pointer transition-all"
           :disabled="isLoading"
           @click="handleGoogleSignIn"
         >
@@ -171,7 +171,7 @@ const handleGoogleSignIn = async () => {
           Chưa có tài khoản?
           <NuxtLink
             to="/dang-ky"
-            class="font-black text-ink underline underline-offset-4 hover:text-accent ml-1"
+            class="font-black text-ink underline underline-offset-4 hover:text-accent ml-1 min-h-[44px] inline-flex items-center"
           >
             Đăng ký tài khoản miễn phí →
           </NuxtLink>

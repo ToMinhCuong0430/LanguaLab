@@ -11,7 +11,7 @@ const { isDark, toggleTheme } = useTheme()
     <header class="border-b-[3px] border-line bg-surface py-3 px-4 sm:px-8">
       <div class="mx-auto max-w-6xl flex items-center justify-between">
         <!-- Logo LanguaLab Neo-brutalism -->
-        <NuxtLink to="/" class="flex items-center gap-2 text-decoration-none group">
+        <NuxtLink to="/" class="flex items-center gap-2 min-h-[44px] text-decoration-none group">
           <div class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-warn shadow-brut-sm group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform">
             <Languages class="h-5 w-5 text-on-tone" :stroke-width="2.5" />
           </div>
@@ -21,8 +21,9 @@ const { isDark, toggleTheme } = useTheme()
         <!-- Nút chuyển Light/Dark mode -->
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm brut-press cursor-pointer"
+          class="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm brut-press cursor-pointer"
           :title="isDark ? 'Chế độ sáng' : 'Chế độ tối'"
+          :aria-label="isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'"
           @click="toggleTheme"
         >
           <Sun v-if="isDark" class="h-4 w-4 text-warn" :stroke-width="2.5" />

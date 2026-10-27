@@ -90,7 +90,7 @@ const handleGoogleSignUp = async () => {
       >
         <p class="text-sm font-black text-ok">🎉 Đăng ký thành công!</p>
         <p>{{ successMsg }}</p>
-        <NuxtLink to="/dang-nhap" class="inline-block mt-2 font-black text-ink underline">
+        <NuxtLink to="/dang-nhap" class="min-h-[44px] inline-flex items-center mt-2 font-black text-ink underline">
           Chuyển tới màn Đăng nhập →
         </NuxtLink>
       </div>
@@ -181,7 +181,7 @@ const handleGoogleSignUp = async () => {
       <div v-if="!successMsg">
         <button
           type="button"
-          class="flex w-full items-center justify-center gap-2.5 rounded-brut border-2 border-line bg-surface py-2.5 px-4 font-display text-sm font-bold text-ink shadow-brut-sm hover:bg-surface-2 brut-press disabled:opacity-50 cursor-pointer transition-all"
+          class="flex w-full min-h-[44px] items-center justify-center gap-2.5 rounded-brut border-2 border-line bg-surface py-2.5 px-4 font-display text-sm font-bold text-ink shadow-brut-sm hover:bg-surface-2 brut-press disabled:opacity-50 cursor-pointer transition-all"
           :disabled="isLoading"
           @click="handleGoogleSignUp"
         >
@@ -212,7 +212,7 @@ const handleGoogleSignUp = async () => {
           Đã có tài khoản Langua?
           <NuxtLink
             to="/dang-nhap"
-            class="font-black text-ink underline underline-offset-4 hover:text-accent ml-1"
+            class="font-black text-ink underline underline-offset-4 hover:text-accent ml-1 min-h-[44px] inline-flex items-center"
           >
             Đăng nhập tại đây →
           </NuxtLink>

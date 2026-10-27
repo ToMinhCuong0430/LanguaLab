@@ -73,7 +73,7 @@ const handleSubmit = async () => {
         <div class="pt-2">
           <NuxtLink
             to="/dang-nhap"
-            class="inline-flex items-center gap-1.5 font-black text-ink underline"
+            class="min-h-[44px] inline-flex items-center gap-1.5 font-black text-ink underline"
           >
             <ArrowLeft class="h-3.5 w-3.5" />
             <span>Quay lại trang Đăng nhập</span>
@@ -122,7 +122,7 @@ const handleSubmit = async () => {
         <div class="text-center text-xs text-ink-soft">
           <NuxtLink
             to="/dang-nhap"
-            class="inline-flex items-center gap-1 font-bold text-ink underline underline-offset-4 hover:text-accent"
+            class="min-h-[44px] inline-flex items-center gap-1 font-bold text-ink underline underline-offset-4 hover:text-accent"
           >
             <ArrowLeft class="h-3.5 w-3.5" />
             <span>Quay lại trang Đăng nhập</span>
