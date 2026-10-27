@@ -26,15 +26,15 @@ const currentYear = new Date().getFullYear()
         <!-- Cột 2: Điều khoản & Pháp lý -->
         <div class="space-y-2">
           <h3 class="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-ink">Pháp lý & Quy định</h3>
-          <ul class="space-y-1.5 text-xs sm:text-sm">
+          <ul class="space-y-1 text-xs sm:text-sm">
             <li>
-              <NuxtLink to="/dieu-khoan" class="footer-link inline-flex items-center gap-1.5">
+              <NuxtLink to="/dieu-khoan" class="footer-link inline-flex items-center gap-1.5 py-1 min-h-[36px]">
                 <FileText class="h-3.5 w-3.5" :stroke-width="2.5" />
                 <span>Điều khoản sử dụng</span>
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/chinh-sach-quyen-rieng-tu" class="footer-link inline-flex items-center gap-1.5">
+              <NuxtLink to="/chinh-sach-quyen-rieng-tu" class="footer-link inline-flex items-center gap-1.5 py-1 min-h-[36px]">
                 <ShieldCheck class="h-3.5 w-3.5" :stroke-width="2.5" />
                 <span>Chính sách quyền riêng tư</span>
               </NuxtLink>
@@ -45,14 +45,14 @@ const currentYear = new Date().getFullYear()
         <!-- Cột 3: Cộng đồng & Đóng góp -->
         <div class="space-y-2">
           <h3 class="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-ink">Cộng đồng</h3>
-          <ul class="space-y-1.5 text-xs sm:text-sm">
+          <ul class="space-y-1 text-xs sm:text-sm">
             <li>
-              <NuxtLink to="/yeu-cau-tinh-nang" class="footer-link">
+              <NuxtLink to="/yeu-cau-tinh-nang" class="footer-link inline-flex items-center py-1 min-h-[36px]">
                 Góp ý & Yêu cầu tính năng
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="#" class="footer-link">
+              <NuxtLink to="/yeu-cau-tinh-nang" class="footer-link inline-flex items-center py-1 min-h-[36px]">
                 Đóng góp học liệu mở
               </NuxtLink>
             </li>

@@ -108,7 +108,7 @@ onUnmounted(() => {
         <div v-if="user" ref="userMenuRef" class="relative">
           <button
             type="button"
-            class="flex items-center gap-2 rounded-brut border-2 border-line bg-surface py-1 px-2 text-ink shadow-brut-sm brut-press cursor-pointer"
+            class="flex items-center gap-2 rounded-brut border-2 border-line bg-surface py-1 px-2.5 min-h-[44px] text-ink shadow-brut-sm brut-press cursor-pointer"
             aria-label="Menu tài khoản"
             :aria-expanded="isUserMenuOpen"
             @click.stop="toggleUserMenu"
@@ -299,8 +299,10 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border: var(--bw) solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -314,12 +316,20 @@ onUnmounted(() => {
   box-shadow: 0 0 0 var(--line);
 }
 
+.theme-toggle-btn:focus-visible,
+.mobile-toggle-btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .mobile-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border: var(--bw) solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-2);
