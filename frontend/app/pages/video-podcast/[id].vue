@@ -279,7 +279,7 @@ const formatTime = (secs: number) => {
     <div class="flex items-center justify-between">
       <NuxtLink
         to="/video-podcast"
-        class="inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
+        class="inline-flex items-center gap-1.5 min-h-[44px] text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
       >
         <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
         <span>Về kho Video & Podcast</span>
@@ -319,7 +319,7 @@ const formatTime = (secs: number) => {
     <div id="practice-modes-tabs" class="flex flex-wrap items-center gap-2.5 border-b-2 border-line pb-3">
       <button
         type="button"
-        class="px-4 py-2 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
+        class="px-4 py-2 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
         :class="[
           currentPracticeMode === 'watch'
             ? 'bg-c-blue text-white border-line shadow-brut'
@@ -333,7 +333,7 @@ const formatTime = (secs: number) => {
 
       <button
         type="button"
-        class="px-4 py-2 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
+        class="px-4 py-2 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
         :class="[
           currentPracticeMode === 'dictation'
             ? 'bg-c-green text-on-tone border-line shadow-brut'
@@ -347,7 +347,7 @@ const formatTime = (secs: number) => {
 
       <button
         type="button"
-        class="px-4 py-2 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
+        class="px-4 py-2 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
         :class="[
           currentPracticeMode === 'shadowing'
             ? 'bg-c-pink text-ink border-line shadow-brut'
@@ -362,7 +362,7 @@ const formatTime = (secs: number) => {
       <button
         v-if="currentMedia.quiz && currentMedia.quiz.length > 0"
         type="button"
-        class="px-4 py-2 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
+        class="px-4 py-2 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
         :class="[
           currentPracticeMode === 'quiz'
             ? 'bg-c-yellow text-on-tone border-line shadow-brut'
@@ -420,8 +420,9 @@ const formatTime = (secs: number) => {
               <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  class="p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
+                  class="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
                   title="Lùi 5s"
+                  aria-label="Lùi lại 5 giây"
                   @click="seekToTime(Math.max(0, currentTime - 5))"
                 >
                   <Rewind class="w-4 h-4" />
@@ -429,7 +430,7 @@ const formatTime = (secs: number) => {
 
                 <button
                   type="button"
-                  class="px-4 py-1.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
+                  class="px-4 py-2 min-h-[44px] rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
                   @click="togglePlay"
                 >
                   <component :is="isPlaying ? Pause : Play" class="w-4 h-4 fill-current" />
@@ -438,8 +439,9 @@ const formatTime = (secs: number) => {
 
                 <button
                   type="button"
-                  class="p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
+                  class="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
                   title="Tiến 5s"
+                  aria-label="Tiến tới 5 giây"
                   @click="seekToTime(Math.min(currentMedia.durationSec, currentTime + 5))"
                 >
                   <FastForward class="w-4 h-4" />
@@ -453,7 +455,7 @@ const formatTime = (secs: number) => {
                   v-for="spd in [0.75, 1, 1.25]"
                   :key="spd"
                   type="button"
-                  class="px-2 py-0.5 text-xs font-mono font-bold rounded-brut border transition-colors cursor-pointer"
+                  class="px-2.5 py-1 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-xs font-mono font-bold rounded-brut border transition-colors cursor-pointer"
                   :class="playbackSpeed === spd ? 'bg-warn text-on-tone border-line font-black' : 'bg-surface border-line/40 text-ink hover:bg-surface-2'"
                   @click="setSpeed(spd)"
                 >

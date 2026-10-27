@@ -160,7 +160,7 @@ const formatDuration = (secs: number) => {
           <button
             id="add-custom-video-btn"
             type="button"
-            class="px-3.5 py-1.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
+            class="px-4 py-2 min-h-[44px] rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
             @click="isAddModalOpen = true"
           >
             <Plus class="w-4 h-4 stroke-[3]" />
@@ -177,16 +177,16 @@ const formatDuration = (secs: number) => {
     </div>
 
     <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut animate-pulse space-y-4">
-      <div class="h-5 bg-surface-2 rounded-brut w-1/4"></div>
-      <div class="h-28 bg-surface-2 rounded-brut w-full"></div>
+    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut space-y-4">
+      <BaseSkeleton class="h-6 w-1/4 rounded-brut" />
+      <BaseSkeleton class="h-28 w-full rounded-brut" />
     </div>
 
     <!-- SECTION 1: TABS CHÍNH (Kho tuyển chọn vs Video của tôi) -->
     <div id="media-main-tabs" class="flex items-center gap-2 border-b-2 border-line pb-2">
       <button
         type="button"
-        class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+        class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
         :class="[
           activeTab === 'explore'
             ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -200,7 +200,7 @@ const formatDuration = (secs: number) => {
 
       <button
         type="button"
-        class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+        class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
         :class="[
           activeTab === 'my_videos'
             ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -312,7 +312,7 @@ const formatDuration = (secs: number) => {
             ]"
             :key="mode.id"
             type="button"
-            class="px-3 py-1 text-xs font-bold rounded-brut transition-all cursor-pointer"
+            class="px-3.5 py-1.5 min-h-[44px] flex items-center justify-center text-xs font-bold rounded-brut transition-all cursor-pointer"
             :class="typeFilter === mode.id ? 'bg-warn text-on-tone border border-line font-black shadow-brut-sm' : 'text-ink hover:text-black'"
             @click="typeFilter = mode.id as any"
           >
@@ -327,7 +327,7 @@ const formatDuration = (secs: number) => {
           <span class="text-xs font-bold text-ink-soft">Trình độ:</span>
           <select
             v-model="levelFilter"
-            class="px-2.5 py-1 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+            class="px-3 py-1.5 min-h-[44px] text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
           >
             <option value="all">Tất cả cấp độ</option>
             <option value="A1">A1 - A2 (Cơ bản)</option>
@@ -342,7 +342,7 @@ const formatDuration = (secs: number) => {
           <span class="text-xs font-bold text-ink-soft">Chủ đề:</span>
           <select
             v-model="categoryFilter"
-            class="px-2.5 py-1 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+            class="px-3 py-1.5 min-h-[44px] text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
           >
             <option value="all">Tất cả chủ đề</option>
             <option value="tech">Khoa học & Não bộ</option>
@@ -357,15 +357,11 @@ const formatDuration = (secs: number) => {
     <!-- SECTION 3: LƯỚI NỘI DUNG 3 CỘT (CÓ THUMBNAIL THẬT + HOVER HIỆN 2 DÒNG PHỤ ĐỀ SONG NGỮ + CHIP CHẾ ĐỘ) -->
     <div id="media-grid-list">
       <!-- Trống -->
-      <div
+      <BaseEmptyState
         v-if="filteredMediaList.length === 0"
-        class="p-12 text-center bg-surface rounded-brut border-2 border-line border-dashed space-y-3"
-      >
-        <p class="font-black text-ink text-base">Chưa có nội dung nào trong danh mục này</p>
-        <p class="text-xs text-ink-soft max-w-md mx-auto">
-          {{ activeTab === 'my_videos' ? 'Dán link YouTube bất kỳ để hệ thống tự động phân tách phụ đề song ngữ và tạo bài tập luyện nghe!' : 'Vui lòng chọn bộ lọc khác để hiển thị tài liệu.' }}
-        </p>
-      </div>
+        title="Chưa có nội dung nào trong danh mục này"
+        :description="activeTab === 'my_videos' ? 'Dán link YouTube bất kỳ để hệ thống tự động phân tách phụ đề song ngữ và tạo bài tập luyện nghe!' : 'Vui lòng chọn bộ lọc khác để hiển thị tài liệu.'"
+      />
 
       <!-- Grid Cards 3 Cột (Thẻ đầu tiên span-2 nếu là danh sách tuyển chọn) -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -447,8 +443,9 @@ const formatDuration = (secs: number) => {
               <button
                 v-if="item.isCustom"
                 type="button"
-                class="p-1.5 text-bad hover:opacity-80"
+                class="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-bad hover:opacity-80 cursor-pointer"
                 title="Xoá video này"
+                aria-label="Xoá video này"
                 @click="deleteCustomVideo(item.id)"
               >
                 <Trash2 class="w-4 h-4" />
@@ -456,7 +453,7 @@ const formatDuration = (secs: number) => {
 
               <NuxtLink
                 :to="`/video-podcast/${item.id}`"
-                class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5"
+                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5"
               >
                 <Play class="w-3.5 h-3.5 fill-current" />
                 <span>Vào luyện ngay</span>
