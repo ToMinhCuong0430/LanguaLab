@@ -259,7 +259,7 @@ watch(currentIndex, () => {
     <div class="flex items-center justify-between">
       <NuxtLink
         to="/go-cau"
-        class="inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
+        class="inline-flex items-center gap-1.5 min-h-[44px] text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
       >
         <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
         <span>Về danh sách chủ đề</span>
@@ -382,8 +382,9 @@ watch(currentIndex, () => {
               <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-2 border-line rounded-brut bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer transition-transform active:translate-y-0.5"
+                  class="inline-flex items-center min-h-[44px] gap-1.5 px-3.5 py-2 text-xs font-bold border-2 border-line rounded-brut bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer transition-transform active:translate-y-0.5"
                   title="Nghe phát âm chuẩn"
+                  aria-label="Nghe phát âm mẫu chuẩn"
                   @click="speakSentence"
                 >
                   <Volume2 class="w-4 h-4 text-accent" :stroke-width="2.5" />
@@ -570,7 +571,7 @@ watch(currentIndex, () => {
               v-for="(sent, sIdx) in sentences"
               :key="sent.id"
               type="button"
-              class="w-full text-left p-2.5 rounded-brut border-2 transition-all flex items-center justify-between text-xs cursor-pointer"
+              class="w-full text-left p-2.5 min-h-[44px] rounded-brut border-2 transition-all flex items-center justify-between text-xs cursor-pointer"
               :class="[
                 sIdx === currentIndex
                   ? 'border-line bg-warn text-on-tone font-black shadow-brut-sm'
