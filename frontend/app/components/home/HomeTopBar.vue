@@ -239,7 +239,7 @@ onUnmounted(() => {
         <!-- Nút điểm danh hôm nay -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line px-3 py-1.5 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press"
+          class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           :class="user.checkedInToday ? 'bg-ok text-on-tone' : 'bg-warn text-on-tone'"
           :disabled="user.checkedInToday"
           @click="toggleCheckIn"
@@ -251,7 +251,7 @@ onUnmounted(() => {
 
       <!-- Khối hiển thị XP -->
       <div
-        class="flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm"
+        class="flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 min-h-[44px] px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm"
         title="Tổng điểm kinh nghiệm tích luỹ"
       >
         <Zap class="h-4 w-4 text-warn fill-warn" :stroke-width="2.5" />
@@ -262,7 +262,7 @@ onUnmounted(() => {
       <div ref="notificationRef" class="relative">
         <button
           type="button"
-          class="relative flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press"
+          class="relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           :aria-expanded="isNotificationOpen"
           aria-label="Thông báo"
           @click="toggleNotification"

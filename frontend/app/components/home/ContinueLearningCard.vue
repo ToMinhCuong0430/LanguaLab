@@ -42,17 +42,17 @@ const inProgressLesson = {
       </div>
 
       <!-- Progress bar -->
-      <div class="space-y-1 my-3">
+      <div class="space-y-1.5 my-3">
         <div class="flex justify-between text-xs font-bold">
           <span class="text-ink-soft">Tiến độ hoàn thành</span>
           <span class="font-mono text-ink">{{ inProgressLesson.progress }}%</span>
         </div>
-        <div class="h-2.5 w-full rounded border-2 border-line bg-surface-2 overflow-hidden">
-          <div
-            class="h-full bg-ok border-r-2 border-line transition-all duration-300"
-            :style="{ width: `${inProgressLesson.progress}%` }"
-          />
-        </div>
+        <BaseProgress
+          :value="inProgressLesson.progress"
+          tone="ok"
+          size="sm"
+          label="Tiến độ bài học đang dở"
+        />
       </div>
     </div>
 

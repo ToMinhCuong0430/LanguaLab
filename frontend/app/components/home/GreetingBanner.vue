@@ -179,7 +179,7 @@ const targetXp = 50
           <NuxtLink
             v-if="examButtonInfo"
             :to="examButtonInfo.path"
-            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-brut border-2 border-line bg-surface font-display text-xs sm:text-sm font-bold text-ink shadow-brut-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all text-decoration-none"
+            class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-brut border-2 border-line bg-surface font-display text-xs sm:text-sm font-bold text-ink shadow-brut-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all text-decoration-none cursor-pointer brut-press"
           >
             <span>{{ examButtonInfo.title }}</span>
             <ArrowUpRight class="h-4 w-4" :stroke-width="2.5" />
@@ -220,35 +220,35 @@ const targetXp = 50
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* 1. SÁNG: Xanh ngọc nhạt (#BDEFF7), đồi ngọc (#7FD6D0) */
+/* 1. SÁNG: Xanh ngọc nhạt, đồi ngọc */
 [data-period='sang'] {
-  --banner-bg: #BDEFF7;
-  --banner-hill: #7FD6D0;
-  --banner-hill-far: #9FE3DE;
-  --banner-ink: #11141D;
-  --banner-ink-soft: #233842;
+  --banner-bg: var(--greeting-morning-bg, #BDEFF7);
+  --banner-hill: var(--greeting-morning-hill, #7FD6D0);
+  --banner-hill-far: var(--greeting-morning-hill-far, #9FE3DE);
+  --banner-ink: var(--greeting-morning-ink, #11141D);
+  --banner-ink-soft: var(--greeting-morning-ink-soft, #233842);
   background-color: var(--banner-bg);
   color: var(--banner-ink);
 }
 
-/* 2. CHIỀU: Cam đào nhạt (#FFD3A1), đồi cam (#F4A261) */
+/* 2. CHIỀU: Cam đào nhạt, đồi cam */
 [data-period='chieu'] {
-  --banner-bg: #FFD3A1;
-  --banner-hill: #F4A261;
-  --banner-hill-far: #F9BC89;
-  --banner-ink: #11141D;
-  --banner-ink-soft: #422818;
+  --banner-bg: var(--greeting-afternoon-bg, #FFD3A1);
+  --banner-hill: var(--greeting-afternoon-hill, #F4A261);
+  --banner-hill-far: var(--greeting-afternoon-hill-far, #F9BC89);
+  --banner-ink: var(--greeting-afternoon-ink, #11141D);
+  --banner-ink-soft: var(--greeting-afternoon-ink-soft, #422818);
   background-color: var(--banner-bg);
   color: var(--banner-ink);
 }
 
-/* 3. TỐI: Xanh navy đậm (#1B2565), đồi navy (#34479B), chữ trắng */
+/* 3. TỐI: Xanh navy đậm, đồi navy, chữ trắng */
 [data-period='toi'] {
-  --banner-bg: #1B2565;
-  --banner-hill: #34479B;
-  --banner-hill-far: #25337E;
-  --banner-ink: #FFFFFF;
-  --banner-ink-soft: #D3DBFF;
+  --banner-bg: var(--greeting-evening-bg, #1B2565);
+  --banner-hill: var(--greeting-evening-hill, #34479B);
+  --banner-hill-far: var(--greeting-evening-hill-far, #25337E);
+  --banner-ink: var(--greeting-evening-ink, #FFFFFF);
+  --banner-ink-soft: var(--greeting-evening-ink-soft, #D3DBFF);
   background-color: var(--banner-bg);
   color: var(--banner-ink);
 }
