@@ -28,7 +28,12 @@ Persistence (Master + Overrides pattern):
 import argparse
 import json as json_module
 import sys
+import os
 import io
+
+# Ensure scripts directory is on sys.path for embedded python environments
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, UNTRUNCATED_COLS, search, search_stack
 from design_system import generate_design_system
 

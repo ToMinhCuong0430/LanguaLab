@@ -24,3 +24,6 @@ backend/supabase/.temp
 # Local data cache
 .data/
 
+
+__pycache__/
+*.pyc

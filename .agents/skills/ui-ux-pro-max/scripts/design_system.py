@@ -986,7 +986,15 @@ def _write_persisted_file(path: Path, content: str, force: bool) -> None:
         else:
             # A same-filesystem hard link atomically publishes only if the
             # destination is absent. Losing writers get FileExistsError.
-            os.link(temp_name, path)
+            # On Windows without developer mode/admin rights, os.link raises PermissionError.
+            try:
+                os.link(temp_name, path)
+            except (PermissionError, OSError):
+                if not os.path.exists(path):
+                    os.replace(temp_name, path)
+                    temp_name = None
+                else:
+                    raise FileExistsError(f"Destination exists: {path}")
     finally:
         if temp_name and os.path.exists(temp_name):
             os.unlink(temp_name)

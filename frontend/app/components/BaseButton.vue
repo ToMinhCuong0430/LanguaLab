@@ -1,28 +1,53 @@
 <script setup lang="ts">
+import { Loader2 } from '@lucide/vue'
+
+type ButtonVariant = 'primary' | 'secondary' | 'neutral' | 'danger' | 'warning' | 'success' | 'ghost'
+type LegacyTone = 'warn' | 'ok' | 'bad' | 'accent' | 'surface'
+
 const props = withDefaults(
   defineProps<{
-    variant?: 'primary' | 'secondary' | 'neutral' | 'danger' | 'warning' | 'ghost'
+    variant?: ButtonVariant
+    tone?: ButtonVariant | LegacyTone
     size?: 'sm' | 'md' | 'lg'
     to?: string | Record<string, any>
     block?: boolean
     disabled?: boolean
+    loading?: boolean
     type?: 'button' | 'submit' | 'reset'
+    ariaLabel?: string
   }>(),
   {
     variant: 'primary',
     size: 'md',
     type: 'button',
     disabled: false,
+    loading: false,
     block: false,
   },
 )
 
 const NuxtLink = resolveComponent('NuxtLink')
 const tag = computed(() => (props.to ? NuxtLink : 'button'))
+
+const LEGACY_MAP: Record<string, ButtonVariant> = {
+  warn: 'warning',
+  ok: 'success',
+  bad: 'danger',
+  accent: 'primary',
+  surface: 'secondary',
+}
+
+const resolvedVariant = computed<ButtonVariant>(() => {
+  if (props.tone) {
+    return LEGACY_MAP[props.tone] || (props.tone as ButtonVariant)
+  }
+  return props.variant
+})
+
 const attrs = computed(() =>
   props.to
-    ? { to: props.to }
-    : { type: props.type, disabled: props.disabled },
+    ? { to: props.to, 'aria-label': props.ariaLabel }
+    : { type: props.type, disabled: props.disabled || props.loading, 'aria-label': props.ariaLabel },
 )
 </script>
 
@@ -32,14 +57,18 @@ const attrs = computed(() =>
     v-bind="attrs"
     class="base-btn"
     :class="[
-      `base-btn--${variant}`,
+      `base-btn--${resolvedVariant}`,
       `base-btn--${size}`,
-      { 'base-btn--block': block },
+      {
+        'base-btn--block': block,
+        'base-btn--loading': loading,
+      },
     ]"
   >
-    <slot name="left" />
-    <span><slot /></span>
-    <slot name="right" />
+    <Loader2 v-if="loading" class="w-4 h-4 animate-spin shrink-0 stroke-[2.5]" />
+    <slot v-else name="left" />
+    <span :class="{ 'opacity-90': loading }"><slot /></span>
+    <slot v-if="!loading" name="right" />
   </component>
 </template>
 
@@ -62,6 +91,11 @@ const attrs = computed(() =>
   white-space: nowrap;
 }
 
+.base-btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .base-btn:hover:not(:disabled) {
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-sm);
@@ -72,9 +106,10 @@ const attrs = computed(() =>
   box-shadow: 0 0 0 var(--line);
 }
 
-/* Kích cỡ */
+/* Kích cỡ (Touch target >= 44px chuẩn ui-ux-pro-max) */
 .base-btn--sm {
-  min-height: 36px;
+  min-height: 38px;
+  min-width: 44px;
   padding: 0.4rem 0.85rem;
   font-size: 0.875rem;
 }
@@ -96,10 +131,14 @@ const attrs = computed(() =>
   width: 100%;
 }
 
+.base-btn--loading {
+  cursor: wait;
+}
+
 /* Các biến thể màu Neo-brutalism */
 .base-btn--primary {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--c-yellow);
+  color: var(--on-tone);
 }
 
 .base-btn--secondary {
@@ -117,9 +156,14 @@ const attrs = computed(() =>
   color: var(--on-tone);
 }
 
+.base-btn--success {
+  background: var(--ok);
+  color: var(--on-tone);
+}
+
 .base-btn--danger {
   background: var(--bad);
-  color: var(--on-tone);
+  color: #FFFFFF;
 }
 
 .base-btn--ghost {

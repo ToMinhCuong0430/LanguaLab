@@ -17,6 +17,31 @@
   --accent: #2F5BFF;
   --accent-ink: #FFFFFF;
 
+  /* Vai trò ngữ nghĩa chuẩn (Role-based tokens) */
+  --primary: #2F5BFF;
+  --primary-ink: #FFFFFF;
+  --secondary: #9B6BFF;
+  --secondary-ink: #FFFFFF;
+  --success: #00D084;
+  --success-ink: #11141D;
+  --warning: #FFD23F;
+  --warning-ink: #11141D;
+  --danger: #FF5A4E;
+  --danger-ink: #FFFFFF;
+
+  /* Bảng màu 3 buổi của Greeting Banner */
+  --greeting-morning-bg: #4ED8A8;
+  --greeting-morning-soft: #D6FFF0;
+  --greeting-morning-ink: #004D36;
+
+  --greeting-afternoon-bg: #FFA366;
+  --greeting-afternoon-soft: #FFE9D6;
+  --greeting-afternoon-ink: #5C2600;
+
+  --greeting-evening-bg: #1A2238;
+  --greeting-evening-soft: #283354;
+  --greeting-evening-ink: #FFFFFF;
+
   /* Màu trạng thái Neo-brutalism */
   --ok: #00D084;
   --warn: #FFD23F;
@@ -91,6 +116,29 @@
 
   --accent: #547BFF;
   --accent-ink: #FFFFFF;
+
+  --primary: #547BFF;
+  --primary-ink: #FFFFFF;
+  --secondary: #B18CFF;
+  --secondary-ink: #11141D;
+  --success: #20E096;
+  --success-ink: #11141D;
+  --warning: #FFDC5C;
+  --warning-ink: #11141D;
+  --danger: #FF6666;
+  --danger-ink: #FFFFFF;
+
+  --greeting-morning-bg: #1B5E43;
+  --greeting-morning-soft: #0A3D28;
+  --greeting-morning-ink: #7DFFCA;
+
+  --greeting-afternoon-bg: #803900;
+  --greeting-afternoon-soft: #4D2200;
+  --greeting-afternoon-ink: #FFBE8A;
+
+  --greeting-evening-bg: #0D1220;
+  --greeting-evening-soft: #1E2742;
+  --greeting-evening-ink: #FFFFFF;
 
   --ok: #20E096;
   --warn: #FFDC5C;

@@ -13,9 +13,9 @@ const currentYear = new Date().getFullYear()
         <div class="md:col-span-2 space-y-2">
           <div class="flex items-center gap-2">
             <span class="font-display text-2xl font-black">{{ BRAND_NAME }}</span>
-            <span class="rounded border-2 border-line bg-ok px-2 py-0.5 text-xs font-bold text-on-tone shadow-[2px_2px_0_var(--line)]">
+            <BaseBadge tone="green" size="sm">
               Phi thương mại
-            </span>
+            </BaseBadge>
           </div>
           <p class="text-xs sm:text-sm text-ink-soft max-w-md leading-relaxed">
             Dự án học ngoại ngữ và luyện thi chứng chỉ mở hoàn toàn miễn phí.
