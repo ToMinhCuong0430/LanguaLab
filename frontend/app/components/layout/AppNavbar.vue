@@ -96,7 +96,7 @@ onUnmounted(() => {
             class="nav-chip__icon"
             :style="{ backgroundColor: getFeatureColor(item.feature) }"
           >
-            <component :is="item.icon" class="h-3.5 w-3.5" :stroke-width="2.5" style="color: #11141D" />
+            <component :is="item.icon" class="h-3.5 w-3.5 text-ink" :stroke-width="2.5" />
           </span>
           <span class="nav-chip__label">{{ item.shortTitle }}</span>
         </NuxtLink>
@@ -241,7 +241,7 @@ onUnmounted(() => {
           @click="closeMobileMenu"
         >
           <span class="mobile-nav-chip__icon" :style="{ backgroundColor: isActive(item.path) ? 'rgba(0,0,0,0.15)' : getFeatureColor(item.feature) }">
-            <component :is="item.icon" class="h-4 w-4" :stroke-width="2.5" style="color: #11141D" />
+            <component :is="item.icon" class="h-4 w-4 text-ink" :stroke-width="2.5" />
           </span>
           <span class="text-xs font-bold leading-tight">{{ item.shortTitle }}</span>
         </NuxtLink>
@@ -275,7 +275,7 @@ onUnmounted(() => {
 }
 
 .nav-chip--active {
-  color: #11141D;
+  color: var(--ink);
   border-color: var(--line) !important;
   box-shadow: 2px 2px 0 var(--line);
 }
@@ -358,7 +358,7 @@ onUnmounted(() => {
 }
 
 .mobile-nav-chip--active {
-  color: #11141D;
+  color: var(--ink);
 }
 
 .mobile-nav-chip__icon {

@@ -163,7 +163,7 @@ const attrs = computed(() =>
 
 .base-btn--danger {
   background: var(--bad);
-  color: #FFFFFF;
+  color: var(--on-tone, #ffffff);
 }
 
 .base-btn--ghost {

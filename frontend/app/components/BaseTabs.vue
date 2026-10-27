@@ -134,7 +134,7 @@ const selectTab = (item: TabItem) => {
 
 .base-tab-btn--active-primary {
   background: var(--c-blue);
-  color: #FFFFFF;
+  color: var(--on-tone, #ffffff);
 }
 
 .base-tab-btn--active-neutral {

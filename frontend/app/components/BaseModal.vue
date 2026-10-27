@@ -158,7 +158,7 @@ onUnmounted(() => {
 
 .base-modal-close:hover {
   background: var(--bad);
-  color: #FFFFFF;
+  color: var(--on-tone, #ffffff);
   transform: translate(1px, 1px);
 }
 

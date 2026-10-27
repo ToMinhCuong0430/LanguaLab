@@ -29,8 +29,8 @@ const periodConfig = computed(() => {
     case 'sang':
       return {
         tagLabel: 'BUỔI SÁNG',
-        tagBg: '#FFFFFF',
-        tagInk: '#11141D',
+        tagBg: 'var(--surface)',
+        tagInk: 'var(--ink)',
         greetingTitle: 'Chào buổi sáng,',
         description: 'Nạp năng lượng, mở trí thức. Khởi đầu ngày mới với một bài học nhé!',
         motivation: 'Khởi động thật hứng khởi!',
@@ -38,8 +38,8 @@ const periodConfig = computed(() => {
     case 'chieu':
       return {
         tagLabel: 'BUỔI CHIỀU',
-        tagBg: '#FFFFFF',
-        tagInk: '#11141D',
+        tagBg: 'var(--surface)',
+        tagInk: 'var(--ink)',
         greetingTitle: 'Chào buổi chiều,',
         description: 'Đánh thức cảm hứng, bứt phá ngoại ngữ. Thêm một bài học, tiến xa hơn!',
         motivation: 'Tiếp đà chinh phục!',
@@ -47,8 +47,8 @@ const periodConfig = computed(() => {
     case 'toi':
       return {
         tagLabel: 'BUỔI TỐI',
-        tagBg: '#34479B',
-        tagInk: '#FFFFFF',
+        tagBg: 'var(--c-blue)',
+        tagInk: 'var(--on-tone, #ffffff)',
         greetingTitle: 'Chào buổi tối,',
         description: 'Khép lại ngày bằng một bài học nhỏ. Để kiến thức lưu giữ bền lâu.',
         motivation: 'Một chút mỗi ngày, giỏi hơn mỗi ngày!',
@@ -126,7 +126,7 @@ const targetXp = 50
         <path
           d="M0 100 Q280 40 580 95 T1200 85 L1200 160 L0 160 Z"
           fill="var(--banner-hill)"
-          stroke="#11141D"
+          stroke="var(--line, #11141D)"
           stroke-width="3.5"
           stroke-linejoin="round"
         />

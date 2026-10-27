@@ -97,7 +97,7 @@ withDefaults(
 
 .base-card--feature {
   --card-bg: var(--feature);
-  --card-ink: #11141D;
+  --card-ink: var(--ink);
 }
 
 .base-card--feature-soft {
