@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Eye,
   X,
+  BookOpen,
 } from '@lucide/vue'
 import type { TestMode, IeltsTestDetail } from '~/composables/useIelts'
 import ReadingPane from '~/components/ielts/ReadingPane.vue'
@@ -327,19 +328,21 @@ const examRoomGuideSteps: GuideStep[] = [
           <div class="lg:hidden flex rounded-brut border-2 border-line bg-surface-2 p-1 text-xs font-black">
             <button
               type="button"
-              class="flex-1 py-2 text-center rounded transition-all"
+              class="flex-1 min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2 text-center rounded transition-all cursor-pointer"
               :class="mobileActiveTab === 'passage' ? 'bg-warn text-on-tone shadow-brut-sm' : 'text-ink'"
               @click="mobileActiveTab = 'passage'"
             >
-              📖 Bài đọc (Passage)
+              <BookOpen class="h-4 w-4" :stroke-width="2.5" />
+              <span>Bài đọc (Passage)</span>
             </button>
             <button
               type="button"
-              class="flex-1 py-2 text-center rounded transition-all"
+              class="flex-1 min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2 text-center rounded transition-all cursor-pointer"
               :class="mobileActiveTab === 'questions' ? 'bg-accent text-accent-ink shadow-brut-sm' : 'text-ink'"
               @click="mobileActiveTab = 'questions'"
             >
-              ❓ Câu hỏi ({{ totalQuestions }})
+              <HelpCircle class="h-4 w-4" :stroke-width="2.5" />
+              <span>Câu hỏi ({{ totalQuestions }})</span>
             </button>
           </div>
 

@@ -130,7 +130,7 @@ const skillGuideSteps: GuideStep[] = [
           <label class="text-ink-soft">Dạng câu hỏi / Section:</label>
           <select
             v-model="selectedCategory"
-            class="w-full rounded-brut border-2 border-line bg-surface-2 p-2 text-ink outline-none focus:bg-surface font-display"
+            class="w-full min-h-[44px] rounded-brut border-2 border-line bg-surface-2 p-2.5 text-ink outline-none focus:bg-surface font-display"
           >
             <option v-for="cat in availableCategories" :key="cat" :value="cat">
               {{ cat }}
@@ -143,7 +143,7 @@ const skillGuideSteps: GuideStep[] = [
           <label class="text-ink-soft">Độ khó:</label>
           <select
             v-model="selectedDifficulty"
-            class="w-full rounded-brut border-2 border-line bg-surface-2 p-2 text-ink outline-none focus:bg-surface font-display"
+            class="w-full min-h-[44px] rounded-brut border-2 border-line bg-surface-2 p-2.5 text-ink outline-none focus:bg-surface font-display"
           >
             <option value="Tất cả">Tất cả độ khó</option>
             <option value="Dễ">Dễ</option>
@@ -157,7 +157,7 @@ const skillGuideSteps: GuideStep[] = [
           <label class="text-ink-soft">Trạng thái:</label>
           <select
             v-model="selectedStatus"
-            class="w-full rounded-brut border-2 border-line bg-surface-2 p-2 text-ink outline-none focus:bg-surface font-display"
+            class="w-full min-h-[44px] rounded-brut border-2 border-line bg-surface-2 p-2.5 text-ink outline-none focus:bg-surface font-display"
           >
             <option value="Tất cả">Tất cả trạng thái</option>
             <option value="chua_lam">Chưa làm</option>
@@ -244,16 +244,16 @@ const skillGuideSteps: GuideStep[] = [
             <div class="flex items-center gap-2">
               <NuxtLink
                 :to="`/luyen-thi/ielts/lam-bai/${test.id}?mode=practice`"
-                class="rounded-brut border-2 border-line bg-surface px-3 py-1.5 font-display text-xs font-bold text-ink hover:bg-surface-2 shadow-brut-sm brut-press transition-all"
+                class="inline-flex items-center justify-center min-h-[44px] rounded-brut border-2 border-line bg-surface px-3.5 py-2 font-display text-xs font-bold text-ink hover:bg-surface-2 shadow-brut-sm brut-press transition-all text-decoration-none cursor-pointer"
               >
                 Luyện tập
               </NuxtLink>
 
               <NuxtLink
                 :to="`/luyen-thi/ielts/lam-bai/${test.id}?mode=exam`"
-                class="flex items-center gap-1 rounded-brut border-2 border-line bg-warn px-3.5 py-1.5 font-display text-xs font-black text-on-tone shadow-brut-sm brut-press hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                class="inline-flex items-center justify-center min-h-[44px] gap-1.5 rounded-brut border-2 border-line bg-warn px-4 py-2 font-display text-xs font-black text-on-tone shadow-brut-sm brut-press hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-decoration-none cursor-pointer"
               >
-                <Play class="h-3 w-3 fill-current" />
+                <Play class="h-3.5 w-3.5 fill-current" />
                 <span>Thi thử</span>
               </NuxtLink>
             </div>

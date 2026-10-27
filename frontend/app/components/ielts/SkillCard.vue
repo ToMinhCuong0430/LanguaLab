@@ -23,7 +23,13 @@ const getSkillIcon = (skill: string) => {
   }
 }
 
-const getToneClasses = (tone: string) => {
+const getToneClasses = (skill: string, tone: string) => {
+  switch (skill) {
+    case 'listening': return { badge: 'bg-c-blue text-white', bar: 'bg-c-blue', border: 'border-c-blue' }
+    case 'reading': return { badge: 'bg-c-green text-white', bar: 'bg-c-green', border: 'border-c-green' }
+    case 'writing': return { badge: 'bg-c-orange text-white', bar: 'bg-c-orange', border: 'border-c-orange' }
+    case 'speaking': return { badge: 'bg-c-pink text-white', bar: 'bg-c-pink', border: 'border-c-pink' }
+  }
   switch (tone) {
     case 'accent': return { badge: 'bg-accent text-accent-ink', bar: 'bg-accent', border: 'border-accent' }
     case 'warn': return { badge: 'bg-warn text-on-tone', bar: 'bg-warn', border: 'border-warn' }
@@ -33,7 +39,7 @@ const getToneClasses = (tone: string) => {
   }
 }
 
-const toneStyles = computed(() => getToneClasses(props.overview.tone))
+const toneStyles = computed(() => getToneClasses(props.overview.skill, props.overview.tone))
 const progressPct = computed(() => Math.round((props.overview.completedTests / props.overview.totalTests) * 100))
 </script>
 

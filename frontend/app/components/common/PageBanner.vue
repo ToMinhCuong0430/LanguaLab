@@ -17,7 +17,7 @@ withDefaults(
   <section
     class="relative overflow-hidden border-[3px] border-line rounded-brut-lg shadow-brut"
     :data-feature="feature"
-    :style="feature ? { backgroundColor: 'var(--feature)', color: '#11141D' } : { backgroundColor: 'var(--surface)' }"
+    :style="feature ? { backgroundColor: 'var(--feature)', color: 'var(--ink)' } : { backgroundColor: 'var(--surface)' }"
   >
     <div class="flex flex-col sm:flex-row sm:items-stretch justify-between gap-0">
       <!-- Left content -->
@@ -36,7 +36,7 @@ withDefaults(
             <div v-if="badgeText" class="inline-block">
               <span
                 class="inline-flex items-center gap-1.5 font-display text-xs font-black uppercase tracking-wide px-2.5 py-1 rounded-brut border-2 border-line shadow-[2px_2px_0_var(--line)]"
-                :style="feature ? { backgroundColor: 'rgba(0,0,0,0.12)', color: '#11141D' } : { backgroundColor: 'var(--warn)', color: 'var(--on-tone)' }"
+                :style="feature ? { backgroundColor: 'rgba(0,0,0,0.12)', color: 'var(--ink)' } : { backgroundColor: 'var(--warn)', color: 'var(--on-tone)' }"
               >
                 {{ badgeText }}
               </span>
@@ -44,7 +44,7 @@ withDefaults(
 
             <h1
               class="text-2xl sm:text-3xl font-black tracking-tight"
-              :style="feature ? { color: '#11141D' } : { color: 'var(--ink)' }"
+              :style="feature ? { color: 'var(--ink)' } : { color: 'var(--ink)' }"
             >
               {{ title }}
             </h1>
