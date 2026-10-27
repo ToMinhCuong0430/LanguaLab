@@ -138,9 +138,9 @@ const totalStats = computed(() => {
     </div>
 
     <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut animate-pulse space-y-4">
-      <div class="h-5 bg-surface-2 rounded-brut w-1/4"></div>
-      <div class="h-20 bg-surface-2 rounded-brut w-full"></div>
+    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut space-y-4">
+      <BaseSkeleton class="h-6 w-1/4 rounded-brut" />
+      <BaseSkeleton class="h-20 w-full rounded-brut" />
     </div>
 
     <!-- DANH SÁCH CÁC CẤP ĐỘ: MỖI CẤP LÀ MỘT DẢI MÀU RIÊNG, CẤP ĐẦU MỞ SẴN -->

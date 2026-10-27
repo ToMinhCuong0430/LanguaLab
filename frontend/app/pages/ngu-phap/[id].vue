@@ -193,7 +193,7 @@ const speakText = (text: string) => {
     <div class="flex items-center justify-between">
       <NuxtLink
         to="/ngu-phap"
-        class="inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
+        class="inline-flex items-center gap-1.5 min-h-[44px] text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
       >
         <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
         <span>Về danh mục Ngữ pháp</span>
@@ -337,8 +337,9 @@ const speakText = (text: string) => {
                 </p>
                 <button
                   type="button"
-                  class="p-1.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer flex-shrink-0"
+                  class="p-2.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer flex-shrink-0"
                   title="Nghe phát âm"
+                  aria-label="Nghe phát âm ví dụ câu"
                   @click="speakText(ex.sentence || ex.target)"
                 >
                   <Volume2 class="w-4 h-4 text-accent stroke-[2.5]" />
@@ -433,7 +434,7 @@ const speakText = (text: string) => {
                     v-for="(opt, optIdx) in ex.options"
                     :key="optIdx"
                     type="button"
-                    class="w-full text-left p-2.5 rounded-brut border-2 text-xs font-bold transition-all flex items-center justify-between cursor-pointer"
+                    class="w-full text-left p-3 min-h-[44px] rounded-brut border-2 text-xs font-bold transition-all flex items-center justify-between cursor-pointer"
                     :class="[
                       userChoiceAnswers[ex.id] === optIdx
                         ? 'border-line bg-warn text-on-tone font-black shadow-brut-sm'
