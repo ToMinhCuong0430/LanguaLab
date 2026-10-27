@@ -323,9 +323,9 @@ const handleAddWord = () => {
     </div>
 
     <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut animate-pulse space-y-4">
-      <div class="h-5 bg-surface-2 rounded-brut w-1/4"></div>
-      <div class="h-20 bg-surface-2 rounded-brut w-full"></div>
+    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut space-y-4">
+      <BaseSkeleton class="h-6 w-1/4 rounded-brut" />
+      <BaseSkeleton class="h-20 w-full rounded-brut" />
     </div>
 
     <!-- SECTION 1: TAB SELECTOR (BỘ ĐỀ XUẤT vs BỘ CỦA TÔI) -->
@@ -333,7 +333,7 @@ const handleAddWord = () => {
       <div class="flex items-center gap-2 border-b-2 border-line pb-2">
         <button
           type="button"
-          class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+          class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
           :class="[
             activeTab === 'curated'
               ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -347,7 +347,7 @@ const handleAddWord = () => {
 
         <button
           type="button"
-          class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+          class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
           :class="[
             activeTab === 'my_sets'
               ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -436,7 +436,7 @@ const handleAddWord = () => {
           <button
             id="custom-set-actions"
             type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm cursor-pointer"
             @click="isCreateSetModalOpen = true"
           >
             <Plus class="w-4 h-4 stroke-[3]" />
@@ -444,10 +444,18 @@ const handleAddWord = () => {
           </button>
         </div>
 
-        <div v-if="mySets.length === 0" class="p-8 text-center bg-surface rounded-brut border-2 border-line border-dashed space-y-2">
-          <p class="font-black text-ink text-sm">Bạn chưa có bộ từ nào</p>
-          <p class="text-xs text-ink-soft">Bấm "Tạo bộ từ mới" phía trên để bắt đầu thêm từ vựng cá nhân hoá!</p>
-        </div>
+        <BaseEmptyState
+          v-if="mySets.length === 0"
+          title="Bạn chưa có bộ từ nào"
+          description="Bấm nút 'Tạo bộ từ mới' phía trên để bắt đầu thêm từ vựng cá nhân hoá!"
+        >
+          <template #action>
+            <BaseButton variant="primary" size="sm" @click="isCreateSetModalOpen = true">
+              <Plus class="w-4 h-4 mr-1" />
+              <span>Tạo bộ từ mới</span>
+            </BaseButton>
+          </template>
+        </BaseEmptyState>
 
         <div v-else class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div
@@ -466,11 +474,12 @@ const handleAddWord = () => {
                 <BaseBadge v-bind="levelBadge(set.level)" size="sm">{{ set.level }}</BaseBadge>
                 <button
                   type="button"
-                  class="text-bad hover:opacity-80 p-1"
+                  class="text-bad hover:opacity-80 p-1 min-h-[44px] min-w-[44px] inline-flex items-center justify-center cursor-pointer"
                   title="Xoá bộ từ"
+                  aria-label="Xoá bộ từ này"
                   @click.stop="deleteMySet(set.id)"
                 >
-                  <Trash2 class="w-3.5 h-3.5" />
+                  <Trash2 class="w-4 h-4" />
                 </button>
               </div>
               <h3 class="font-black text-sm text-ink font-display line-clamp-1">
@@ -513,7 +522,7 @@ const handleAddWord = () => {
         <div class="flex items-center gap-1.5 p-1 bg-surface-2 border border-line rounded-brut">
           <button
             type="button"
-            class="px-3 py-1 text-xs font-bold rounded-brut transition-all cursor-pointer"
+            class="px-3.5 py-2 min-h-[44px] text-xs font-bold rounded-brut transition-all cursor-pointer flex items-center justify-center"
             :class="studyMode === 'flashcard' ? 'bg-warn text-on-tone border border-line font-black shadow-brut-sm' : 'text-ink hover:text-black'"
             @click="studyMode = 'flashcard'"
           >
@@ -521,7 +530,7 @@ const handleAddWord = () => {
           </button>
           <button
             type="button"
-            class="px-3 py-1 text-xs font-bold rounded-brut transition-all cursor-pointer"
+            class="px-3.5 py-2 min-h-[44px] text-xs font-bold rounded-brut transition-all cursor-pointer flex items-center justify-center"
             :class="studyMode === 'srs' ? 'bg-warn text-on-tone border border-line font-black shadow-brut-sm' : 'text-ink hover:text-black'"
             @click="studyMode = 'srs'"
           >
@@ -529,7 +538,7 @@ const handleAddWord = () => {
           </button>
           <button
             type="button"
-            class="px-3 py-1 text-xs font-bold rounded-brut transition-all cursor-pointer"
+            class="px-3.5 py-2 min-h-[44px] text-xs font-bold rounded-brut transition-all cursor-pointer flex items-center justify-center"
             :class="studyMode === 'quiz' ? 'bg-warn text-on-tone border border-line font-black shadow-brut-sm' : 'text-ink hover:text-black'"
             @click="studyMode = 'quiz'"
           >
@@ -663,7 +672,7 @@ const handleAddWord = () => {
               <!-- Tốt (Green) -->
               <button
                 type="button"
-                class="p-2.5 rounded-brut border-2 border-line bg-c-green text-on-tone font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
+                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-green text-on-tone font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
                 @click="rateSrs('good')"
               >
                 <span>Tốt (Good)</span>
@@ -672,7 +681,7 @@ const handleAddWord = () => {
               <!-- Dễ (Blue) -->
               <button
                 type="button"
-                class="p-2.5 rounded-brut border-2 border-line bg-c-blue text-white font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
+                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-blue text-white font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
                 @click="rateSrs('easy')"
               >
                 <span>Dễ (Easy)</span>
@@ -721,7 +730,8 @@ const handleAddWord = () => {
                   <span class="font-display text-2xl font-black text-ink">{{ currentWord.term }}</span>
                   <button
                     type="button"
-                    class="px-3 py-1.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
+                    class="px-3.5 py-2 min-h-[44px] rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
+                    aria-label="Nghe phát âm chuẩn bản xứ"
                     @click="speakWord()"
                   >
                     <Volume2 class="w-4 h-4 text-c-blue stroke-[2.5]" />
@@ -736,7 +746,7 @@ const handleAddWord = () => {
                   <button
                     v-if="!isRecording"
                     type="button"
-                    class="w-full py-2.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut cursor-pointer flex items-center justify-center gap-2"
+                    class="w-full min-h-[44px] py-2.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut cursor-pointer flex items-center justify-center gap-2"
                     @click="startRecording"
                   >
                     <Mic class="w-4 h-4 stroke-[2.5]" />
@@ -746,7 +756,7 @@ const handleAddWord = () => {
                   <button
                     v-else
                     type="button"
-                    class="w-full py-2.5 rounded-brut border-2 border-line bg-bad text-white font-black text-xs shadow-brut cursor-pointer flex items-center justify-center gap-2 animate-pulse"
+                    class="w-full min-h-[44px] py-2.5 rounded-brut border-2 border-line bg-bad text-white font-black text-xs shadow-brut cursor-pointer flex items-center justify-center gap-2 animate-pulse"
                     @click="stopRecording"
                   >
                     <Square class="w-4 h-4 fill-current" />
@@ -756,7 +766,7 @@ const handleAddWord = () => {
                   <button
                     v-if="userAudioUrl"
                     type="button"
-                    class="w-full py-2 rounded-brut border-2 border-line bg-ok text-on-tone font-black text-xs shadow-brut-sm cursor-pointer flex items-center justify-center gap-1.5"
+                    class="w-full min-h-[44px] py-2 rounded-brut border-2 border-line bg-ok text-on-tone font-black text-xs shadow-brut-sm cursor-pointer flex items-center justify-center gap-1.5"
                     @click="playUserAudio"
                   >
                     <Play class="w-4 h-4 fill-current" />
