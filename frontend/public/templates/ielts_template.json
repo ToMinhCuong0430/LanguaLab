@@ -1,0 +1,27 @@
+[
+  {
+    "id": "read_mock_sample_1",
+    "exam_id": "ielts",
+    "skill": "reading",
+    "title": "Sample Reading Passage 1",
+    "subtitle": "Mini Academic Practice",
+    "difficulty": "Trung bình",
+    "time_minutes": 20,
+    "passage_title": "The Secret Life of Honeybees",
+    "passage_content": "Honeybees live in complex colonies where every bee has a defined role. The worker bees forage for nectar, while the queen lays thousands of eggs daily.",
+    "license": "original",
+    "questions": [
+      {
+        "question_number": 1,
+        "type": "multiple_choice",
+        "question_text": "What is the main task of worker bees in a colony?",
+        "options": [
+          {"id": "A", "text": "Laying eggs for the hive"},
+          {"id": "B", "text": "Foraging for nectar"}
+        ],
+        "correct_answer": "B",
+        "explanation": "Đoạn 1 nêu rõ: The worker bees forage for nectar."
+      }
+    ]
+  }
+]

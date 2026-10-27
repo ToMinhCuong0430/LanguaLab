@@ -1,0 +1,42 @@
+[
+  {
+    "id": "en-a1-present-simple",
+    "language": "en",
+    "level": "A1",
+    "title": "Present Simple Tense",
+    "vietnamese_title": "Thì Hiện tại Đơn",
+    "summary": "Diễn tả thói quen hoặc sự thật hiển nhiên",
+    "formula": {
+      "affirmative": "S + V(s/es)",
+      "negative": "S + do/does not + V"
+    },
+    "explanation": "Dùng thì hiện tại đơn khi nói về hành động lặp đi lặp lại hoặc chân lý.",
+    "examples": [
+      {
+        "sentence": "The sun rises in the east.",
+        "translation": "Mặt trời mọc ở hướng đông."
+      }
+    ],
+    "common_mistakes": [
+      {
+        "mistake": "She work every day.",
+        "correction": "She works every day."
+      }
+    ],
+    "xp_reward": 30,
+    "license": "original",
+    "exercises": [
+      {
+        "question_type": "multiple_choice",
+        "prompt": "Chọn dạng đúng của động từ:",
+        "question": "She ___ to school every morning.",
+        "options": [
+          {"id": "A", "text": "go"},
+          {"id": "B", "text": "goes"}
+        ],
+        "correct_answer": "B",
+        "explanation": "Chủ ngữ She số ít cần thêm -es."
+      }
+    ]
+  }
+]

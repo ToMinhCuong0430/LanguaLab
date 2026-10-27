@@ -1,0 +1,26 @@
+[
+  {
+    "set_title": "Từ vựng Giao tiếp Cơ bản",
+    "set_language": "en",
+    "set_level_number": 1,
+    "license": "original",
+    "words": [
+      {
+        "word": "hello",
+        "phonetic": "/həˈloʊ/",
+        "part_of_speech": "interjection",
+        "meaning_vi": "lời chào, xin chào",
+        "example_sentence": "Hello, how are you today?",
+        "example_translation": "Xin chào, hôm nay bạn thế nào?"
+      },
+      {
+        "word": "family",
+        "phonetic": "/ˈfæm.əl.i/",
+        "part_of_speech": "noun",
+        "meaning_vi": "gia đình, dòng tộc",
+        "example_sentence": "I spend weekend with my family.",
+        "example_translation": "Tôi dành ngày cuối tuần cùng gia đình."
+      }
+    ]
+  }
+]

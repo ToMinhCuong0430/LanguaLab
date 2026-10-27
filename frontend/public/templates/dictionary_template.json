@@ -1,0 +1,29 @@
+[
+  {
+    "headword": "serendipity",
+    "language": "en",
+    "source": "in_house",
+    "license": "CC-BY-SA 4.0",
+    "data": {
+      "phonetics": [
+        {"text": "/ˌser.ənˈdɪp.ə.t̬i/", "audio": ""}
+      ],
+      "senses": [
+        {
+          "index": 1,
+          "part_of_speech": "noun",
+          "vietnamese": "sự tình cờ may mắn phát hiện điều tốt đẹp",
+          "examples": [
+            {
+              "sentence": "Finding this quiet cafe was pure serendipity.",
+              "translation": "Tìm thấy quán cà phê yên tĩnh này là một sự tình cờ đầy may mắn."
+            }
+          ]
+        }
+      ],
+      "collocations": ["pure serendipity", "by serendipity"],
+      "synonyms": ["fluke", "happy chance"],
+      "antonyms": ["misfortune"]
+    }
+  }
+]

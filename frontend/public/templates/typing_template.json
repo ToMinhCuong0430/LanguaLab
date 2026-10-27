@@ -1,0 +1,25 @@
+[
+  {
+    "topic_id": "en-life-greeting",
+    "language": "en",
+    "level": "A1",
+    "group_type": "life",
+    "title": "Chào hỏi hàng ngày",
+    "description": "Các mẫu câu chào hỏi giao tiếp thông thường",
+    "license": "original",
+    "sentences": [
+      {
+        "content": "Good morning, nice to meet you.",
+        "translation": "Chào buổi sáng, rất vui được gặp bạn.",
+        "hint_word": "morning",
+        "sort_order": 1
+      },
+      {
+        "content": "Have a great day at school.",
+        "translation": "Chúc bạn một ngày tuyệt vời tại trường học.",
+        "hint_word": "school",
+        "sort_order": 2
+      }
+    ]
+  }
+]

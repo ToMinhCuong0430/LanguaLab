@@ -1,0 +1,9 @@
+1
+00:00:01,000 --> 00:00:04,500
+Learning a new language opens a whole new world.
+Học một ngôn ngữ mới mở ra cả một thế giới hoàn toàn mới.
+
+2
+00:00:05,000 --> 00:00:09,000
+Every day practice makes your memory much stronger.
+Luyện tập mỗi ngày giúp trí nhớ của bạn trở nên mạnh mẽ hơn nhiều.

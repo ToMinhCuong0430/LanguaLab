@@ -1,0 +1,25 @@
+[
+  {
+    "id": "read-en-morning-sun",
+    "content_type": "short_story",
+    "language": "en",
+    "level": "A1",
+    "title": "The Morning Sun",
+    "vietnamese_title": "Ánh Mặt Trời Buổi Sớm",
+    "author": "Langua Team",
+    "source_note": "Bài viết tự biên soạn cho người mới bắt đầu",
+    "license": "original",
+    "sections": [
+      {
+        "sort_order": 1,
+        "original_text": "Every morning, little Leo opens his window. He sees the golden sun rising above the green hills.",
+        "translated_text": "Mỗi buổi sáng, cậu bé Leo mở cửa sổ phòng mình. Cậu nhìn thấy ánh mặt trời vàng óng mọc trên những ngọn đồi xanh biếc."
+      },
+      {
+        "sort_order": 2,
+        "original_text": "Birds sing sweet melodies in the trees. Leo smiles and gets ready for a wonderful day ahead.",
+        "translated_text": "Những chú chim hót líu lo khúc nhạc ngọt ngào trên tán cây. Leo mỉm cười và chuẩn bị cho một ngày tuyệt vời phía trước."
+      }
+    ]
+  }
+]

@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Neo-brutalism Design Tokens & Theming */
+:root {
+  /* Nền và chữ */
+  --bg: #F5F6FA;
+  --surface: #FFFFFF;
+  --surface-2: #EAEBF4;
+  --ink: #11141D;
+  --ink-soft: #4E5569;
+  --line: #11141D;
+  --focus: #FF5A4E;
+
+  /* Màu nhấn phẳng tươi (Accent) */
+  --accent: #2F5BFF;
+  --accent-ink: #FFFFFF;
+
+  /* Màu trạng thái Neo-brutalism */
+  --ok: #00D084;
+  --warn: #FFD23F;
+  --bad: #FF4D4D;
+  --mark: #FF70A6;
+  --on-tone: #11141D;
+
+  /* ── Feature color palette (8 chức năng) ── */
+  --c-green:  #00D084;
+  --c-blue:   #2F5BFF;
+  --c-yellow: #FFD23F;
+  --c-pink:   #FF70A6;
+  --c-orange: #FF8A3D;
+  --c-violet: #9B6BFF;
+  --c-coral:  #FF5A4E;
+  --c-cyan:   #23D5E8;
+
+  /* Soft variants (nền nhạt) */
+  --c-green-soft:  #D6FFF0;
+  --c-blue-soft:   #D9E2FF;
+  --c-yellow-soft: #FFF8D6;
+  --c-pink-soft:   #FFE0EF;
+  --c-orange-soft: #FFE9D6;
+  --c-violet-soft: #EAE0FF;
+  --c-coral-soft:  #FFE0DE;
+  --c-cyan-soft:   #D6FAFD;
+
+  /* Ink variants (text trên soft bg, tương phản ≥4.5:1) */
+  --c-green-ink:  #005C3A;
+  --c-blue-ink:   #0A2394;
+  --c-yellow-ink: #5C4400;
+  --c-pink-ink:   #7A0040;
+  --c-orange-ink: #6B2E00;
+  --c-violet-ink: #3D007A;
+  --c-coral-ink:  #6B0000;
+  --c-cyan-ink:   #004D57;
+
+  /* Feature token mặc định (override theo data-feature) */
+  --feature:      var(--c-blue);
+  --feature-soft: var(--c-blue-soft);
+  --feature-ink:  var(--c-blue-ink);
+
+  /* Màu ngôn ngữ */
+  --lang-en: #2F5BFF;
+  --lang-zh: #D92B1F;
+  --lang-ja: #FF70A6;
+
+  /* Neo-brutalism: viền dày và bóng đổ cứng không blur */
+  --bw: 3px;
+  --shadow-x: 4px;
+  --shadow: 4px 4px 0 var(--line);
+  --shadow-sm: 2px 2px 0 var(--line);
+  --shadow-lg: 6px 6px 0 var(--line);
+  --radius: 6px;
+  --radius-lg: 12px;
+
+  /* Font typography */
+  --font-display: 'Space Grotesk', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Dark Mode Tokens */
+.dark,
+[data-theme='dark'] {
+  --bg: #12131D;
+  --surface: #1E2132;
+  --surface-2: #282C43;
+  --ink: #F5F7FF;
+  --ink-soft: #A3A8BE;
+  --line: #F5F7FF;
+  --focus: #FFD23F;
+
+  --accent: #547BFF;
+  --accent-ink: #FFFFFF;
+
+  --ok: #20E096;
+  --warn: #FFDC5C;
+  --bad: #FF6666;
+  --mark: #FF85B8;
+  --on-tone: #11141D;
+
+  --shadow: 4px 4px 0 var(--line);
+  --shadow-sm: 2px 2px 0 var(--line);
+  --shadow-lg: 6px 6px 0 var(--line);
+
+  /* Dark mode feature soft/ink */
+  --c-green-soft:  #0A3D28;
+  --c-blue-soft:   #0A1A55;
+  --c-yellow-soft: #3D3000;
+  --c-pink-soft:   #4D1030;
+  --c-orange-soft: #4D2200;
+  --c-violet-soft: #261050;
+  --c-coral-soft:  #4D0D0D;
+  --c-cyan-soft:   #003D47;
+
+  --c-green-ink:  #7DFFCA;
+  --c-blue-ink:   #8BABFF;
+  --c-yellow-ink: #FFEC8A;
+  --c-pink-ink:   #FFB3D6;
+  --c-orange-ink: #FFBE8A;
+  --c-violet-ink: #C9AAFF;
+  --c-coral-ink:  #FF9B97;
+  --c-cyan-ink:   #7AECF7;
+}
+
+/* ── Feature color overrides per page ── */
+[data-feature='home'], [data-feature='video-podcast'] {
+  --feature: var(--c-blue);
+  --feature-soft: var(--c-blue-soft);
+  --feature-ink: var(--c-blue-ink);
+}
+[data-feature='go-cau'] {
+  --feature: var(--c-green);
+  --feature-soft: var(--c-green-soft);
+  --feature-ink: var(--c-green-ink);
+}
+[data-feature='ngu-phap'] {
+  --feature: var(--c-yellow);
+  --feature-soft: var(--c-yellow-soft);
+  --feature-ink: var(--c-yellow-ink);
+}
+[data-feature='tu-vung'] {
+  --feature: var(--c-pink);
+  --feature-soft: var(--c-pink-soft);
+  --feature-ink: var(--c-pink-ink);
+}
+[data-feature='doc-dich'] {
+  --feature: var(--c-orange);
+  --feature-soft: var(--c-orange-soft);
+  --feature-ink: var(--c-orange-ink);
+}
+[data-feature='tu-dien'] {
+  --feature: var(--c-violet);
+  --feature-soft: var(--c-violet-soft);
+  --feature-ink: var(--c-violet-ink);
+}
+[data-feature='luyen-thi'] {
+  --feature: var(--c-coral);
+  --feature-soft: var(--c-coral-soft);
+  --feature-ink: var(--c-coral-ink);
+}
+[data-feature='yeu-cau-tinh-nang'], [data-feature='gop-y'] {
+  --feature: var(--c-cyan);
+  --feature-soft: var(--c-cyan-soft);
+  --feature-ink: var(--c-cyan-ink);
+}
+[data-feature='admin'] {
+  --feature: var(--surface-2);
+  --feature-soft: var(--surface-2);
+  --feature-ink: var(--ink);
+}
+
+/* Màu nhấn theo ngôn ngữ */
+[data-lang='en'] { --accent: #2F5BFF; --accent-ink: #FFFFFF; }
+[data-lang='zh'] { --accent: #D92B1F; --accent-ink: #FFFFFF; }
+[data-lang='ja'] { --accent: #FF70A6; --accent-ink: #000000; }
+
+[data-theme='dark'][data-lang='en'], [data-theme='dark'] [data-lang='en'] { --accent: #7C97FF; --accent-ink: #000000; }
+[data-theme='dark'][data-lang='zh'], [data-theme='dark'] [data-lang='zh'] { --accent: #FF7A6E; --accent-ink: #000000; }
+[data-theme='dark'][data-lang='ja'], [data-theme='dark'] [data-lang='ja'] { --accent: #FF8FC7; --accent-ink: #000000; }
+
+/* Base Styles */
+html {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--warn);
+  color: #11141D;
+}
+
+/* Tiện ích hiệu ứng nút / card neo-brutalism */
+@layer utilities {
+  .brut-box {
+    border: var(--bw) solid var(--line);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+  }
+
+  .brut-press {
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+
+  .brut-press:hover:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .brut-press:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

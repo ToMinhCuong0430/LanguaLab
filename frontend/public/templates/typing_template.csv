@@ -1,0 +1,5 @@
+topic_id,topic_language,topic_level,group_type,topic_title,topic_description,sentence_content,reading,translation,hint_word,sort_order,license
+en-life-greeting,en,A1,life,"Chào hỏi hàng ngày","Các mẫu câu chào hỏi giao tiếp thông thường","Good morning, nice to meet you.",,"Chào buổi sáng, rất vui được gặp bạn.","morning",1,original
+en-life-greeting,en,A1,life,"Chào hỏi hàng ngày","Các mẫu câu chào hỏi giao tiếp thông thường","Have a great day at school.",,"Chúc bạn một ngày tuyệt vời tại trường học.","school",2,original
+en-work-email,en,B1,work,"Viết email công việc","Mẫu câu thường dùng trong trao đổi email công sở","I am writing to confirm our meeting tomorrow.",,"Tôi viết thư này để xác nhận buổi họp ngày mai của chúng ta.","confirm",1,original
+zh-life-morning,zh,HSK1,life,"Buổi sáng vui vẻ","Giao tiếp tiếng Trung khi bắt đầu ngày mới","早上好，你吃早餐了吗？","zǎoshang hǎo, nǐ chī zǎocān le ma?","Chào buổi sáng, bạn ăn sáng chưa?","早餐",1,original

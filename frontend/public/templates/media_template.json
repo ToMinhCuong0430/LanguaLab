@@ -1,0 +1,28 @@
+[
+  {
+    "id": "media-en-ted-intro",
+    "media_type": "video",
+    "language": "en",
+    "level": "B1",
+    "topic": "Học tập",
+    "title": "How Learning Changes Your Mind",
+    "vietnamese_title": "Bộ Não Thay Đổi Ra Sao Khi Học",
+    "speaker": "Dr. Elena Ross",
+    "provider": "youtube",
+    "source_url": "dQw4w9WgXcQ",
+    "duration_seconds": 180,
+    "license": "original",
+    "quiz_questions": [
+      {
+        "segment_time_sec": 60,
+        "question": "Theo diễn giả, điều gì giúp trí não linh hoạt hơn?",
+        "options": [
+          {"id": 0, "text": "Ngủ đủ giấc và rèn luyện đều đặn"},
+          {"id": 1, "text": "Ăn nhiều đồ ngọt"}
+        ],
+        "correct_index": 0,
+        "explanation": "Diễn giả nhấn mạnh giấc ngủ và thói quen rèn luyện hàng ngày."
+      }
+    ]
+  }
+]
