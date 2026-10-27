@@ -151,10 +151,11 @@ onUnmounted(() => {
           <button
             v-else-if="searchQuery"
             type="button"
-            class="p-0.5 rounded text-ink-soft hover:text-ink cursor-pointer"
+            class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-1 rounded text-ink-soft hover:text-ink cursor-pointer"
+            aria-label="Xóa từ khóa tìm kiếm"
             @click="clearSearch"
           >
-            <X class="h-3.5 w-3.5" />
+            <X class="h-4 w-4" :stroke-width="2.5" />
           </button>
         </div>
       </div>
@@ -239,7 +240,7 @@ onUnmounted(() => {
         <!-- Nút điểm danh hôm nay -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press"
           :class="user.checkedInToday ? 'bg-ok text-on-tone' : 'bg-warn text-on-tone'"
           :disabled="user.checkedInToday"
           @click="toggleCheckIn"
@@ -262,9 +263,9 @@ onUnmounted(() => {
       <div ref="notificationRef" class="relative">
         <button
           type="button"
-          class="relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          class="relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press"
           :aria-expanded="isNotificationOpen"
-          aria-label="Thông báo"
+          aria-label="Thông báo học tập"
           @click="toggleNotification"
         >
           <Bell class="h-4 w-4 text-ink" :stroke-width="2.5" />
@@ -295,10 +296,11 @@ onUnmounted(() => {
               </button>
               <button
                 type="button"
-                class="text-ink-soft hover:text-ink cursor-pointer"
+                class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded text-ink-soft hover:text-ink cursor-pointer"
+                aria-label="Đóng bảng thông báo"
                 @click="closeNotification"
               >
-                <X class="h-4 w-4" />
+                <X class="h-4 w-4" :stroke-width="2.5" />
               </button>
             </div>
           </div>

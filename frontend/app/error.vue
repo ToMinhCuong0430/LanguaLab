@@ -53,11 +53,11 @@ const handleReload = () => {
       <div class="mx-auto w-40 h-32 flex items-center justify-center">
         <svg viewBox="0 0 160 120" fill="none" class="w-full h-full select-none" aria-hidden="true">
           <!-- Hộp lỗi 404/500 -->
-          <rect x="15" y="15" width="130" height="90" rx="8" fill="var(--surface-2)" stroke="#11141D" stroke-width="3.5" />
-          <rect x="25" y="25" width="110" height="20" rx="4" fill="var(--bad)" stroke="#11141D" stroke-width="2.5" />
-          <circle cx="35" cy="35" r="3" fill="#FFFFFF" />
-          <circle cx="45" cy="35" r="3" fill="#FFFFFF" />
-          <circle cx="55" cy="35" r="3" fill="#FFFFFF" />
+          <rect x="15" y="15" width="130" height="90" rx="8" fill="var(--surface-2)" stroke="var(--line)" stroke-width="3.5" />
+          <rect x="25" y="25" width="110" height="20" rx="4" fill="var(--bad)" stroke="var(--line)" stroke-width="2.5" />
+          <circle cx="35" cy="35" r="3" fill="var(--surface)" />
+          <circle cx="45" cy="35" r="3" fill="var(--surface)" />
+          <circle cx="55" cy="35" r="3" fill="var(--surface)" />
           <!-- Chữ số lớn bên trong -->
           <text
             x="80"
@@ -66,7 +66,7 @@ const handleReload = () => {
             font-family="var(--font-display)"
             font-weight="900"
             font-size="34"
-            fill="#11141D"
+            fill="var(--ink)"
           >
             {{ statusCode === 404 ? '404' : statusCode === 403 ? '403' : '500' }}
           </text>

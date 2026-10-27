@@ -343,8 +343,9 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
               <button
                 v-if="item.isCustom"
                 type="button"
-                class="p-1.5 text-bad hover:opacity-80 cursor-pointer"
+                class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-2 text-bad hover:opacity-80 cursor-pointer"
                 title="Xoá bài này"
+                aria-label="Xoá bài đọc tự tạo"
                 @click="deleteCustomText(item.id)"
               >
                 <Trash2 class="w-4 h-4" />
@@ -352,7 +353,7 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
 
               <NuxtLink
                 :to="`/doc-dich/${item.id}`"
-                class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-brut border-2 border-line bg-c-orange hover:bg-c-orange/90 text-white font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5"
+                class="min-h-[44px] inline-flex items-center gap-1 px-3.5 py-2 rounded-brut border-2 border-line bg-c-orange hover:bg-c-orange/90 text-ink font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5 text-decoration-none"
               >
                 <span>Vào đọc ngay</span>
                 <ArrowRight class="w-3.5 h-3.5 stroke-[3]" />

@@ -11,7 +11,8 @@ useHead({
     <div class="flex items-center gap-3">
       <NuxtLink
         to="/"
-        class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-surface text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+        class="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+        aria-label="Quay lại trang chủ"
       >
         <ArrowLeft class="h-4 w-4" :stroke-width="2.5" />
       </NuxtLink>

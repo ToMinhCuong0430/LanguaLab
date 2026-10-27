@@ -20,6 +20,10 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const modalContainerRef = ref<HTMLElement | null>(null)
+const titleId = `modal-title-${Math.random().toString(36).substring(2, 9)}`
+let previousActiveElement: HTMLElement | null = null
+
 const close = () => {
   emit('update:modelValue', false)
   emit('close')
@@ -32,19 +36,66 @@ const onBackdropClick = (e: MouseEvent) => {
 }
 
 const onKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && props.modelValue) {
+  if (!props.modelValue) return
+
+  if (e.key === 'Escape') {
+    e.preventDefault()
     close()
+    return
+  }
+
+  // Focus trap
+  if (e.key === 'Tab' && modalContainerRef.value) {
+    const focusables = modalContainerRef.value.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+    if (!focusables.length) return
+
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
   }
 }
 
-onMounted(() => {
-  if (import.meta.client) {
-    window.addEventListener('keydown', onKeydown)
-  }
-})
+watch(
+  () => props.modelValue,
+  (isOpen) => {
+    if (!import.meta.client) return
+    if (isOpen) {
+      previousActiveElement = document.activeElement as HTMLElement
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', onKeydown)
+      nextTick(() => {
+        const firstFocusable = modalContainerRef.value?.querySelector<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+        if (firstFocusable) {
+          firstFocusable.focus()
+        } else {
+          modalContainerRef.value?.focus()
+        }
+      })
+    } else {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKeydown)
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus()
+      }
+    }
+  },
+  { immediate: true },
+)
 
 onUnmounted(() => {
   if (import.meta.client) {
+    document.body.style.overflow = ''
     window.removeEventListener('keydown', onKeydown)
   }
 })
@@ -58,17 +109,20 @@ onUnmounted(() => {
         class="base-modal-backdrop"
         role="dialog"
         aria-modal="true"
-        :aria-label="title || 'Hộp thoại'"
+        :aria-labelledby="title ? titleId : undefined"
+        :aria-label="!title ? 'Hộp thoại' : undefined"
         @click="onBackdropClick"
       >
         <div
+          ref="modalContainerRef"
           class="base-modal-container"
           :class="`base-modal-container--${maxWidth}`"
+          tabindex="-1"
         >
           <!-- Header -->
           <header v-if="title || $slots.header" class="base-modal-header">
             <slot name="header">
-              <h2 class="base-modal-title">{{ title }}</h2>
+              <h2 :id="titleId" class="base-modal-title">{{ title }}</h2>
             </slot>
             <button
               type="button"
@@ -100,7 +154,7 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(17, 20, 29, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,13 +197,15 @@ onUnmounted(() => {
 }
 
 .base-modal-close {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 2px solid var(--line);
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: var(--radius);
+  border: 2px solid var(--line);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
@@ -170,22 +226,28 @@ onUnmounted(() => {
 .base-modal-body {
   padding: 1.25rem;
   overflow-y: auto;
+  flex: 1;
 }
 
 .base-modal-footer {
-  padding: 0.85rem 1.25rem;
-  border-top: var(--bw) solid var(--line);
-  background: var(--surface-2);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 2px solid var(--line);
+  background: var(--surface-2);
 }
 
-/* Transitions */
+/* Animations */
 .base-modal-enter-active,
 .base-modal-leave-active {
-  transition: opacity 0.15s ease;
+  transition: opacity 0.18s ease;
+}
+
+.base-modal-enter-active .base-modal-container,
+.base-modal-leave-active .base-modal-container {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease;
 }
 
 .base-modal-enter-from,
@@ -193,13 +255,9 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-.base-modal-enter-active .base-modal-container,
-.base-modal-leave-active .base-modal-container {
-  transition: transform 0.15s ease;
-}
-
 .base-modal-enter-from .base-modal-container,
 .base-modal-leave-to .base-modal-container {
-  transform: scale(0.96) translateY(8px);
+  opacity: 0;
+  transform: scale(0.96) translateY(6px);
 }
 </style>

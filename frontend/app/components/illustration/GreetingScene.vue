@@ -102,12 +102,12 @@ const targetBadgeText = computed(() => {
       <path d="M170 30 Q176 24 182 28 Q188 24 194 30" fill="none" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
       <path d="M196 42 Q200 38 205 41 Q210 38 214 42" fill="none" stroke="#11141D" stroke-width="2" stroke-linecap="round" />
 
-      <!-- Ngôi sao 4 cánh lấp lánh (vàng & xanh) -->
-      <g class="anim-sparkle" transform="translate(130, 60)">
-        <path d="M0 -8 Q0 0 8 0 Q0 0 0 8 Q0 0 -8 0 Q0 0 0 -8 Z" fill="#FFD23F" stroke="#11141D" stroke-width="2" />
+      <!-- Họa tiết hình học phẳng neo-brutalism (dấu cộng & hình thoi nhỏ) -->
+      <g transform="translate(130, 60)">
+        <path d="M-5 0 L5 0 M0 -5 L0 5" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
       </g>
-      <g class="anim-sparkle" transform="translate(340, 95)">
-        <path d="M0 -6 Q0 0 6 0 Q0 0 0 6 Q0 0 -6 0 Q0 0 0 -6 Z" fill="#2F5BFF" stroke="#11141D" stroke-width="1.8" />
+      <g transform="translate(340, 95)">
+        <rect x="-3.5" y="-3.5" width="7" height="7" fill="var(--c-blue, #2F5BFF)" stroke="#11141D" stroke-width="1.8" transform="rotate(45)" />
       </g>
 
       <!-- Cốc cà phê nhỏ góc dưới bên phải -->
@@ -161,9 +161,9 @@ const targetBadgeText = computed(() => {
         <circle cx="8" cy="10" r="3" fill="#00D084" />
       </g>
 
-      <!-- Sao 4 cánh -->
-      <g class="anim-sparkle" transform="translate(140, 55)">
-        <path d="M0 -7 Q0 0 7 0 Q0 0 0 7 Q0 0 -7 0 Q0 0 0 -7 Z" fill="#FFD23F" stroke="#11141D" stroke-width="2" />
+      <!-- Dấu cộng hình học phẳng -->
+      <g transform="translate(140, 55)">
+        <path d="M-4.5 0 L4.5 0 M0 -4.5 L0 4.5" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
       </g>
     </g>
 
@@ -182,18 +182,18 @@ const targetBadgeText = computed(() => {
         <path d="M-9 5 Q-6 8 -3 5" fill="none" stroke="#11141D" stroke-width="2" stroke-linecap="round" />
       </g>
 
-      <!-- Các ngôi sao nhỏ trắng & vàng rực rỡ buổi tối -->
-      <g class="anim-sparkle" transform="translate(90, 30)">
-        <path d="M0 -7 Q0 0 7 0 Q0 0 0 7 Q0 0 -7 0 Q0 0 0 -7 Z" fill="#FFD23F" stroke="#11141D" stroke-width="2" />
+      <!-- Các họa tiết hình học phẳng: chấm tròn, dấu cộng, hình thoi -->
+      <g transform="translate(90, 30)">
+        <circle cx="0" cy="0" r="3.5" fill="var(--c-yellow, #FFD23F)" stroke="#11141D" stroke-width="2" />
       </g>
-      <g class="anim-sparkle" transform="translate(160, 50)">
+      <g transform="translate(160, 50)">
         <circle cx="0" cy="0" r="3" fill="#FFFFFF" stroke="#11141D" stroke-width="1.5" />
       </g>
-      <g class="anim-sparkle" transform="translate(300, 30)">
-        <path d="M0 -5 Q0 0 5 0 Q0 0 0 5 Q0 0 -5 0 Q0 0 0 -5 Z" fill="#FFFFFF" stroke="#11141D" stroke-width="1.8" />
+      <g transform="translate(300, 30)">
+        <path d="M-4 0 L4 0 M0 -4 L0 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
       </g>
-      <g class="anim-sparkle" transform="translate(420, 90)">
-        <path d="M0 -6 Q0 0 6 0 Q0 0 0 6 Q0 0 -6 0 Q0 0 0 -6 Z" fill="#FFD23F" stroke="#11141D" stroke-width="2" />
+      <g transform="translate(420, 90)">
+        <rect x="-3" y="-3" width="6" height="6" fill="var(--c-yellow, #FFD23F)" stroke="#11141D" stroke-width="1.8" transform="rotate(45)" />
       </g>
       <circle cx="210" cy="35" r="2.5" fill="#FFFFFF" />
       <circle cx="340" cy="75" r="2" fill="#FFD23F" />
@@ -309,17 +309,6 @@ const targetBadgeText = computed(() => {
   }
 }
 
-@keyframes sparkle {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-
 @keyframes mascotBob {
   0%, 100% {
     transform: translateY(0);
@@ -341,11 +330,6 @@ const targetBadgeText = computed(() => {
   animation: driftCloud2 7s ease-in-out infinite;
 }
 
-.anim-sparkle {
-  transform-origin: center;
-  animation: sparkle 2.5s ease-in-out infinite;
-}
-
 .anim-mascot-bob {
   animation: mascotBob 3.5s ease-in-out infinite;
 }
@@ -354,7 +338,6 @@ const targetBadgeText = computed(() => {
   .anim-float-sun,
   .anim-drift-cloud-1,
   .anim-drift-cloud-2,
-  .anim-sparkle,
   .anim-mascot-bob {
     animation: none !important;
   }

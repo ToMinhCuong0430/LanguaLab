@@ -35,9 +35,9 @@ const answeredCount = computed(() => {
 // Bảng màu câu hiện tại theo từng kỹ năng
 const skillActiveColors: Record<string, string> = {
   listening: 'bg-c-blue text-white',
-  reading: 'bg-c-green text-white',
-  writing: 'bg-c-orange text-white',
-  speaking: 'bg-c-pink text-white',
+  reading: 'bg-c-green text-ink',
+  writing: 'bg-c-orange text-ink',
+  speaking: 'bg-c-pink text-ink',
 }
 
 const activeClass = computed(() => skillActiveColors[props.skill] || 'bg-accent text-accent-ink')

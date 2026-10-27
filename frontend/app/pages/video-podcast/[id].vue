@@ -350,7 +350,7 @@ const formatTime = (secs: number) => {
         class="px-4 py-2 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5"
         :class="[
           currentPracticeMode === 'shadowing'
-            ? 'bg-c-pink text-white border-line shadow-brut'
+            ? 'bg-c-pink text-ink border-line shadow-brut'
             : 'bg-surface hover:bg-surface-2 text-ink border-line shadow-brut-sm',
         ]"
         @click="currentPracticeMode = 'shadowing'; playShadowingSegment()"

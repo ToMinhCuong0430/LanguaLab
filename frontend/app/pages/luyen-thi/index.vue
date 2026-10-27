@@ -45,7 +45,7 @@ const skillPreviews = [
   {
     name: 'Reading',
     sub: '2 dòng trích bài đọc học thuật',
-    color: 'bg-c-green text-white',
+    color: 'bg-c-green text-ink',
     border: 'border-l-c-green',
     icon: BookOpen,
     preview: '"The history of urban architecture suggests that green spaces profoundly influence cognitive well-being..."',
@@ -53,7 +53,7 @@ const skillPreviews = [
   {
     name: 'Writing',
     sub: 'Đề Task 1 & 2 rút gọn',
-    color: 'bg-c-orange text-white',
+    color: 'bg-c-orange text-ink',
     border: 'border-l-c-orange',
     icon: PenTool,
     preview: 'Task 2: Some believe technology isolates individuals while others argue it bridges cultural barriers. Discuss both views.',
@@ -61,7 +61,7 @@ const skillPreviews = [
   {
     name: 'Speaking',
     sub: 'Câu hỏi Part 1 trực diện',
-    color: 'bg-c-pink text-white',
+    color: 'bg-c-pink text-ink',
     border: 'border-l-c-pink',
     icon: Mic,
     preview: 'Part 1: "Do you prefer studying alone or in a group? How has your routine changed over the past few years?"',

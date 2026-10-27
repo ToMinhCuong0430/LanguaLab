@@ -18,9 +18,9 @@ const emit = defineEmits<{
 const { currentLang, supportedLanguages, setLanguage } = useLanguage()
 
 const langColorMap: Record<string, { bg: string; text: string }> = {
-  en: { bg: 'var(--c-blue)', text: '#FFFFFF' },
-  zh: { bg: 'var(--c-coral)', text: '#FFFFFF' },
-  ja: { bg: 'var(--c-pink)', text: '#11141D' },
+  en: { bg: 'var(--c-blue)', text: 'var(--accent-ink, #FFFFFF)' },
+  zh: { bg: 'var(--c-coral)', text: 'var(--ink)' },
+  ja: { bg: 'var(--c-pink)', text: 'var(--ink)' },
 }
 
 const selectLang = (lang: LearningLanguage) => {
@@ -43,13 +43,13 @@ const selectLang = (lang: LearningLanguage) => {
         type="button"
         role="radio"
         :aria-checked="currentLang === item.code"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-brut border-2 transition-all cursor-pointer"
+        class="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-brut border-2 transition-all cursor-pointer"
         :class="[
           currentLang === item.code
             ? 'border-line shadow-brut-sm font-black'
             : 'bg-surface hover:bg-surface-2 text-ink border-transparent hover:border-line',
         ]"
-        :style="currentLang === item.code ? { backgroundColor: langColorMap[item.code]?.bg || 'var(--warn)', color: langColorMap[item.code]?.text || '#11141D' } : {}"
+        :style="currentLang === item.code ? { backgroundColor: langColorMap[item.code]?.bg || 'var(--warn)', color: langColorMap[item.code]?.text || 'var(--ink)' } : {}"
         @click="selectLang(item.code)"
       >
         <span class="text-sm leading-none">{{ item.flag }}</span>

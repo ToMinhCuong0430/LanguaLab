@@ -223,7 +223,8 @@ const getSlideIcon = (type?: string) => {
               <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  class="rounded border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                  class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                  :aria-label="isPaused ? 'Tiếp tục bảng tin' : 'Tạm dừng bảng tin'"
                   :title="isPaused ? 'Tiếp tục' : 'Tạm dừng'"
                   @click="isPaused = !isPaused"
                 >
@@ -232,8 +233,8 @@ const getSlideIcon = (type?: string) => {
                 </button>
                 <button
                   type="button"
-                  class="rounded border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
-                  aria-label="Đóng story"
+                  class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                  aria-label="Đóng bảng tin story"
                   @click="closeStory"
                 >
                   <X class="h-4 w-4" :stroke-width="2.5" />

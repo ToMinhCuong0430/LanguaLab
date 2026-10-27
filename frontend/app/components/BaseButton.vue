@@ -108,9 +108,9 @@ const attrs = computed(() =>
 
 /* Kích cỡ (Touch target >= 44px chuẩn ui-ux-pro-max) */
 .base-btn--sm {
-  min-height: 38px;
+  min-height: 44px;
   min-width: 44px;
-  padding: 0.4rem 0.85rem;
+  padding: 0.45rem 0.95rem;
   font-size: 0.875rem;
 }
 

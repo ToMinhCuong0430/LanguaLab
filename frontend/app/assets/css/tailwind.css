@@ -11,7 +11,7 @@
   --ink: #11141D;
   --ink-soft: #4E5569;
   --line: #11141D;
-  --focus: #FF5A4E;
+  --focus: #D9381E;
 
   /* Màu nhấn phẳng tươi (Accent) */
   --accent: #2F5BFF;
@@ -21,13 +21,13 @@
   --primary: #2F5BFF;
   --primary-ink: #FFFFFF;
   --secondary: #9B6BFF;
-  --secondary-ink: #FFFFFF;
+  --secondary-ink: #11141D;
   --success: #00D084;
   --success-ink: #11141D;
   --warning: #FFD23F;
   --warning-ink: #11141D;
   --danger: #FF5A4E;
-  --danger-ink: #FFFFFF;
+  --danger-ink: #11141D;
 
   /* Bảng màu 3 buổi của Greeting Banner */
   --greeting-morning-bg: #4ED8A8;
@@ -118,7 +118,7 @@
   --accent-ink: #FFFFFF;
 
   --primary: #547BFF;
-  --primary-ink: #FFFFFF;
+  --primary-ink: #11141D;
   --secondary: #B18CFF;
   --secondary-ink: #11141D;
   --success: #20E096;
@@ -126,7 +126,7 @@
   --warning: #FFDC5C;
   --warning-ink: #11141D;
   --danger: #FF6666;
-  --danger-ink: #FFFFFF;
+  --danger-ink: #11141D;
 
   --greeting-morning-bg: #1B5E43;
   --greeting-morning-soft: #0A3D28;

@@ -169,8 +169,9 @@ onUnmounted(() => {
         <!-- Nút lùi 5s -->
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-surface text-ink shadow-brut-sm brut-press disabled:opacity-50 cursor-pointer"
+          class="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface text-ink shadow-brut-sm brut-press disabled:opacity-50 cursor-pointer"
           :disabled="mode === 'exam' && enforceLimit"
+          aria-label="Lùi lại 5 giây"
           title="Lùi 5 giây"
           @click="seekRelative(-5)"
         >
@@ -180,7 +181,7 @@ onUnmounted(() => {
         <!-- Nút Play / Pause chính -->
         <button
           type="button"
-          class="flex h-11 px-4 items-center gap-2 rounded-brut border-2 border-line bg-warn text-on-tone font-display text-sm font-black shadow-brut brut-press disabled:opacity-50 cursor-pointer"
+          class="flex h-11 min-h-[44px] px-4 items-center gap-2 rounded-brut border-2 border-line bg-warn text-on-tone font-display text-sm font-black shadow-brut brut-press disabled:opacity-50 cursor-pointer"
           :disabled="playCount >= maxPlays && enforceLimit && !isPlaying"
           @click="togglePlay"
         >
@@ -192,8 +193,9 @@ onUnmounted(() => {
         <!-- Nút tiến 5s -->
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-surface text-ink shadow-brut-sm brut-press disabled:opacity-50 cursor-pointer"
+          class="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface text-ink shadow-brut-sm brut-press disabled:opacity-50 cursor-pointer"
           :disabled="mode === 'exam' && enforceLimit"
+          aria-label="Tua tới 5 giây"
           title="Tua tới 5 giây"
           @click="seekRelative(5)"
         >

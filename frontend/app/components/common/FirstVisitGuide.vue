@@ -122,7 +122,7 @@ onUnmounted(() => {
     <Teleport to="body">
       <div
         v-if="isModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-none"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50"
         role="dialog"
         aria-modal="true"
         aria-labelledby="guide-title"
@@ -141,7 +141,7 @@ onUnmounted(() => {
 
             <button
               type="button"
-              class="rounded border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm brut-press"
+              class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm brut-press cursor-pointer"
               aria-label="Đóng hướng dẫn"
               @click="skipGuide"
             >

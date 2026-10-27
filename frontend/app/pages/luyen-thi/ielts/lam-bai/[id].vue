@@ -252,7 +252,8 @@ const examRoomGuideSteps: GuideStep[] = [
         <div class="flex items-center gap-3">
           <NuxtLink
             :to="`/luyen-thi/ielts/${test.skill}`"
-            class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-surface-2 text-ink hover:bg-surface shadow-brut-sm cursor-pointer"
+            class="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface-2 text-ink hover:bg-surface shadow-brut-sm cursor-pointer"
+            aria-label="Thoát về danh sách đề thi"
             title="Thoát về danh sách đề"
           >
             <ArrowLeft class="h-4 w-4" :stroke-width="2.5" />
@@ -594,7 +595,8 @@ const examRoomGuideSteps: GuideStep[] = [
             </div>
             <button
               type="button"
-              class="rounded border border-line p-1 hover:bg-surface-2"
+              class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded border border-line p-1 hover:bg-surface-2 cursor-pointer"
+              aria-label="Đóng hộp thoại xác nhận"
               @click="cancelSubmit"
             >
               <X class="h-4 w-4" :stroke-width="2.5" />

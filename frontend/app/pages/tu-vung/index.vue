@@ -558,37 +558,38 @@ const handleAddWord = () => {
             :class="[
               isCardFlipped
                 ? 'bg-surface text-ink'
-                : 'bg-c-pink text-white',
+                : 'bg-c-pink text-ink',
             ]"
             @click="flipCard"
           >
             <!-- Card Header -->
             <div class="flex items-center justify-between border-b-2 border-line/40 pb-3">
-              <span class="text-xs font-mono font-black" :class="isCardFlipped ? 'text-ink-soft' : 'text-white/90'">
+              <span class="text-xs font-mono font-black" :class="isCardFlipped ? 'text-ink-soft' : 'text-ink'">
                 Từ #{{ currentWordIndex + 1 }} / {{ activeSet?.words.length }}
               </span>
 
               <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  class="p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
+                  class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
                   title="Nghe phát âm chuẩn"
+                  aria-label="Nghe phát âm chuẩn từ vựng"
                   @click.stop="speakWord()"
                 >
                   <Volume2 class="w-4 h-4 text-ink" :stroke-width="2.5" />
                 </button>
-                <span class="text-xs font-bold" :class="isCardFlipped ? 'text-ink-soft' : 'text-white/90'">
+                <span class="text-xs font-bold" :class="isCardFlipped ? 'text-ink-soft' : 'text-ink'">
                   {{ isCardFlipped ? 'Mặt sau (Nghĩa)' : 'Mặt trước (Bấm lật)' }}
                 </span>
               </div>
             </div>
 
-            <!-- Mặt trước (Nền màu Pink, chữ trắng nổi bật) -->
+            <!-- Mặt trước (Nền màu Pink, chữ ink tương phản cao) -->
             <div v-if="!isCardFlipped" class="py-8 text-center space-y-4 flex-1 flex flex-col justify-center items-center">
-              <h2 class="text-4xl sm:text-6xl font-black text-white font-display tracking-tight drop-shadow-sm">
+              <h2 class="text-4xl sm:text-6xl font-black text-ink font-display tracking-tight">
                 {{ currentWord.term }}
               </h2>
-              <p class="text-lg sm:text-xl text-white/90 font-mono italic">
+              <p class="text-lg sm:text-xl text-ink font-mono italic">
                 {{ currentWord.phonetic }}
               </p>
               <div class="inline-block px-3 py-1 bg-surface rounded-brut border-2 border-line text-xs font-black text-ink shadow-[1px_1px_0_var(--line)]">
@@ -617,7 +618,7 @@ const handleAddWord = () => {
             </div>
 
             <!-- Card Footer -->
-            <div class="flex items-center justify-between border-t-2 border-line/40 pt-3 text-xs font-bold" :class="isCardFlipped ? 'text-ink-soft' : 'text-white/90'">
+            <div class="flex items-center justify-between border-t-2 border-line/40 pt-3 text-xs font-bold" :class="isCardFlipped ? 'text-ink-soft' : 'text-ink'">
               <div class="flex items-center gap-1">
                 <RotateCw class="w-3.5 h-3.5" />
                 <span>Bấm vào thẻ để xoay</span>
@@ -626,7 +627,8 @@ const handleAddWord = () => {
               <button
                 v-if="activeSet?.isCustom"
                 type="button"
-                class="text-bad hover:underline font-bold text-xs"
+                class="min-h-[44px] px-2 inline-flex items-center text-bad hover:underline font-bold text-xs"
+                aria-label="Xoá từ này khỏi bộ từ"
                 @click.stop="removeWordFromMySet(activeSet.id, currentWord.id)"
               >
                 Xoá từ này
@@ -643,7 +645,7 @@ const handleAddWord = () => {
               <!-- Quên (Coral / Red) -->
               <button
                 type="button"
-                class="p-2.5 rounded-brut border-2 border-line bg-c-coral text-white font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
+                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-coral text-ink font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
                 @click="rateSrs('again')"
               >
                 <span>Quên (Again)</span>
@@ -652,7 +654,7 @@ const handleAddWord = () => {
               <!-- Khó (Orange) -->
               <button
                 type="button"
-                class="p-2.5 rounded-brut border-2 border-line bg-c-orange text-white font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
+                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-orange text-ink font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
                 @click="rateSrs('hard')"
               >
                 <span>Khó (Hard)</span>
@@ -848,159 +850,143 @@ const handleAddWord = () => {
     </div>
 
     <!-- MODAL 1: TẠO BỘ TỪ MỚI -->
-    <div
-      v-if="isCreateSetModalOpen"
-      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+    <BaseModal
+      v-model="isCreateSetModalOpen"
+      title="Tạo bộ từ vựng mới"
+      max-width="md"
     >
-      <div class="bg-surface rounded-brut border-[3px] border-line shadow-brut-lg max-w-md w-full p-6 space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-line pb-2">
-          <h3 class="text-lg font-black text-ink font-display">Tạo bộ từ vựng mới</h3>
-          <button type="button" class="text-ink-soft hover:text-ink" @click="isCreateSetModalOpen = false">
-            <X class="w-5 h-5" />
-          </button>
+      <form class="space-y-4" @submit.prevent="handleCreateSet">
+        <div class="space-y-1">
+          <label class="block text-xs font-bold uppercase text-ink-soft">Tên bộ từ:</label>
+          <input
+            v-model="newSetTitle"
+            type="text"
+            required
+            placeholder="Ví dụ: Từ vựng Podcast BBC Tập 1..."
+            class="w-full px-3 py-2 text-sm font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          >
         </div>
 
-        <form class="space-y-4" @submit.prevent="handleCreateSet">
+        <div class="space-y-1">
+          <label class="block text-xs font-bold uppercase text-ink-soft">Mô tả ngắn:</label>
+          <input
+            v-model="newSetDesc"
+            type="text"
+            placeholder="Bộ từ thu thập khi nghe podcast tuần này"
+            class="w-full px-3 py-2 text-xs font-medium rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          >
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-xs font-bold uppercase text-ink-soft">Cấp độ mục tiêu:</label>
+          <select
+            v-model="newSetLevel"
+            class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          >
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+            <option value="HSK 3">HSK 3</option>
+            <option value="N3">JLPT N3</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t-2 border-line">
+          <BaseButton type="button" variant="secondary" size="sm" @click="isCreateSetModalOpen = false">
+            Huỷ
+          </BaseButton>
+          <BaseButton type="submit" variant="primary" size="sm">
+            Tạo bộ từ
+          </BaseButton>
+        </div>
+      </form>
+    </BaseModal>
+
+    <!-- MODAL 2: THÊM TỪ THỦ CÔNG VÀO BỘ -->
+    <BaseModal
+      v-model="isAddWordModalOpen"
+      :title="`Thêm từ thủ công vào &quot;${activeSet?.title || ''}&quot;`"
+      max-width="lg"
+    >
+      <form class="space-y-3" @submit.prevent="handleAddWord">
+        <div class="grid grid-cols-2 gap-3">
           <div class="space-y-1">
-            <label class="block text-xs font-bold uppercase text-ink-soft">Tên bộ từ:</label>
+            <label class="block text-xs font-bold uppercase text-ink-soft">Từ vựng (*):</label>
             <input
-              v-model="newSetTitle"
+              v-model="newWordTerm"
               type="text"
               required
-              placeholder="Ví dụ: Từ vựng Podcast BBC Tập 1..."
+              placeholder="Ví dụ: Paradigm"
               class="w-full px-3 py-2 text-sm font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
             >
           </div>
-
           <div class="space-y-1">
-            <label class="block text-xs font-bold uppercase text-ink-soft">Mô tả ngắn:</label>
+            <label class="block text-xs font-bold uppercase text-ink-soft">Phiên âm:</label>
             <input
-              v-model="newSetDesc"
+              v-model="newWordPhonetic"
               type="text"
-              placeholder="Bộ từ thu thập khi nghe podcast tuần này"
-              class="w-full px-3 py-2 text-xs font-medium rounded-brut border-2 border-line bg-surface text-ink outline-none"
+              placeholder="/ˈpærədaɪm/"
+              class="w-full px-3 py-2 text-xs font-mono font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
             >
           </div>
-
-          <div class="space-y-1">
-            <label class="block text-xs font-bold uppercase text-ink-soft">Cấp độ mục tiêu:</label>
-            <select
-              v-model="newSetLevel"
-              class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
-            >
-              <option value="A1">A1</option>
-              <option value="A2">A2</option>
-              <option value="B1">B1</option>
-              <option value="B2">B2</option>
-              <option value="C1">C1</option>
-              <option value="HSK 3">HSK 3</option>
-              <option value="N3">JLPT N3</option>
-            </select>
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2 border-t-2 border-line">
-            <BaseButton type="button" variant="secondary" size="sm" @click="isCreateSetModalOpen = false">
-              Huỷ
-            </BaseButton>
-            <BaseButton type="submit" variant="primary" size="sm">
-              Tạo bộ từ
-            </BaseButton>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL 2: THÊM TỪ THỦ CÔNG VÀO BỘ -->
-    <div
-      v-if="isAddWordModalOpen"
-      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
-    >
-      <div class="bg-surface rounded-brut border-[3px] border-line shadow-brut-lg max-w-lg w-full p-6 space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-line pb-2">
-          <h3 class="text-lg font-black text-ink font-display">Thêm từ thủ công vào "{{ activeSet?.title }}"</h3>
-          <button type="button" class="text-ink-soft hover:text-ink" @click="isAddWordModalOpen = false">
-            <X class="w-5 h-5" />
-          </button>
         </div>
 
-        <form class="space-y-3" @submit.prevent="handleAddWord">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label class="block text-xs font-bold uppercase text-ink-soft">Từ vựng (*):</label>
-              <input
-                v-model="newWordTerm"
-                type="text"
-                required
-                placeholder="Ví dụ: Paradigm"
-                class="w-full px-3 py-2 text-sm font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
-              >
-            </div>
-            <div class="space-y-1">
-              <label class="block text-xs font-bold uppercase text-ink-soft">Phiên âm:</label>
-              <input
-                v-model="newWordPhonetic"
-                type="text"
-                placeholder="/ˈpærədaɪm/"
-                class="w-full px-3 py-2 text-xs font-mono font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
-              >
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label class="block text-xs font-bold uppercase text-ink-soft">Từ loại:</label>
-              <select
-                v-model="newWordPartOfSpeech"
-                class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
-              >
-                <option value="noun">Danh từ (Noun)</option>
-                <option value="verb">Động từ (Verb)</option>
-                <option value="adj">Tính từ (Adjective)</option>
-                <option value="adv">Trạng từ (Adverb)</option>
-              </select>
-            </div>
-            <div class="space-y-1">
-              <label class="block text-xs font-bold uppercase text-ink-soft">Nghĩa tiếng Việt (*):</label>
-              <input
-                v-model="newWordMeaning"
-                type="text"
-                required
-                placeholder="Mô hình, kiểu mẫu tư duy"
-                class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
-              >
-            </div>
-          </div>
-
+        <div class="grid grid-cols-2 gap-3">
           <div class="space-y-1">
-            <label class="block text-xs font-bold uppercase text-ink-soft">Ví dụ câu bản xứ:</label>
+            <label class="block text-xs font-bold uppercase text-ink-soft">Từ loại:</label>
+            <select
+              v-model="newWordPartOfSpeech"
+              class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+            >
+              <option value="noun">Danh từ (Noun)</option>
+              <option value="verb">Động từ (Verb)</option>
+              <option value="adj">Tính từ (Adjective)</option>
+              <option value="adv">Trạng từ (Adverb)</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="block text-xs font-bold uppercase text-ink-soft">Nghĩa tiếng Việt (*):</label>
             <input
-              v-model="newWordExample"
+              v-model="newWordMeaning"
               type="text"
-              placeholder="This research represents a new paradigm in physics."
-              class="w-full px-3 py-2 text-xs font-medium rounded-brut border-2 border-line bg-surface text-ink outline-none"
+              required
+              placeholder="Mô hình, kiểu mẫu tư duy"
+              class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
             >
           </div>
+        </div>
 
-          <div class="space-y-1">
-            <label class="block text-xs font-bold uppercase text-ink-soft">Dịch nghĩa câu ví dụ:</label>
-            <input
-              v-model="newWordExampleMeaning"
-              type="text"
-              placeholder="Nghiên cứu này đại diện cho một mô hình mới trong vật lý học."
-              class="w-full px-3 py-2 text-xs font-medium rounded-brut border-2 border-line bg-surface text-ink outline-none"
-            >
-          </div>
+        <div class="space-y-1">
+          <label class="block text-xs font-bold uppercase text-ink-soft">Ví dụ câu bản xứ:</label>
+          <input
+            v-model="newWordExample"
+            type="text"
+            placeholder="This research represents a new paradigm in physics."
+            class="w-full px-3 py-2 text-xs font-medium rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          >
+        </div>
 
-          <div class="flex justify-end gap-2 pt-2 border-t-2 border-line">
-            <BaseButton type="button" variant="secondary" size="sm" @click="isAddWordModalOpen = false">
-              Huỷ
-            </BaseButton>
-            <BaseButton type="submit" variant="primary" size="sm">
-              Lưu từ vựng
-            </BaseButton>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div class="space-y-1">
+          <label class="block text-xs font-bold uppercase text-ink-soft">Dịch nghĩa câu ví dụ:</label>
+          <input
+            v-model="newWordExampleMeaning"
+            type="text"
+            placeholder="Nghiên cứu này đại diện cho một mô hình mới trong vật lý học."
+            class="w-full px-3 py-2 text-xs font-medium rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          >
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t-2 border-line">
+          <BaseButton type="button" variant="secondary" size="sm" @click="isAddWordModalOpen = false">
+            Huỷ
+          </BaseButton>
+          <BaseButton type="submit" variant="primary" size="sm">
+            Lưu từ vựng
+          </BaseButton>
+        </div>
+      </form>
+    </BaseModal>
   </div>
 </template>

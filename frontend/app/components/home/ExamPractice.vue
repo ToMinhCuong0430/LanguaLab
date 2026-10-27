@@ -9,9 +9,9 @@ const otherExams = computed(() => examOptions.value.filter(e => e.id !== 'ielts'
 
 const ieltsSkills = [
   { name: 'Listening', desc: '40 câu • 30 phút', icon: Headphones, color: 'bg-c-blue text-white' },
-  { name: 'Reading', desc: '40 câu • 60 phút', icon: BookOpen, color: 'bg-c-green text-white' },
-  { name: 'Writing', desc: '2 Task • 60 phút', icon: PenTool, color: 'bg-c-orange text-white' },
-  { name: 'Speaking', desc: '3 Part • 15 phút', icon: Mic, color: 'bg-c-pink text-white' },
+  { name: 'Reading', desc: '40 câu • 60 phút', icon: BookOpen, color: 'bg-c-green text-ink' },
+  { name: 'Writing', desc: '2 Task • 60 phút', icon: PenTool, color: 'bg-c-orange text-ink' },
+  { name: 'Speaking', desc: '3 Part • 15 phút', icon: Mic, color: 'bg-c-pink text-ink' },
 ]
 </script>
 

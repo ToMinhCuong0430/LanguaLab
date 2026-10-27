@@ -237,12 +237,12 @@ const getNodeIcon = (iconName: string) => {
     </div>
 
     <!-- BANNER MÀU VIOLET: Ô TRA TỪ RẤT LỚN Ở GIỮA (NỔI BẬT HƠN CẢ TIÊU ĐỀ) -->
-    <div class="rounded-brut-lg border-[3px] border-line bg-c-violet p-6 sm:p-10 shadow-brut text-white space-y-6">
+    <div class="rounded-brut-lg border-[3px] border-line bg-c-violet p-6 sm:p-10 shadow-brut text-ink space-y-6">
       <div class="text-center space-y-1">
-        <span class="rounded-brut border-2 border-line bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-wider text-white">
+        <span class="rounded-brut border-2 border-line bg-surface px-3 py-1 text-xs font-black uppercase tracking-wider text-ink shadow-brut-sm">
           Từ điển học thuật chuyên sâu
         </span>
-        <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-white font-display">
+        <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-ink font-display">
           Tra cứu nghĩa chuẩn xác & ngữ cảnh bản xứ
         </h1>
       </div>
@@ -262,7 +262,8 @@ const getNodeIcon = (iconName: string) => {
             <button
               v-if="searchQuery"
               type="button"
-              class="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-ink-soft hover:text-ink cursor-pointer"
+              class="absolute right-4 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-1 text-ink-soft hover:text-ink cursor-pointer"
+              aria-label="Xóa từ khóa tìm kiếm"
               @click="searchQuery = ''; searchSuggestions = []"
             >
               <X class="w-5 h-5" />
@@ -338,7 +339,7 @@ const getNodeIcon = (iconName: string) => {
       >
         <div class="space-y-2">
           <div class="flex items-center gap-2">
-            <span class="rounded-brut border-2 border-line bg-c-violet text-white px-2.5 py-0.5 text-xs font-black uppercase shadow-brut-sm">
+            <span class="rounded-brut border-2 border-line bg-c-violet text-ink px-2.5 py-0.5 text-xs font-black uppercase shadow-brut-sm">
               Từ của hôm nay
             </span>
             <span class="rounded border border-line bg-surface px-2 py-0.5 text-xs font-bold text-ink">
@@ -505,7 +506,7 @@ const getNodeIcon = (iconName: string) => {
                 node.status === 'completed'
                   ? 'bg-c-green text-on-tone hover:-translate-y-1'
                   : node.status === 'active'
-                    ? 'bg-c-violet text-white hover:-translate-y-1 ring-4 ring-c-violet/30 animate-pulse'
+                    ? 'bg-c-violet text-ink hover:-translate-y-1 ring-4 ring-c-violet/30 animate-pulse'
                     : 'bg-surface-2 text-ink-soft/40 cursor-not-allowed',
               ]"
               @click="openLesson(node)"
@@ -536,25 +537,14 @@ const getNodeIcon = (iconName: string) => {
     </div>
 
     <!-- MODAL LÀM BÀI HỌC DUOLINGO -->
-    <div
-      v-if="activeLessonNode"
-      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+    <BaseModal
+      :model-value="!!activeLessonNode"
+      :title="activeLessonNode ? `${activeLessonNode.level} • ${activeLessonNode.title}` : ''"
+      max-width="md"
+      @close="activeLessonNode = null"
+      @update:model-value="(val) => { if (!val) activeLessonNode = null }"
     >
-      <div class="bg-surface rounded-brut-lg border-[3px] border-line shadow-brut-lg max-w-md w-full p-6 space-y-5">
-        <div class="flex items-center justify-between border-b-2 border-line pb-2">
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 bg-warn text-on-tone font-black text-xs rounded-brut border border-line">
-              {{ activeLessonNode.level }}
-            </span>
-            <h3 class="font-black text-base text-ink font-display">
-              {{ activeLessonNode.title }}
-            </h3>
-          </div>
-          <button type="button" class="text-ink-soft hover:text-ink cursor-pointer" @click="activeLessonNode = null">
-            <X class="w-5 h-5" />
-          </button>
-        </div>
-
+      <div v-if="activeLessonNode">
         <div v-if="lessonCompleted" class="py-6 text-center space-y-4">
           <div class="w-16 h-16 mx-auto rounded-full border-[3px] border-line bg-ok text-on-tone flex items-center justify-center shadow-brut">
             <CheckCircle2 class="w-8 h-8 stroke-[3]" />
@@ -619,6 +609,6 @@ const getNodeIcon = (iconName: string) => {
           </div>
         </div>
       </div>
-    </div>
+    </BaseModal>
   </div>
 </template>

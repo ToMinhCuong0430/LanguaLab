@@ -40,11 +40,12 @@ Mọi mã màu phải đi qua CSS variables hoặc Tailwind theme tokens; **tuy�
 | **Ink (Chữ chính)** | `var(--ink)` (`#11141D`) | `var(--ink)` (`#F5F7FF`) | Tiêu đề, chữ văn bản (contrast ≥ 7:1) |
 | **Ink-soft (Chữ phụ)** | `var(--ink-soft)` (`#4E5569`) | `var(--ink-soft)` (`#A3A8BE`) | Mô tả, nhãn phụ (contrast ≥ 4.5:1) |
 | **Line (Viền & Bóng)** | `var(--line)` (`#11141D`) | `var(--line)` (`#F5F7FF`) | Viền neo-brutalism, bóng đổ cứng |
-| **Primary (Chính)** | `var(--c-blue)` (`#2F5BFF`) | `var(--c-blue)` (`#547BFF`) | Hành động chính, điều hướng |
-| **Accent / CTA** | `var(--c-yellow)` (`#FFD23F`) | `var(--c-yellow)` (`#FFDC5C`) | Nút "Học ngay", "Bắt đầu", nổi bật |
-| **Success / OK** | `var(--c-green)` (`#00D084`) | `var(--c-green)` (`#20E096`) | Đã hoàn thành, chính xác |
-| **Warning / Warn** | `var(--c-yellow)` (`#FFD23F`) | `var(--c-yellow)` (`#FFDC5C`) | Đang học, lưu ý |
-| **Danger / Bad** | `var(--c-coral)` (`#FF5A4E`) | `var(--c-coral)` (`#FF6666`) | Sai sót, bẫy lỗi, xoá |
+| **Primary (Chính)** | `var(--c-blue)` (`#2F5BFF`), ink `#FFFFFF` (5.17:1) | `var(--c-blue)` (`#547BFF`), ink `#11141D` (4.95:1) | Hành động chính, điều hướng |
+| **Secondary (Phụ)** | `var(--c-violet)` (`#9B6BFF`), ink `#11141D` (5.20:1) | `var(--c-violet)` (`#B18CFF`), ink `#11141D` (6.80:1) | Hành động phụ, badge kỹ năng |
+| **Accent / CTA** | `var(--c-yellow)` (`#FFD23F`), ink `#11141D` (12.74:1) | `var(--c-yellow)` (`#FFDC5C`), ink `#11141D` (13.10:1) | Nút "Học ngay", "Bắt đầu", nổi bật |
+| **Success / OK** | `var(--c-green)` (`#00D084`), ink `#11141D` (9.07:1) | `var(--c-green)` (`#20E096`), ink `#11141D` (9.80:1) | Đã hoàn thành, chính xác |
+| **Warning / Warn** | `var(--c-yellow)` (`#FFD23F`), ink `#11141D` (12.74:1) | `var(--c-yellow)` (`#FFDC5C`), ink `#11141D` (13.10:1) | Đang học, lưu ý |
+| **Danger / Bad** | `var(--c-coral)` (`#FF5A4E`), ink `#11141D` (5.98:1) | `var(--c-coral)` (`#FF6666`), ink `#11141D` (6.20:1) | Sai sót, bẫy lỗi, xoá |
 
 ### 2.2 Bảng màu 3 Buổi của Greeting Banner
 
@@ -94,7 +95,8 @@ Mỗi tính năng có bộ 3 token: `solid`, `soft` (nền nhạt) và `ink` (m�
 - **Kích thước bấm tối thiểu (Touch Targets)**:
   - Tất cả các nút bấm, icon button, tab, checkbox phải đạt kích thước tối thiểu **44×44px** (hoặc `min-h-[44px]`).
 - **Focus ring dễ thấy**:
-  - `focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2`.
+  - `:focus-visible` toàn cục tự động áp dụng `outline: 3px solid var(--focus); outline-offset: 2px;` (với `--focus: #D9381E` ở Light mode đạt 4.29:1 vs background và 4.63:1 vs surface, vượt chuẩn 3:1 WCAG 2.2; ở Dark mode `--focus: #FFD23F` đạt 12.79:1).
+  - Tuyệt đối không dùng `focus-visible:outline-none` hay `ring-3`/`ring-focus` riêng lẻ.
 
 ---
 

@@ -442,7 +442,7 @@ const speakText = (text: string) => {
                         ? '!bg-ok !border-line !text-on-tone font-black'
                         : '',
                       isSubmitted && userChoiceAnswers[ex.id] === optIdx && optIdx !== ex.correctIndex
-                        ? '!bg-bad !border-line !text-white'
+                        ? '!bg-bad !border-line !text-on-tone'
                         : '',
                     ]"
                     @click="userChoiceAnswers[ex.id] = optIdx"

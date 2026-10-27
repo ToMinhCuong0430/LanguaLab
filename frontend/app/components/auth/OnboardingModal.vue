@@ -45,6 +45,24 @@ const handleSave = async () => {
 
   isModalOpen.value = false
 }
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isModalOpen.value) {
+    isModalOpen.value = false
+  }
+}
+
+onMounted(() => {
+  if (import.meta.client) {
+    window.addEventListener('keydown', onKeydown)
+  }
+})
+
+onUnmounted(() => {
+  if (import.meta.client) {
+    window.removeEventListener('keydown', onKeydown)
+  }
+})
 </script>
 
 <template>
