@@ -1,0 +1,497 @@
+{
+  "screenshots_18": [
+    {
+      "period": "sang",
+      "viewport": "375",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_sang_375px_light.png"
+    },
+    {
+      "period": "sang",
+      "viewport": "375",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_sang_375px_dark.png"
+    },
+    {
+      "period": "sang",
+      "viewport": "768",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_sang_768px_light.png"
+    },
+    {
+      "period": "sang",
+      "viewport": "768",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_sang_768px_dark.png"
+    },
+    {
+      "period": "sang",
+      "viewport": "1440",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_sang_1440px_light.png"
+    },
+    {
+      "period": "sang",
+      "viewport": "1440",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_sang_1440px_dark.png"
+    },
+    {
+      "period": "chieu",
+      "viewport": "375",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_chieu_375px_light.png"
+    },
+    {
+      "period": "chieu",
+      "viewport": "375",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_chieu_375px_dark.png"
+    },
+    {
+      "period": "chieu",
+      "viewport": "768",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_chieu_768px_light.png"
+    },
+    {
+      "period": "chieu",
+      "viewport": "768",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_chieu_768px_dark.png"
+    },
+    {
+      "period": "chieu",
+      "viewport": "1440",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_chieu_1440px_light.png"
+    },
+    {
+      "period": "chieu",
+      "viewport": "1440",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_chieu_1440px_dark.png"
+    },
+    {
+      "period": "toi",
+      "viewport": "375",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_toi_375px_light.png"
+    },
+    {
+      "period": "toi",
+      "viewport": "375",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_toi_375px_dark.png"
+    },
+    {
+      "period": "toi",
+      "viewport": "768",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_toi_768px_light.png"
+    },
+    {
+      "period": "toi",
+      "viewport": "768",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_toi_768px_dark.png"
+    },
+    {
+      "period": "toi",
+      "viewport": "1440",
+      "theme": "light",
+      "scrollInfo": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_toi_1440px_light.png"
+    },
+    {
+      "period": "toi",
+      "viewport": "1440",
+      "theme": "dark",
+      "scrollInfo": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "hasHorizontalScroll": false
+      },
+      "buttonInfo": [
+        {
+          "text": "Học ngay",
+          "width": 146.6875,
+          "height": 46.78125,
+          "isWrapped": false
+        },
+        {
+          "text": "Luyện đề IELTS",
+          "width": 159.90625,
+          "height": 44,
+          "isWrapped": false
+        }
+      ],
+      "screenshot": "hero_toi_1440px_dark.png"
+    }
+  ],
+  "animation_stability": [
+    {
+      "period": "sang",
+      "stabilityCheck": {
+        "svgLeft": 829.5,
+        "svgTop": 248,
+        "svgWidth": 463.5,
+        "svgHeight": 300
+      }
+    },
+    {
+      "period": "chieu",
+      "stabilityCheck": {
+        "svgLeft": 829.5,
+        "svgTop": 248,
+        "svgWidth": 463.5,
+        "svgHeight": 300
+      }
+    },
+    {
+      "period": "toi",
+      "stabilityCheck": {
+        "svgLeft": 829.5,
+        "svgTop": 248,
+        "svgWidth": 463.5,
+        "svgHeight": 300
+      }
+    }
+  ],
+  "axe_results": {
+    "light": {
+      "totalViolations": 0,
+      "criticalSeriousCount": 0,
+      "criticalSerious": []
+    },
+    "dark": {
+      "totalViolations": 0,
+      "criticalSeriousCount": 0,
+      "criticalSerious": []
+    }
+  },
+  "keyboard_tab_order": [],
+  "reduced_motion_count": 0
+}

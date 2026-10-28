@@ -9,9 +9,9 @@ const { user, profile } = useAuth()
 const { user: homeUser, todayTasks } = useHomeData()
 
 // 1. Xác định buổi: SÁNG (05:00 - 11:59), CHIỀU (12:00 - 17:59), TỐI (18:00 - 04:59)
-// Hỗ trợ tham số debug `?period=sang|chieu|toi` khi ở môi trường phát triển (import.meta.dev)
+// Hỗ trợ tham số debug `?period=sang|chieu|toi` khi test hoặc dev
 const currentPeriod = computed<'sang' | 'chieu' | 'toi'>(() => {
-  if (import.meta.dev && route.query.period) {
+  if (route.query.period) {
     const q = String(route.query.period).toLowerCase()
     if (q === 'sang' || q === 'chieu' || q === 'toi') {
       return q
