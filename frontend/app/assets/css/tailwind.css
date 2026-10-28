@@ -29,6 +29,22 @@
   --danger: #FF5A4E;
   --danger-ink: #11141D;
 
+  /* Bảng màu 3 buổi của Home Hero Banner (Artwork độc lập, cố định ở cả light và dark) */
+  --hero-sang-bg: #BDEFF7;
+  --hero-sang-hill: #7FD6D0;
+  --hero-sang-ink: #11141D;
+  --hero-sang-ink-soft: #233842;
+
+  --hero-chieu-bg: #FFD3A1;
+  --hero-chieu-hill: #F4A261;
+  --hero-chieu-ink: #11141D;
+  --hero-chieu-ink-soft: #422818;
+
+  --hero-toi-bg: #1B2565;
+  --hero-toi-hill: #34479B;
+  --hero-toi-ink: #FFFFFF;
+  --hero-toi-ink-soft: #D3DBFF;
+
   /* Màu trạng thái Neo-brutalism */
   --ok: #00D084;
   --warn: #FFD23F;
@@ -114,6 +130,22 @@
   --warning-ink: #11141D;
   --danger: #FF6666;
   --danger-ink: #11141D;
+
+  /* Bảng màu 3 buổi của Home Hero Banner (Artwork độc lập, cố định ở cả light và dark) */
+  --hero-sang-bg: #BDEFF7;
+  --hero-sang-hill: #7FD6D0;
+  --hero-sang-ink: #11141D;
+  --hero-sang-ink-soft: #233842;
+
+  --hero-chieu-bg: #FFD3A1;
+  --hero-chieu-hill: #F4A261;
+  --hero-chieu-ink: #11141D;
+  --hero-chieu-ink-soft: #422818;
+
+  --hero-toi-bg: #1B2565;
+  --hero-toi-hill: #34479B;
+  --hero-toi-ink: #FFFFFF;
+  --hero-toi-ink-soft: #D3DBFF;
 
   --ok: #20E096;
   --warn: #FFDC5C;
@@ -254,6 +286,36 @@ h1, h2, h3, h4, h5, h6 {
     transform: translate(4px, 4px);
     box-shadow: 0 0 0 var(--line);
   }
+}
+
+/* Hero Banner Animations (nhẹ nhàng, biên độ nhỏ <= 3px dọc, <= 6px ngang) */
+@keyframes hero-mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes hero-cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes hero-celestial-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.animate-hero-mascot {
+  animation: hero-mascot-float 3.5s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.animate-hero-cloud {
+  animation: hero-cloud-drift 5.5s ease-in-out infinite;
+}
+
+.animate-hero-celestial {
+  animation: hero-celestial-pulse 4s ease-in-out infinite;
+  transform-origin: center center;
 }
 
 @media (prefers-reduced-motion: reduce) {

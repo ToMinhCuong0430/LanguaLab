@@ -47,12 +47,47 @@ Mọi mã màu phải đi qua CSS variables hoặc Tailwind theme tokens; **tuy�
 | **Warning / Warn** | `var(--c-yellow)` (`#FFD23F`), ink `#11141D` (12.74:1) | `var(--c-yellow)` (`#FFDC5C`), ink `#11141D` (13.10:1) | Đang học, lưu ý |
 | **Danger / Bad** | `var(--c-coral)` (`#FF5A4E`), ink `#11141D` (5.98:1) | `var(--c-coral)` (`#FF6666`), ink `#11141D` (6.20:1) | Sai sót, bẫy lỗi, xoá |
 
-### 2.2 Bảng màu 3 Buổi của Greeting Banner
+### 2.2 Hero Banner Trang Chủ (HomeHero)
 
-Mascot quyển sách đeo tai nghe đổi phông nền theo thời gian thực:
-- **Buổi sáng (5h - 12h)**: Xanh ngọc Mint (`#4ED8A8`, soft: `#D6FFF0`, ink: `#004D36`) — Năng lượng tươi sáng khởi đầu ngày mới.
-- **Buổi chiều (12h - 18h)**: Cam đào Peach (`#FFA366`, soft: `#FFE9D6`, ink: `#5C2600`) — Rực rỡ, bứt phá năng suất học tập.
-- **Buổi tối (18h - 5h)**: Xanh navy Midnight (`#1A2238`, soft: `#283354`, ink: `#FFFFFF`, accent: `#FFD23F`) — Tĩnh tâm, tập trung rèn luyện chuyên sâu.
+Hero Banner ở trang chủ (`components/home/HomeHero.vue`, `HeroScene.vue`, `HeroMascot.vue`) là một **artwork độc lập** với theme, giữ nguyên bảng màu ở cả Light và Dark mode. Trong phạm vi banner, các biến nền tảng được cố định (`--line: #11141D; --ink: #11141D; --surface: #FFFBF0; --on-tone: #11141D;`) để nút bấm và viền không bị đảo màu khi bật Dark mode.
+
+#### 1. Bảng màu 3 Buổi (Tokens mới trong tailwind.css)
+- **Buổi sáng (5h - 12h)**:
+  - Nền (`--hero-sang-bg`): `#BDEFF7` | Đồi phẳng (`--hero-sang-hill`): `#7FD6D0`
+  - Chữ chính (`--hero-sang-ink`): `#11141D` | Chữ phụ (`--hero-sang-ink-soft`): `#233842`
+  - Bìa sách: `#2F5BFF` (Xanh) | Thẻ lời chào: `#FFFBF0` (Kem)
+- **Buổi chiều (12h - 18h)**:
+  - Nền (`--hero-chieu-bg`): `#FFD3A1` | Đồi phẳng (`--hero-chieu-hill`): `#F4A261`
+  - Chữ chính (`--hero-chieu-ink`): `#11141D` | Chữ phụ (`--hero-chieu-ink-soft`): `#422818`
+  - Bìa sách: `#F28B52` (Cam) | Thẻ lời chào: `#FFFBF0` (Kem)
+- **Buổi tối (18h - 5h)**:
+  - Nền (`--hero-toi-bg`): `#1B2565` | Đồi phẳng (`--hero-toi-hill`): `#34479B`
+  - Chữ chính (`--hero-toi-ink`): `#FFFFFF` | Chữ phụ (`--hero-toi-ink-soft`): `#D3DBFF`
+  - Bìa sách: `#A99BFF` (Tím nhạt) | Thẻ lời chào: `#9BE8C0` (Xanh bạc hà)
+
+#### 2. Bố cục Hero Banner
+- **Khung ngoài**: Viền 3px mực `#11141D`, bo góc `rounded-brut-lg` (12px), bóng cứng lệch 6px `shadow-[6px_6px_0px_#11141D]`. Nền màu đặc theo buổi, không gradient, không blur.
+- **Trái (7 cột trên desktop)**:
+  - Hàng nhãn: "LanguaLab" + nhãn buổi ("SÁNG" / "CHIỀU" / "TỐI", viền 2px).
+  - Tiêu đề 2 dòng: `<h1>` "Chào buổi …," và "{tên}!" cỡ 42px đậm.
+  - Mô tả một dòng truyền cảm hứng.
+  - Hai nút cùng hàng: "Học ngay" (vàng, mũi tên phải truyền qua slot `#right`, không xuống dòng) và nút phụ nền kem "Luyện đề IELTS" (mũi tên chéo, `min-h-[44px]`).
+  - Dòng chip mục tiêu: biểu tượng tia sét `Zap` trong vòng tròn vàng + "Mục tiêu hôm nay: 50 XP" + câu động viên.
+- **Phải (5 cột trên desktop)**:
+  - Minh hoạ phẳng canh phải và đáy.
+  - Linh vật quyển sách mở đeo tai nghe (`HeroMascot.vue`): mặt cười, má hồng, tai nghe xanh dương, ốp tai vàng, hai chân đứng trên đế vàng nhãn "LITTLE STEPS. BIG DREAMS.".
+  - Thẻ lời chào nghiêng -8° và thẻ mục tiêu kỳ thi nghiêng +8° (tím nhạt `#A99BFF`, `{EXAM} {BAND}+`).
+  - Cảnh vật nền theo buổi: Sáng (mặt trời cười + mây + tách cà phê), Chiều (mặt trời cam + ly nước mát), Tối (trăng lưỡi liềm + sao + đèn bàn học).
+- **Dưới đáy**: Dải đồi lượn sóng phẳng cùng tông màu, **không viền đen**, cao tối đa khoảng 90px, nằm sau nội dung (`z-0 pointer-events-none`).
+- **Mobile (<1024px)**: Xếp dọc, chữ ở trên, tranh ở dưới, hai nút xuống dòng tự nhiên, tuyệt đối không scroll ngang.
+
+#### 3. Quy tắc Kỹ thuật Bắt buộc
+1. **SVG Animation**: Toạ độ định vị cố định đặt trên thẻ `<g>` NGOÀI (`transform="translate(...)"`); class CSS animation chỉ áp lên thẻ `<g>` TRONG. Không animate cùng phần tử đang giữ thuộc tính transform định vị.
+2. **Icon trong Nút**: `BaseButton` truyền icon qua slot `#right`. Nút luôn giữ trên một dòng (`whitespace-nowrap`). Nút phụ dùng `inline-flex items-center gap-2`.
+3. **SVG Font**: Thuộc tính font-family cho thẻ `<text>` trong SVG đặt bằng `style="font-family: var(--font-display), sans-serif"`.
+4. **Trợ năng (A11y)**: Vùng bấm $\ge 44\times 44$px, focus-visible thấy rõ, tương phản chữ $\ge 4.5:1$, viền $\ge 3:1$. SVG minh hoạ mang `aria-hidden="true"`.
+5. **Prefers-reduced-motion**: Tắt hoàn toàn animation khi người dùng kích hoạt reduced motion. Chỉ dùng chuyển động nhẹ (nổi lên xuống $\le 3$px, mây trôi $\le 6$px).
+6. **Không icon AI / Emoji**: Chỉ dùng Lucide icons (`Zap`, `ArrowRight`, `ArrowUpRight`), không gradient, không icon sparkles/wand. Ngôi sao 4 cánh tĩnh nhỏ là hoạ tiết trang trí phẳng (tối đa 6 cái).
 
 ### 2.3 Hệ màu 8 Chức năng LanguaLab
 
@@ -109,7 +144,7 @@ Mỗi tính năng có bộ 3 token: `solid`, `soft` (nền nhạt) và `ink` (m�
    - Icon đứng độc lập (không kèm chữ): **BẮT BUỘC** có `aria-label` hoặc `title`.
 3. **Minh hoạ phẳng (Flat Illustration)**:
    - Dựng thuần bằng SVG/CSS, không nhúng ảnh raster PNG/JPG trừ avatar hoặc ảnh thumbnail thật của bài học.
-   - Mascot quyển sách đeo tai nghe `MascotBook.vue`: vector phẳng, viền nét rõ, biểu cảm vui vẻ.
+   - Mascot quyển sách đeo tai nghe `HeroMascot.vue`: vector phẳng, viền nét rõ, biểu cảm vui vẻ.
 
 ---
 
@@ -166,3 +201,13 @@ Mỗi tính năng có bộ 3 token: `solid`, `soft` (nền nhạt) và `ink` (m�
 - **Phần C — Bảo toàn Logic 100%**:
   - Xác nhận bằng `git diff --stat ca24287 HEAD` đối với `composables`, `middleware`, `utils`, `mocks`, `config`, `constants`, `nuxt.config.ts`, `backend` cho kết quả rỗng (0 dòng thay đổi).
   - Toàn bộ 16 file có khác biệt script chỉ liên quan đến import component Base, khai báo props/emits trợ năng hoặc icon.
+
+### 2026-10-28 — Xóa Banner cũ và Thiết kế HomeHero mới (Prompt 22)
+- **Gỡ bỏ triệt để banner cũ**: Xóa hoàn toàn `GreetingBanner.vue`, `GreetingScene.vue`, `MascotBook.vue`, dọn dẹp các token cũ `--greeting-*`.
+- **Tạo mới HomeHero & HeroScene & HeroMascot**:
+  - Chuẩn hoá Neo-brutalism viền 3px `#11141D`, bo góc `rounded-brut-lg`, bóng đổ cứng lệch 6px `shadow-[6px_6px_0px_#11141D]`.
+  - Banner hoạt động như artwork độc lập, cô lập biến CSS (`--line`, `--ink`, `--surface`, `--on-tone`) để không bị đảo màu khi bật Dark mode.
+  - Cột trái: Nhãn thương hiệu + nhãn buổi viền 2px; tiêu đề 2 dòng cỡ 42px đậm; 2 nút hành động (nút "Học ngay" vàng slot `#right` không xuống dòng + nút phụ "Luyện đề IELTS" nền kem $\ge 44\times 44$px); chip mục tiêu tia sét Zap 50 XP.
+  - Cột phải: Linh vật quyển sách mở đeo tai nghe (`HeroMascot.vue`), thẻ chào nghiêng -8°, thẻ mục tiêu kỳ thi nghiêng +8°, nền theo buổi (Sáng: mặt trời cười + mây + cà phê; Chiều: mặt trời cam + ly nước mát; Tối: trăng lưỡi liềm + sao + đèn bàn).
+  - Dưới đáy: Đồi lượn sóng phẳng cùng tông màu, **không viền đen**, cao tối đa 90px, nằm sau nội dung (`z-0`).
+  - Đảm bảo tuân thủ 100% quy tắc kỹ thuật SVG transform ngoài, animation CSS trong, text font-family inline style, reduced motion $\le 3$px và 0 lỗi Axe Core trên cả 2 theme.
