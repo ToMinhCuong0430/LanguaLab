@@ -53,7 +53,7 @@ const statCards = computed(() => [
           :class="item.bg"
         >
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-black uppercase tracking-wider opacity-90">
+            <span class="text-xs font-black uppercase tracking-wider">
               {{ item.label }}
             </span>
             <div class="p-1.5 rounded-brut border-2 border-line bg-surface text-ink shadow-[1px_1px_0_var(--line)]">
@@ -65,7 +65,7 @@ const statCards = computed(() => [
             <span class="font-display text-3xl sm:text-4xl font-black tracking-tight leading-none">
               {{ item.value }}
             </span>
-            <span class="font-mono text-xs font-bold uppercase opacity-85">
+            <span class="font-mono text-xs font-bold uppercase">
               {{ item.unit }}
             </span>
           </div>

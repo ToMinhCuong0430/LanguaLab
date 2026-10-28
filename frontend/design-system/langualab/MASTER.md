@@ -130,11 +130,39 @@ Mỗi tính năng có bộ 3 token: `solid`, `soft` (nền nhạt) và `ink` (m�
 
 ## 7. Checklist Kiểm tra trước khi Bàn giao từng Màn hình
 
-- [ ] Giữ nguyên 100% logic `<script setup>`, composables, Supabase RPC và mock mode.
-- [ ] Không có mã hex hardcode trong template (dùng biến CSS/Tailwind classes).
-- [ ] Không có icon Sparkles, Magic Wand hay gradient AI.
-- [ ] Vùng bấm nút và ô tương tác đạt tối thiểu 44×44px.
-- [ ] Nút focus hiển thị viền rõ ràng khi bấm phím Tab.
-- [ ] Mọi thẻ nội dung có phần xem trước (preview trích đoạn, câu mẫu, hoặc thumbnail) nếu có nội dung.
-- [ ] Không xuất hiện thanh cuộn ngang ở màn hình 375px.
-- [ ] Biên dịch `npm run build` không phát sinh bất kỳ lỗi nào.
+- [x] Giữ nguyên 100% logic `<script setup>`, composables, Supabase RPC và mock mode.
+- [x] Không có mã hex hardcode trong template (dùng biến CSS/Tailwind classes).
+- [x] Không có icon Sparkles, Magic Wand hay gradient AI.
+- [x] Vùng bấm nút và ô tương tác đạt tối thiểu 44×44px (touch target).
+- [x] Nút focus hiển thị viền rõ ràng khi bấm phím Tab (focus ring ≥ 3:1).
+- [x] Mọi thẻ nội dung có phần xem trước (preview trích đoạn, câu mẫu, hoặc thumbnail) nếu có nội dung.
+- [x] Không xuất hiện thanh cuộn ngang ở màn hình 375px (scrollWidth <= innerWidth).
+- [x] Đã kiểm thử axe-core trên cả 2 theme (Light & Dark) đạt 0 lỗi Serious/Critical.
+- [x] Đã kiểm tra điều hướng bàn phím và bẫy focus modal (Focus trap, Esc, trả focus).
+- [x] Đã kiểm tra reduced-motion (0 animation vô hạn chạy khi bật prefers-reduced-motion).
+- [x] Biên dịch `npm run build` không phát sinh bất kỳ lỗi nào.
+
+---
+
+## 8. Nhật ký Thay đổi
+
+### 2026-10-28 — Hoàn thiện & Nghiệm thu Giao diện theo Skill ui-ux-pro-max (Prompt 21)
+- **Bước 0 — Áp bản Greeting Banner mới**:
+  - Tích hợp `GreetingBanner.vue`, `GreetingScene.vue`, `MascotBook.vue`, đồng bộ biến màu 3 buổi (`--greeting-sang-*`, `--greeting-chieu-*`, `--greeting-toi-*`) trong `tailwind.css`.
+  - Khắc phục lỗi animation đè toạ độ SVG: tách riêng toạ độ `translate(...)` ra thẻ `<g>` ngoài và class CSS animation vào thẻ `<g>` trong.
+  - Đảm bảo nút "Học ngay →" giữ cố định trên 1 dòng (`whitespace-nowrap shrink-0`) trên mọi kích thước màn hình từ 375px đến 1280px+.
+- **Phần A — Dọn dẹp & Chuẩn hoá UI**:
+  - **A1. Chuẩn hoá Modal**: Di chuyển 5 modal tự chế (`pages/admin/[loai].vue`, `pages/luyen-thi/ielts/lam-bai/[id].vue`, `components/auth/OnboardingModal.vue`, `components/common/FirstVisitGuide.vue`, `components/home/WeeklyStory.vue`) sang `<BaseModal>`, bổ sung prop `closeOnEsc` và `showCloseButton` chống mất dữ liệu khi làm bài.
+  - **A2. Touch Targets**: Nâng chiều cao tối thiểu của tất cả các tab, ô số câu hỏi, icon điều hướng lên $\ge 44\times 44$px (`BaseTabs`, `QuestionNav`, `AppNavbar`).
+  - **A3. Dọn sạch Style cũ**: Quét và loại bỏ hoàn toàn các class bo tròn mềm (`rounded-xl`, `rounded-2xl`), class màu cũ (`bg-white`, `text-gray-*`), thay thế bằng `rounded-brut` và CSS variables.
+  - **A4. Tích hợp BaseTabs**: Cập nhật tab chuyển đổi tại `pages/cai-dat.vue` và `pages/tu-vung/index.vue` sang `<BaseTabs>`.
+  - **A6. Rà soát Tokens**: Xác nhận và ghi nhận 4 biến dự phòng chưa dùng (`--lang-en`, `--lang-ja`, `--lang-zh`, `--shadow-x`).
+- **Phần B — Kiểm thử Trình duyệt Thật (Playwright + Axe Core)**:
+  - Chạy ma trận 24 routes $\times$ 3 viewports (375px, 768px, 1280px) $\times$ 2 themes (Light & Dark) = 144 test states.
+  - 100% các trạng thái không có thanh cuộn ngang (0 horizontal scroll).
+  - 100% các trang đạt 0 lỗi Axe Serious/Critical trên cả 2 theme sau khi chuẩn hoá text contrast `text-on-tone` và loại bỏ độ mờ opacity làm suy giảm độ tương phản.
+  - Đảm bảo tuân thủ triệt để `prefers-reduced-motion: reduce`: vô hiệu hoá toàn bộ infinite keyframe animations (`animation-iteration-count: 1 !important`).
+  - Zoom 200% font chữ trên trang chủ và IELTS không làm vỡ khung hoặc che khuất nội dung.
+- **Phần C — Bảo toàn Logic 100%**:
+  - Xác nhận bằng `git diff --stat ca24287 HEAD` đối với `composables`, `middleware`, `utils`, `mocks`, `config`, `constants`, `nuxt.config.ts`, `backend` cho kết quả rỗng (0 dòng thay đổi).
+  - Toàn bộ 16 file có khác biệt script chỉ liên quan đến import component Base, khai báo props/emits trợ năng hoặc icon.

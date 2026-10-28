@@ -21,3 +21,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# QA Testing
+qa-screenshots/

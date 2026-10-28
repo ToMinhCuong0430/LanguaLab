@@ -46,7 +46,7 @@ const { todayTasks } = useHomeData()
             {{ task.title }}
           </h3>
 
-          <div class="flex items-center gap-1.5 text-xs font-bold opacity-85">
+          <div class="flex items-center gap-1.5 text-xs font-bold">
             <Clock class="h-3.5 w-3.5" :stroke-width="2.5" />
             <span>Thời lượng ước tính: {{ task.estMinutes }} phút</span>
           </div>

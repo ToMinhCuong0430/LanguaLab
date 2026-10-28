@@ -57,7 +57,7 @@ const { targetBandRoadmap } = useHomeData()
                 ? 'bg-warn text-on-tone shadow-brut ring-2 ring-line'
                 : step.isPassed
                   ? 'bg-surface-2 text-ink shadow-brut-sm'
-                  : 'bg-surface opacity-80 text-ink-soft',
+                  : 'bg-surface text-ink-soft border-dashed',
             ]"
           >
             <div class="flex items-center justify-between mb-1.5">

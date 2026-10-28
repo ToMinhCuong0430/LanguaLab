@@ -103,7 +103,7 @@ const ieltsSkills = [
         <div
           v-for="exam in otherExams"
           :key="exam.id"
-          class="flex items-center justify-between rounded-brut border-2 border-line bg-surface-2 p-3 opacity-70 select-none"
+          class="flex items-center justify-between rounded-brut border-2 border-dashed border-line bg-surface-2 p-3 select-none"
         >
           <div class="space-y-0.5">
             <div class="flex items-center gap-1.5">

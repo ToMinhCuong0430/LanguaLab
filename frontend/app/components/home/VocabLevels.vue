@@ -48,7 +48,8 @@ const levelColors: Record<number, { bg: string; soft: string; ink: string }> = {
           <!-- Header: Code + Progress Circle -->
           <div class="flex items-center justify-between mb-2">
             <span
-              class="rounded-brut border-2 border-line px-2 py-0.5 font-display text-xs font-black text-on-tone shadow-[1px_1px_0_var(--line)]"
+              class="rounded-brut border-2 border-line px-2 py-0.5 font-display text-xs font-black shadow-[1px_1px_0_var(--line)]"
+              :class="levelColors[lvl.level]?.bg === 'var(--c-blue)' ? 'text-white' : 'text-on-tone'"
               :style="{ backgroundColor: levelColors[lvl.level]?.bg || 'var(--warn)' }"
             >
               {{ lvl.code }}

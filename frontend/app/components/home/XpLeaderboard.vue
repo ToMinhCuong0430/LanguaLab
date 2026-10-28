@@ -9,11 +9,11 @@ const remainingUsers = computed(() => leaderboardUsers.value.slice(3))
 // Avatar palette ngẫu nhiên đẹp mắt
 const avatarColors = [
   'bg-c-blue text-white',
-  'bg-c-pink text-ink',
-  'bg-c-violet text-ink',
-  'bg-c-green text-ink',
-  'bg-c-orange text-ink',
-  'bg-c-cyan text-ink',
+  'bg-c-pink text-on-tone',
+  'bg-c-violet text-on-tone',
+  'bg-c-green text-on-tone',
+  'bg-c-orange text-on-tone',
+  'bg-c-cyan text-on-tone',
 ]
 
 const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
@@ -89,10 +89,10 @@ const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
           <!-- Hạng 3 (Đồng) -->
           <div v-if="top3[2]" class="flex flex-col items-center">
             <div class="relative mb-2">
-              <div class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-c-orange text-ink font-display text-xs font-black shadow-brut-sm">
+              <div class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-c-orange text-on-tone font-display text-xs font-black shadow-brut-sm">
                 {{ top3[2].avatarChar }}
               </div>
-              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border border-line bg-c-orange px-1.5 text-[10px] font-black text-ink shadow-sm">
+              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border border-line bg-c-orange px-1.5 text-[10px] font-black text-on-tone shadow-sm">
                 #3
               </span>
             </div>
@@ -103,14 +103,14 @@ const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
               {{ top3[2].weeklyXp }} XP
             </span>
             <!-- Bục Đồng phẳng -->
-            <div class="mt-2 w-full h-9 rounded-t-brut border-2 border-line bg-c-orange flex items-center justify-center font-display font-black text-xs text-ink">
+            <div class="mt-2 w-full h-9 rounded-t-brut border-2 border-line bg-c-orange flex items-center justify-center font-display font-black text-xs text-on-tone">
               3
             </div>
           </div>
         </div>
 
         <!-- DANH SÁCH TỪ HẠNG 4 TRỞ XUỐNG -->
-        <div class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+        <div class="space-y-2 max-h-[300px] overflow-y-auto pr-1" tabindex="0" role="region" aria-label="Bảng xếp hạng tuần">
           <div
             v-for="(userItem, idx) in remainingUsers"
             :key="userItem.id"

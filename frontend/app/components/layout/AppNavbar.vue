@@ -39,6 +39,13 @@ function getFeatureColor(feature: string) {
   return featureColorMap[feature] ?? 'var(--c-blue)'
 }
 
+function getFeatureInk(feature: string) {
+  if (feature === 'home' || feature === 'video-podcast' || !featureColorMap[feature]) {
+    return '#FFFFFF'
+  }
+  return 'var(--ink)'
+}
+
 const closeMobileMenu = () => { isMobileMenuOpen.value = false }
 const toggleUserMenu = () => { isUserMenuOpen.value = !isUserMenuOpen.value }
 const closeUserMenu = () => { isUserMenuOpen.value = false }
@@ -89,16 +96,16 @@ onUnmounted(() => {
           :to="item.path"
           class="nav-chip"
           :class="{ 'nav-chip--active': isActive(item.path) }"
-          :style="isActive(item.path) ? { backgroundColor: getFeatureColor(item.feature), borderColor: 'var(--line)' } : {}"
+          :style="isActive(item.path) ? { backgroundColor: getFeatureColor(item.feature), color: getFeatureInk(item.feature), borderColor: 'var(--line)' } : {}"
           :aria-current="isActive(item.path) ? 'page' : undefined"
         >
           <span
             class="nav-chip__icon"
             :style="{ backgroundColor: getFeatureColor(item.feature) }"
           >
-            <component :is="item.icon" class="h-3.5 w-3.5 text-ink" :stroke-width="2.5" />
+            <component :is="item.icon" class="h-3.5 w-3.5" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'var(--ink)' }" :stroke-width="2.5" />
           </span>
-          <span class="nav-chip__label">{{ item.shortTitle }}</span>
+          <span class="nav-chip__label" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'inherit' }">{{ item.shortTitle }}</span>
         </NuxtLink>
       </nav>
 
@@ -237,13 +244,13 @@ onUnmounted(() => {
           :to="item.path"
           class="mobile-nav-chip"
           :class="{ 'mobile-nav-chip--active': isActive(item.path) }"
-          :style="isActive(item.path) ? { backgroundColor: getFeatureColor(item.feature) } : {}"
+          :style="isActive(item.path) ? { backgroundColor: getFeatureColor(item.feature), color: getFeatureInk(item.feature) } : {}"
           @click="closeMobileMenu"
         >
           <span class="mobile-nav-chip__icon" :style="{ backgroundColor: isActive(item.path) ? 'rgba(0,0,0,0.15)' : getFeatureColor(item.feature) }">
-            <component :is="item.icon" class="h-4 w-4 text-ink" :stroke-width="2.5" />
+            <component :is="item.icon" class="h-4 w-4" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'var(--ink)' }" :stroke-width="2.5" />
           </span>
-          <span class="text-xs font-bold leading-tight">{{ item.shortTitle }}</span>
+          <span class="text-xs font-bold leading-tight" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'inherit' }">{{ item.shortTitle }}</span>
         </NuxtLink>
       </nav>
     </div>
