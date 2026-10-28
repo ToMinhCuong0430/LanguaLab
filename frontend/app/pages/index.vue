@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import HomeTopBar from '~/components/home/HomeTopBar.vue'
-import GreetingBanner from '~/components/home/GreetingBanner.vue'
 import ContinueLearningCard from '~/components/home/ContinueLearningCard.vue'
 import TodayTasks from '~/components/home/TodayTasks.vue'
 import HomeFeatureGrid from '~/components/home/HomeFeatureGrid.vue'
@@ -69,8 +68,7 @@ const homeTourSteps: GuideStep[] = [
     <!-- 1. Thanh trên cùng của trang: Ô tìm kiếm, điểm danh, streak, XP, thông báo -->
     <HomeTopBar />
 
-    <!-- 2. Hero chào theo buổi nền màu, minh hoạ lớn hơn, nút chính Tiếp tục học -->
-    <GreetingBanner />
+    <!-- 2. Hero banner (sẽ được thay thế bởi HomeHero) -->
 
     <!-- 3. Khối hàng đôi: "Tiếp tục học" có preview bài dở cạnh khối "Hôm nay học gì?" -->
     <div id="home-continue-learning" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">

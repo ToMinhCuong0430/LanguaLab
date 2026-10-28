@@ -32,16 +32,6 @@ export default {
         bad: 'var(--bad)',
         mark: 'var(--mark)',
         'on-tone': 'var(--on-tone)',
-        // Greeting banner
-        'greeting-morning': 'var(--greeting-morning-bg)',
-        'greeting-morning-soft': 'var(--greeting-morning-soft)',
-        'greeting-morning-ink': 'var(--greeting-morning-ink)',
-        'greeting-afternoon': 'var(--greeting-afternoon-bg)',
-        'greeting-afternoon-soft': 'var(--greeting-afternoon-soft)',
-        'greeting-afternoon-ink': 'var(--greeting-afternoon-ink)',
-        'greeting-evening': 'var(--greeting-evening-bg)',
-        'greeting-evening-soft': 'var(--greeting-evening-soft)',
-        'greeting-evening-ink': 'var(--greeting-evening-ink)',
         // Feature tokens
         feature: 'var(--feature)',
         'feature-soft': 'var(--feature-soft)',

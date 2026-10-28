@@ -29,22 +29,6 @@
   --danger: #FF5A4E;
   --danger-ink: #11141D;
 
-  /* Bảng màu 3 buổi của Greeting Banner */
-  --greeting-morning-bg: #4ED8A8;
-  --greeting-morning-soft: #D6FFF0;
-  --greeting-morning-ink: #004D36;
-  --greeting-morning-ink-soft: #004D36;
-
-  --greeting-afternoon-bg: #FFA366;
-  --greeting-afternoon-soft: #FFE9D6;
-  --greeting-afternoon-ink: #5C2600;
-  --greeting-afternoon-ink-soft: #5C2600;
-
-  --greeting-evening-bg: #1A2238;
-  --greeting-evening-soft: #283354;
-  --greeting-evening-ink: #FFFFFF;
-  --greeting-evening-ink-soft: #D3DBFF;
-
   /* Màu trạng thái Neo-brutalism */
   --ok: #00D084;
   --warn: #FFD23F;
@@ -130,21 +114,6 @@
   --warning-ink: #11141D;
   --danger: #FF6666;
   --danger-ink: #11141D;
-
-  --greeting-morning-bg: #1B5E43;
-  --greeting-morning-soft: #0A3D28;
-  --greeting-morning-ink: #7DFFCA;
-  --greeting-morning-ink-soft: #D6FFF0;
-
-  --greeting-afternoon-bg: #803900;
-  --greeting-afternoon-soft: #4D2200;
-  --greeting-afternoon-ink: #FFBE8A;
-  --greeting-afternoon-ink-soft: #FFE9D6;
-
-  --greeting-evening-bg: #0D1220;
-  --greeting-evening-soft: #1E2742;
-  --greeting-evening-ink: #FFFFFF;
-  --greeting-evening-ink-soft: #D3DBFF;
 
   --ok: #20E096;
   --warn: #FFDC5C;
