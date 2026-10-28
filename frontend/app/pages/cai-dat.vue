@@ -328,27 +328,16 @@ const handleDeleteAccount = async () => {
       </div>
 
       <!-- Tabs chuyển đổi -->
-      <div class="flex items-center gap-2 p-1.5 rounded-brut border-2 border-line bg-surface-2 self-start sm:self-auto">
-        <button
-          type="button"
-          class="flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold transition-all cursor-pointer"
-          :class="activeTab === 'profile' ? 'border-line bg-surface text-ink shadow-brut-sm' : 'border-transparent text-ink-soft hover:text-ink'"
-          @click="changeTab('profile')"
-        >
-          <User class="h-3.5 w-3.5" :stroke-width="2.5" />
-          <span>Hồ sơ học tập</span>
-        </button>
-
-        <button
-          type="button"
-          class="flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold transition-all cursor-pointer"
-          :class="activeTab === 'settings' ? 'border-line bg-surface text-ink shadow-brut-sm' : 'border-transparent text-ink-soft hover:text-ink'"
-          @click="changeTab('settings')"
-        >
-          <Settings class="h-3.5 w-3.5" :stroke-width="2.5" />
-          <span>Cài đặt & Bảo mật</span>
-        </button>
-      </div>
+      <BaseTabs
+        :model-value="activeTab"
+        :items="[
+          { id: 'profile', label: 'Hồ sơ học tập', icon: User },
+          { id: 'settings', label: 'Cài đặt & Bảo mật', icon: Settings },
+        ]"
+        tone="warning"
+        size="sm"
+        @change="(id) => changeTab(id as any)"
+      />
     </div>
 
     <!-- ==================== TAB 1: HỒ SƠ HỌC TẬP ==================== -->

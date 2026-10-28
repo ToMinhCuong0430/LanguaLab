@@ -579,64 +579,52 @@ const examRoomGuideSteps: GuideStep[] = [
     </div>
 
     <!-- MODAL XÁC NHẬN NỘP BÀI THI -->
-    <Teleport to="body">
-      <div
-        v-if="showConfirmModal"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div class="w-full max-w-md rounded-brut-lg border-[4px] border-line bg-surface p-6 shadow-brut-lg text-ink space-y-4 animate-in zoom-in-95">
-          <div class="flex items-center justify-between border-b-2 border-line pb-3">
-            <div class="flex items-center gap-2">
-              <span class="rounded border-2 border-line bg-warn px-2 py-0.5 font-display text-xs font-black text-on-tone">
-                XÁC NHẬN NỘP BÀI
-              </span>
-            </div>
-            <button
-              type="button"
-              class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded border border-line p-1 hover:bg-surface-2 cursor-pointer"
-              aria-label="Đóng hộp thoại xác nhận"
-              @click="cancelSubmit"
-            >
-              <X class="h-4 w-4" :stroke-width="2.5" />
-            </button>
-          </div>
+    <BaseModal
+      v-model="showConfirmModal"
+      max-width="md"
+      :close-on-backdrop="false"
+      @close="cancelSubmit"
+    >
+      <template #header>
+        <span class="rounded border-2 border-line bg-warn px-2.5 py-1 font-display text-xs font-black text-on-tone">
+          XÁC NHẬN NỘP BÀI
+        </span>
+      </template>
 
-          <div class="space-y-3">
-            <h3 class="font-display text-lg font-black text-ink">
-              Bạn có chắc chắn muốn nộp bài thi?
-            </h3>
+      <div class="space-y-3">
+        <h3 class="font-display text-lg font-black text-ink">
+          Bạn có chắc chắn muốn nộp bài thi?
+        </h3>
 
-            <!-- Cảnh báo nếu còn câu chưa làm -->
-            <div
-              v-if="unansweredCount > 0"
-              class="flex items-start gap-2.5 rounded-brut border-2 border-bad bg-bad/10 p-3 text-xs font-bold text-bad"
-            >
-              <AlertCircle class="h-4 w-4 flex-shrink-0 mt-0.5" />
-              <span>
-                Hiện còn <strong>{{ unansweredCount }} câu</strong> chưa được trả lời. Bạn có thể kiểm tra lại trước khi hoàn tất.
-              </span>
-            </div>
-
-            <p class="text-xs text-ink-soft">
-              Sau khi nộp, hệ thống sẽ tính điểm thô, quy đổi thang Band chuẩn và hiển thị bảng phân tích giải thích cặn kẽ từng câu.
-            </p>
-          </div>
-
-          <div class="flex items-center justify-end gap-3 border-t-2 border-line pt-4">
-            <BaseButton variant="secondary" size="sm" @click="cancelSubmit">
-              Tiếp tục làm bài
-            </BaseButton>
-
-            <BaseButton variant="primary" size="sm" @click="submitTest">
-              <span>Xác nhận nộp bài</span>
-              <Send class="h-3.5 w-3.5" :stroke-width="2.5" />
-            </BaseButton>
-          </div>
+        <!-- Cảnh báo nếu còn câu chưa làm -->
+        <div
+          v-if="unansweredCount > 0"
+          class="flex items-start gap-2.5 rounded-brut border-2 border-bad bg-bad/10 p-3 text-xs font-bold text-bad"
+        >
+          <AlertCircle class="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>
+            Hiện còn <strong>{{ unansweredCount }} câu</strong> chưa được trả lời. Bạn có thể kiểm tra lại trước khi hoàn tất.
+          </span>
         </div>
+
+        <p class="text-xs text-ink-soft">
+          Sau khi nộp, hệ thống sẽ tính điểm thô, quy đổi thang Band chuẩn và hiển thị bảng phân tích giải thích cặn kẽ từng câu.
+        </p>
       </div>
-    </Teleport>
+
+      <template #footer>
+        <div class="flex items-center justify-end gap-3 w-full">
+          <BaseButton variant="secondary" size="sm" @click="cancelSubmit">
+            Tiếp tục làm bài
+          </BaseButton>
+
+          <BaseButton variant="primary" size="sm" @click="submitTest">
+            <span>Xác nhận nộp bài</span>
+            <Send class="h-3.5 w-3.5 ml-1.5" :stroke-width="2.5" />
+          </BaseButton>
+        </div>
+      </template>
+    </BaseModal>
 
     <!-- First Visit Guide -->
     <FirstVisitGuide

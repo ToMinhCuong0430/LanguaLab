@@ -118,103 +118,90 @@ onUnmounted(() => {
       <span class="hidden sm:inline">Hướng dẫn trang</span>
     </button>
 
-    <!-- Modal Hướng Dẫn Neo-brutalism -->
-    <Teleport to="body">
-      <div
-        v-if="isModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="guide-title"
-      >
-        <div class="relative w-full max-w-lg rounded-brut-lg border-[3px] border-line bg-surface p-6 shadow-brut-lg text-ink space-y-5 animate-in fade-in duration-150">
-          <!-- Header Modal -->
-          <div class="flex items-center justify-between border-b-2 border-line pb-3">
-            <div class="flex items-center gap-2">
-              <span class="rounded border-2 border-line bg-warn px-2 py-0.5 font-display text-xs font-black text-on-tone">
-                HƯỚNG DẪN TRANG
-              </span>
-              <span class="text-xs font-bold text-ink-soft">
-                Bước {{ currentStepIndex + 1 }} / {{ steps.length }}
-              </span>
-            </div>
+    <!-- Modal Hướng Dẫn Neo-brutalism qua BaseModal -->
+    <BaseModal
+      v-model="isModalOpen"
+      max-width="lg"
+      @close="skipGuide"
+    >
+      <template #header>
+        <div class="flex items-center gap-2">
+          <span class="rounded border-2 border-line bg-warn px-2.5 py-0.5 font-display text-xs font-black text-on-tone">
+            HƯỚNG DẪN TRANG
+          </span>
+          <span class="text-xs font-bold text-ink-soft">
+            Bước {{ currentStepIndex + 1 }} / {{ steps.length }}
+          </span>
+        </div>
+      </template>
 
-            <button
-              type="button"
-              class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm brut-press cursor-pointer"
-              aria-label="Đóng hướng dẫn"
-              @click="skipGuide"
+      <div class="space-y-4">
+        <!-- Progress indicators -->
+        <div class="flex gap-1.5 w-full">
+          <div
+            v-for="(_, idx) in steps"
+            :key="idx"
+            class="h-2 flex-1 rounded border border-line transition-all duration-150"
+            :class="idx <= currentStepIndex ? 'bg-accent' : 'bg-surface-2'"
+          />
+        </div>
+
+        <!-- Body Content -->
+        <div class="space-y-2 py-1">
+          <div class="flex items-center gap-2">
+            <span
+              v-if="currentStep.badge"
+              class="rounded border border-line bg-ok px-2 py-0.5 text-xs font-bold text-on-tone"
             >
-              <X class="h-4 w-4" :stroke-width="2.5" />
-            </button>
+              {{ currentStep.badge }}
+            </span>
+            <h2 id="guide-title" class="text-xl font-black text-ink">
+              {{ currentStep.title }}
+            </h2>
           </div>
-
-          <!-- Progress indicators -->
-          <div class="flex gap-1.5 w-full">
-            <div
-              v-for="(_, idx) in steps"
-              :key="idx"
-              class="h-2 flex-1 rounded border border-line transition-all duration-150"
-              :class="idx <= currentStepIndex ? 'bg-accent' : 'bg-surface-2'"
-            />
-          </div>
-
-          <!-- Body Content -->
-          <div class="space-y-2 py-1">
-            <div class="flex items-center gap-2">
-              <span
-                v-if="currentStep.badge"
-                class="rounded border border-line bg-ok px-2 py-0.5 text-xs font-bold text-on-tone"
-              >
-                {{ currentStep.badge }}
-              </span>
-              <h2 id="guide-title" class="text-xl font-black text-ink">
-                {{ currentStep.title }}
-              </h2>
-            </div>
-            <p class="text-sm text-ink-soft leading-relaxed font-medium">
-              {{ currentStep.description }}
-            </p>
-          </div>
-
-          <!-- Footer Actions -->
-          <div class="flex items-center justify-between border-t-2 border-line pt-4">
-            <button
-              type="button"
-              class="text-xs font-bold text-ink-soft underline underline-offset-4 hover:text-ink cursor-pointer"
-              @click="skipGuide"
-            >
-              Bỏ qua toàn bộ
-            </button>
-
-            <div class="flex items-center gap-2">
-              <BaseButton
-                v-if="!isFirstStep"
-                variant="secondary"
-                size="sm"
-                @click="handlePrev"
-              >
-                <ChevronLeft class="h-4 w-4" :stroke-width="2.5" />
-                <span>Trước</span>
-              </BaseButton>
-
-              <BaseButton
-                variant="primary"
-                size="sm"
-                @click="handleNext"
-              >
-                <span>{{ isLastStep ? 'Hoàn tất' : 'Tiếp theo' }}</span>
-                <component
-                  :is="isLastStep ? CheckCircle : ChevronRight"
-                  class="h-4 w-4"
-                  :stroke-width="2.5"
-                />
-              </BaseButton>
-            </div>
-          </div>
+          <p class="text-sm text-ink-soft leading-relaxed font-medium">
+            {{ currentStep.description }}
+          </p>
         </div>
       </div>
-    </Teleport>
+
+      <template #footer>
+        <div class="flex items-center justify-between w-full">
+          <button
+            type="button"
+            class="min-h-[44px] inline-flex items-center text-xs font-bold text-ink-soft underline underline-offset-4 hover:text-ink cursor-pointer"
+            @click="skipGuide"
+          >
+            Bỏ qua toàn bộ
+          </button>
+
+          <div class="flex items-center gap-2">
+            <BaseButton
+              v-if="!isFirstStep"
+              variant="secondary"
+              size="sm"
+              @click="handlePrev"
+            >
+              <ChevronLeft class="h-4 w-4" :stroke-width="2.5" />
+              <span>Trước</span>
+            </BaseButton>
+
+            <BaseButton
+              variant="primary"
+              size="sm"
+              @click="handleNext"
+            >
+              <span>{{ isLastStep ? 'Hoàn tất' : 'Tiếp theo' }}</span>
+              <component
+                :is="isLastStep ? CheckCircle : ChevronRight"
+                class="h-4 w-4 ml-1"
+                :stroke-width="2.5"
+              />
+            </BaseButton>
+          </div>
+        </div>
+      </template>
+    </BaseModal>
   </div>
 </template>
 

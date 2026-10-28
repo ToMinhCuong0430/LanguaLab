@@ -75,7 +75,7 @@ const activeClass = computed(() => skillActiveColors[props.skill] || 'bg-accent 
         v-for="idx in totalQuestions"
         :key="idx"
         type="button"
-        class="relative flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line font-display text-xs font-black transition-all cursor-pointer brut-press"
+        class="relative flex min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line font-display text-xs font-black transition-all cursor-pointer brut-press"
         :class="[
           currentIndex === idx - 1
             ? `${activeClass} shadow-brut ring-2 ring-line ring-offset-1`

@@ -104,6 +104,13 @@ const prevSlide = () => {
   }
 }
 
+const isStoryOpen = computed({
+  get: () => activeGroup.value !== null && currentSlide.value !== null,
+  set: (val: boolean) => {
+    if (!val) closeStory()
+  },
+})
+
 // Bắt phím bàn phím
 const handleKeyDown = (e: KeyboardEvent) => {
   if (activeGroupIndex.value === null) return
@@ -180,140 +187,136 @@ const getSlideIcon = (type?: string) => {
       </button>
     </div>
 
-    <!-- Story Viewer Toàn Màn Hình Neo-brutalism -->
-    <Teleport to="body">
-      <div
-        v-if="activeGroup && currentSlide"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 select-none"
-        role="dialog"
-        aria-modal="true"
-        @click.self="closeStory"
-      >
-        <!-- Khung Slide Neo-brutalism -->
-        <div class="relative flex flex-col justify-between w-full max-w-md h-[560px] rounded-brut-lg border-[4px] border-line bg-surface p-6 shadow-brut-lg text-ink overflow-hidden animate-in zoom-in-95 duration-150">
-          <!-- Top Bar: Thanh tiến độ các slide và nút đóng -->
-          <div class="space-y-3 z-20">
-            <!-- Dãy thanh tiến độ -->
-            <div class="flex items-center gap-1.5 w-full">
+    <!-- Story Viewer Toàn Màn Hình Neo-brutalism qua BaseModal -->
+    <BaseModal
+      v-model="isStoryOpen"
+      max-width="md"
+      :show-close-button="false"
+      @close="closeStory"
+    >
+      <template #header>
+        <div v-if="activeGroup" class="space-y-3 w-full">
+          <!-- Dãy thanh tiến độ -->
+          <div class="flex items-center gap-1.5 w-full">
+            <div
+              v-for="(_, sIdx) in activeGroup.slides"
+              :key="sIdx"
+              class="h-2 flex-1 rounded border border-line bg-surface-2 overflow-hidden"
+            >
               <div
-                v-for="(_, sIdx) in activeGroup.slides"
-                :key="sIdx"
-                class="h-2 flex-1 rounded border border-line bg-surface-2 overflow-hidden"
-              >
-                <div
-                  class="h-full bg-accent transition-all duration-75"
-                  :style="{
-                    width: sIdx < currentSlideIndex ? '100%' : sIdx === currentSlideIndex ? `${progress}%` : '0%',
-                  }"
-                />
-              </div>
-            </div>
-
-            <!-- Header Story: Nhóm và Nút X -->
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="rounded border-2 border-line bg-warn px-2 py-0.5 font-display text-xs font-black text-on-tone">
-                  {{ activeGroup.title }}
-                </span>
-                <span class="text-xs font-bold text-ink-soft">
-                  {{ currentSlideIndex + 1 }}/{{ totalSlides }}
-                </span>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
-                  :aria-label="isPaused ? 'Tiếp tục bảng tin' : 'Tạm dừng bảng tin'"
-                  :title="isPaused ? 'Tiếp tục' : 'Tạm dừng'"
-                  @click="isPaused = !isPaused"
-                >
-                  <Play v-if="isPaused" class="h-4 w-4" :stroke-width="2.5" />
-                  <Pause v-else class="h-4 w-4" :stroke-width="2.5" />
-                </button>
-                <button
-                  type="button"
-                  class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
-                  aria-label="Đóng bảng tin story"
-                  @click="closeStory"
-                >
-                  <X class="h-4 w-4" :stroke-width="2.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Nội dung chính của Slide (ở giữa) -->
-          <div class="my-auto text-center space-y-4 z-20 px-2">
-            <!-- Icon nổi bật hình khối neo-brutalism -->
-            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-brut-lg border-[3px] border-line bg-warn text-on-tone shadow-brut">
-              <component
-                :is="getSlideIcon(currentSlide.iconType)"
-                class="h-10 w-10"
-                :stroke-width="2.5"
+                class="h-full bg-accent transition-all duration-75"
+                :style="{
+                  width: sIdx < currentSlideIndex ? '100%' : sIdx === currentSlideIndex ? `${progress}%` : '0%',
+                }"
               />
             </div>
+          </div>
 
-            <div class="space-y-2">
-              <h3 class="font-display text-lg font-bold uppercase tracking-wider text-ink-soft">
-                {{ currentSlide.title }}
-              </h3>
-
-              <!-- Highlight cực đậm -->
-              <div class="inline-block rounded-brut border-[3px] border-line bg-accent px-4 py-2 font-display text-3xl sm:text-4xl font-black text-accent-ink shadow-brut">
-                {{ currentSlide.highlight }}
-              </div>
-            </div>
-
-            <p class="text-sm sm:text-base font-medium leading-relaxed text-ink max-w-xs mx-auto">
-              {{ currentSlide.description }}
-            </p>
-
-            <div v-if="currentSlide.statBadge" class="inline-block">
-              <span class="rounded border-2 border-line bg-ok px-3 py-1 font-display text-xs font-black text-on-tone shadow-brut-sm">
-                {{ currentSlide.statBadge }}
+          <!-- Header Story: Nhóm và Nút X -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="rounded border-2 border-line bg-warn px-2 py-0.5 font-display text-xs font-black text-on-tone">
+                {{ activeGroup.title }}
+              </span>
+              <span class="text-xs font-bold text-ink-soft">
+                {{ currentSlideIndex + 1 }}/{{ totalSlides }}
               </span>
             </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                :aria-label="isPaused ? 'Tiếp tục bảng tin' : 'Tạm dừng bảng tin'"
+                :title="isPaused ? 'Tiếp tục' : 'Tạm dừng'"
+                @click="isPaused = !isPaused"
+              >
+                <Play v-if="isPaused" class="h-4 w-4" :stroke-width="2.5" />
+                <Pause v-else class="h-4 w-4" :stroke-width="2.5" />
+              </button>
+              <button
+                type="button"
+                class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                aria-label="Đóng bảng tin story"
+                @click="closeStory"
+              >
+                <X class="h-4 w-4" :stroke-width="2.5" />
+              </button>
+            </div>
           </div>
+        </div>
+      </template>
 
-          <!-- Footer: Nút bấm chuyển slide thủ công -->
-          <div class="flex items-center justify-between border-t-2 border-line pt-3 z-20">
-            <button
-              type="button"
-              class="flex items-center gap-1 text-xs font-bold text-ink hover:underline cursor-pointer"
-              @click="prevSlide"
-            >
-              <ChevronLeft class="h-4 w-4" :stroke-width="2.5" />
-              <span>Trước</span>
-            </button>
+      <!-- Nội dung chính của Slide (ở giữa) -->
+      <div v-if="currentSlide" class="relative my-auto text-center space-y-4 py-4 select-none">
+        <!-- Nửa màn hình cảm ứng để bấm trái/phải -->
+        <div
+          class="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer"
+          title="Slide trước"
+          @click="prevSlide"
+        />
+        <div
+          class="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer"
+          title="Slide tiếp"
+          @click="nextSlide"
+        />
 
-            <span class="text-[11px] text-ink-soft">
-              Phím mũi tên ← → hoặc click màn hình
-            </span>
-
-            <button
-              type="button"
-              class="flex items-center gap-1 text-xs font-bold text-ink hover:underline cursor-pointer"
-              @click="nextSlide"
-            >
-              <span>Tiếp</span>
-              <ChevronRight class="h-4 w-4" :stroke-width="2.5" />
-            </button>
-          </div>
-
-          <!-- Nửa màn hình cảm ứng để bấm trái/phải -->
-          <div
-            class="absolute top-16 left-0 bottom-12 w-1/2 z-10 cursor-pointer"
-            title="Slide trước"
-            @click="prevSlide"
-          />
-          <div
-            class="absolute top-16 right-0 bottom-12 w-1/2 z-10 cursor-pointer"
-            title="Slide tiếp"
-            @click="nextSlide"
+        <!-- Icon nổi bật hình khối neo-brutalism -->
+        <div class="relative z-20 mx-auto flex h-20 w-20 items-center justify-center rounded-brut-lg border-[3px] border-line bg-warn text-on-tone shadow-brut">
+          <component
+            :is="getSlideIcon(currentSlide.iconType)"
+            class="h-10 w-10"
+            :stroke-width="2.5"
           />
         </div>
+
+        <div class="relative z-20 space-y-2">
+          <h3 class="font-display text-lg font-bold uppercase tracking-wider text-ink-soft">
+            {{ currentSlide.title }}
+          </h3>
+
+          <!-- Highlight cực đậm -->
+          <div class="inline-block rounded-brut border-[3px] border-line bg-accent px-4 py-2 font-display text-3xl sm:text-4xl font-black text-accent-ink shadow-brut">
+            {{ currentSlide.highlight }}
+          </div>
+        </div>
+
+        <p class="relative z-20 text-sm sm:text-base font-medium leading-relaxed text-ink max-w-xs mx-auto">
+          {{ currentSlide.description }}
+        </p>
+
+        <div v-if="currentSlide.statBadge" class="relative z-20 inline-block">
+          <span class="rounded border-2 border-line bg-ok px-3 py-1 font-display text-xs font-black text-on-tone shadow-brut-sm">
+            {{ currentSlide.statBadge }}
+          </span>
+        </div>
       </div>
-    </Teleport>
+
+      <template #footer>
+        <div class="flex items-center justify-between w-full">
+          <button
+            type="button"
+            class="min-h-[44px] inline-flex items-center gap-1 text-xs font-bold text-ink hover:underline cursor-pointer"
+            @click="prevSlide"
+          >
+            <ChevronLeft class="h-4 w-4" :stroke-width="2.5" />
+            <span>Trước</span>
+          </button>
+
+          <span class="text-[11px] text-ink-soft">
+            Phím ← → hoặc click 2 bên màn hình
+          </span>
+
+          <button
+            type="button"
+            class="min-h-[44px] inline-flex items-center gap-1 text-xs font-bold text-ink hover:underline cursor-pointer"
+            @click="nextSlide"
+          >
+            <span>Tiếp</span>
+            <ChevronRight class="h-4 w-4" :stroke-width="2.5" />
+          </button>
+        </div>
+      </template>
+    </BaseModal>
   </div>
 </template>

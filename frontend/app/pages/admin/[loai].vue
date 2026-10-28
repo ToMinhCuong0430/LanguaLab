@@ -605,78 +605,62 @@ const exportData = (format: 'csv' | 'json') => {
       </div>
     </div>
 
-    <!-- Ngăn trượt sửa nhanh (Slide-over Editor) -->
-    <div
-      v-if="isSlideOverOpen"
-      class="fixed inset-0 z-50 overflow-hidden bg-black/40 flex justify-end"
+    <!-- Hộp thoại sửa nhanh (Slide-over / Modal Editor) -->
+    <BaseModal
+      v-model="isSlideOverOpen"
+      max-width="lg"
+      :title="`Chỉnh sửa: ${editingItem?.[currentConfig.idField] || ''}`"
     >
-      <div class="w-full max-w-lg bg-surface border-l-[3px] border-line h-full flex flex-col shadow-brut-lg">
-        <!-- Slide-over Header -->
-        <div class="p-4 sm:p-5 border-b-[3px] border-line flex items-center justify-between bg-surface-2">
-          <div>
-            <h3 class="font-display font-black text-base text-ink">Chỉnh sửa nhanh bản ghi</h3>
-            <p class="text-xs font-mono text-ink-soft">{{ editingItem?.[currentConfig.idField] }}</p>
-          </div>
-          <button
-            type="button"
-            class="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 cursor-pointer"
-            aria-label="Đóng ngăn chỉnh sửa"
-            @click="isSlideOverOpen = false"
+      <div class="space-y-4">
+        <div v-if="saveError" class="p-3 rounded-brut border-2 border-bad bg-bad/10 text-xs font-bold text-bad">
+          {{ saveError }}
+        </div>
+
+        <div>
+          <label class="block text-xs font-black text-ink mb-1">Tiêu đề chính / Từ vựng:</label>
+          <input
+            v-if="editingItem"
+            v-model="editingItem[currentConfig.titleField]"
+            type="text"
+            class="w-full min-h-[44px] p-2 text-xs rounded-brut border-2 border-line bg-surface text-ink"
+          />
+        </div>
+
+        <div v-if="editingItem && editingItem.vietnamese_title !== undefined">
+          <label class="block text-xs font-black text-ink mb-1">Tiêu đề tiếng Việt:</label>
+          <input
+            v-model="editingItem.vietnamese_title"
+            type="text"
+            class="w-full min-h-[44px] p-2 text-xs rounded-brut border-2 border-line bg-surface text-ink"
+          />
+        </div>
+
+        <div v-if="editingItem && currentConfig.hasLicense">
+          <label class="block text-xs font-black text-ink mb-1">Giấy phép bản quyền (License):</label>
+          <select
+            v-model="editingItem.license"
+            class="w-full min-h-[44px] p-2 text-xs rounded-brut border-2 border-line bg-surface text-ink cursor-pointer"
           >
-            <X class="h-4 w-4 text-ink" />
-          </button>
+            <option value="public_domain">Public Domain (Miền công cộng)</option>
+            <option value="original">Original (Tự biên soạn độc quyền)</option>
+            <option value="licensed">Licensed (Có giấy phép sử dụng)</option>
+          </select>
         </div>
 
-        <!-- Slide-over Body -->
-        <div class="p-5 flex-1 overflow-y-auto space-y-4">
-          <div v-if="saveError" class="p-3 rounded-brut border-2 border-bad bg-bad/10 text-xs font-bold text-bad">
-            {{ saveError }}
-          </div>
-
-          <div>
-            <label class="block text-xs font-black text-ink mb-1">Tiêu đề chính / Từ vựng:</label>
+        <div v-if="editingItem && currentConfig.hasPublish" class="pt-2">
+          <label class="flex items-center gap-2 cursor-pointer min-h-[44px]">
             <input
-              v-model="editingItem[currentConfig.titleField]"
-              type="text"
-              class="w-full p-2 text-xs rounded-brut border-2 border-line bg-surface text-ink"
+              v-model="editingItem.is_published"
+              type="checkbox"
+              class="h-4 w-4 rounded border-2 border-line accent-ok"
             />
-          </div>
-
-          <div v-if="editingItem.vietnamese_title !== undefined">
-            <label class="block text-xs font-black text-ink mb-1">Tiêu đề tiếng Việt:</label>
-            <input
-              v-model="editingItem.vietnamese_title"
-              type="text"
-              class="w-full p-2 text-xs rounded-brut border-2 border-line bg-surface text-ink"
-            />
-          </div>
-
-          <div v-if="currentConfig.hasLicense">
-            <label class="block text-xs font-black text-ink mb-1">Giấy phép bản quyền (License):</label>
-            <select
-              v-model="editingItem.license"
-              class="w-full p-2 text-xs rounded-brut border-2 border-line bg-surface text-ink"
-            >
-              <option value="public_domain">Public Domain (Miền công cộng)</option>
-              <option value="original">Original (Tự biên soạn độc quyền)</option>
-              <option value="licensed">Licensed (Có giấy phép sử dụng)</option>
-            </select>
-          </div>
-
-          <div v-if="currentConfig.hasPublish" class="pt-2">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                v-model="editingItem.is_published"
-                type="checkbox"
-                class="h-4 w-4 rounded border-2 border-line accent-ok"
-              />
-              <span class="text-xs font-bold text-ink">Xuất bản công khai cho mọi người học</span>
-            </label>
-          </div>
+            <span class="text-xs font-bold text-ink">Xuất bản công khai cho mọi người học</span>
+          </label>
         </div>
+      </div>
 
-        <!-- Slide-over Footer -->
-        <div class="p-4 border-t-2 border-line bg-surface-2 flex items-center justify-between">
+      <template #footer>
+        <div class="flex items-center justify-between w-full">
           <BaseButton tone="neutral" @click="isSlideOverOpen = false">
             <span>Hủy bỏ</span>
           </BaseButton>
@@ -686,7 +670,7 @@ const exportData = (format: 'csv' | 'json') => {
             <span>Lưu thay đổi</span>
           </BaseButton>
         </div>
-      </div>
-    </div>
+      </template>
+    </BaseModal>
   </div>
 </template>

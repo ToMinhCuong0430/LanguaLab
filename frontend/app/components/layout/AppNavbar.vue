@@ -74,7 +74,7 @@ onUnmounted(() => {
   <header class="sticky top-0 z-40 w-full border-b-[3px] border-line bg-surface">
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
       <!-- Brand Logo -->
-      <NuxtLink to="/" class="group flex items-center gap-2 flex-shrink-0 text-decoration-none">
+      <NuxtLink to="/" class="group flex items-center gap-2 flex-shrink-0 text-decoration-none min-h-[44px]" aria-label="Trang chủ LanguaLab">
         <div class="flex h-9 w-9 items-center justify-center rounded-brut border-2 border-line bg-warn shadow-brut-sm transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5">
           <Languages class="h-5 w-5 text-on-tone" :stroke-width="2.5" />
         </div>

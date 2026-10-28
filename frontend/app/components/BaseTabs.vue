@@ -98,7 +98,7 @@ const selectTab = (item: TabItem) => {
 }
 
 .base-tab-btn--sm {
-  min-height: 38px;
+  min-height: 44px;
   padding: 0.35rem 0.85rem;
   font-size: 0.8125rem;
 }

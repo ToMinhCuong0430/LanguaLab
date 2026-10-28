@@ -7,11 +7,15 @@ const props = withDefaults(
     title?: string
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
     closeOnBackdrop?: boolean
+    closeOnEsc?: boolean
+    showCloseButton?: boolean
   }>(),
   {
     title: '',
     maxWidth: 'md',
     closeOnBackdrop: true,
+    closeOnEsc: true,
+    showCloseButton: true,
   },
 )
 
@@ -39,8 +43,10 @@ const onKeydown = (e: KeyboardEvent) => {
   if (!props.modelValue) return
 
   if (e.key === 'Escape') {
-    e.preventDefault()
-    close()
+    if (props.closeOnEsc) {
+      e.preventDefault()
+      close()
+    }
     return
   }
 
@@ -125,6 +131,7 @@ onUnmounted(() => {
               <h2 :id="titleId" class="base-modal-title">{{ title }}</h2>
             </slot>
             <button
+              v-if="showCloseButton"
               type="button"
               class="base-modal-close"
               aria-label="Đóng hộp thoại"

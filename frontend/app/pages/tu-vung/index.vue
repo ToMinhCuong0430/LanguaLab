@@ -330,35 +330,16 @@ const handleAddWord = () => {
 
     <!-- SECTION 1: TAB SELECTOR (BỘ ĐỀ XUẤT vs BỘ CỦA TÔI) -->
     <div id="vocab-main-tabs" class="space-y-4">
-      <div class="flex items-center gap-2 border-b-2 border-line pb-2">
-        <button
-          type="button"
-          class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
-          :class="[
-            activeTab === 'curated'
-              ? 'bg-warn text-on-tone border-line shadow-brut-sm'
-              : 'bg-surface hover:bg-surface-2 text-ink border-transparent hover:border-line',
-          ]"
-          @click="activeTab = 'curated'; selectedSetId = curatedSets[0]?.id || ''"
-        >
-          <Layers class="w-4 h-4 stroke-[2.5]" />
-          <span>Bộ đề xuất ({{ curatedSets.length }} bộ)</span>
-        </button>
-
-        <button
-          type="button"
-          class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
-          :class="[
-            activeTab === 'my_sets'
-              ? 'bg-warn text-on-tone border-line shadow-brut-sm'
-              : 'bg-surface hover:bg-surface-2 text-ink border-transparent hover:border-line',
-          ]"
-          @click="activeTab = 'my_sets'; selectedSetId = mySets[0]?.id || ''"
-        >
-          <FolderPlus class="w-4 h-4 stroke-[2.5]" />
-          <span>Bộ của tôi ({{ mySets.length }} bộ)</span>
-        </button>
-      </div>
+      <BaseTabs
+        :model-value="activeTab"
+        :items="[
+          { id: 'curated', label: `Bộ đề xuất (${curatedSets.length} bộ)`, icon: Layers },
+          { id: 'my_sets', label: `Bộ của tôi (${mySets.length} bộ)`, icon: FolderPlus },
+        ]"
+        tone="warning"
+        size="md"
+        @change="(id) => { activeTab = id as any; selectedSetId = id === 'curated' ? (curatedSets[0]?.id || '') : (mySets[0]?.id || '') }"
+      />
 
       <!-- Danh sách bộ từ (Bộ đề xuất) - Thẻ to, có preview 3 từ đầu, vòng tiến độ -->
       <div v-if="activeTab === 'curated'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
