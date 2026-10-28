@@ -63,7 +63,7 @@ const ieltsGuideSteps: GuideStep[] = [
       <template #actions>
         <NuxtLink
           to="/luyen-thi"
-          class="text-xs font-bold text-ink underline underline-offset-4 hover:text-accent"
+          class="text-xs font-bold text-ink underline underline-offset-4 hover:text-accent min-h-[44px] inline-flex items-center"
         >
           ← Đổi kỳ thi khác
         </NuxtLink>
@@ -206,7 +206,7 @@ const ieltsGuideSteps: GuideStep[] = [
               <td class="p-3.5 text-right">
                 <NuxtLink
                   :to="`/luyen-thi/ielts/lam-bai/${att.testId}`"
-                  class="inline-flex items-center gap-1 text-xs font-bold text-ink underline hover:text-accent"
+                  class="inline-flex items-center gap-1 min-h-[44px] text-xs font-bold text-ink underline hover:text-accent"
                 >
                   <span>Làm lại</span>
                   <ArrowRight class="h-3.5 w-3.5" :stroke-width="2.5" />
