@@ -138,7 +138,7 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
           </BaseBadge>
           <button
             type="button"
-            class="px-3.5 py-1.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
+            class="px-4 py-2 min-h-[44px] rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
             @click="isCustomModalOpen = true"
           >
             <Plus class="w-4 h-4 stroke-[3]" />
@@ -156,7 +156,7 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
       </div>
       <button
         type="button"
-        class="text-accent underline font-bold cursor-pointer flex items-center gap-1"
+        class="text-accent underline font-bold cursor-pointer min-h-[44px] inline-flex items-center gap-1"
         @click="showCopyrightInfo = !showCopyrightInfo"
       >
         <Info class="w-3.5 h-3.5" />
@@ -178,16 +178,16 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
     </div>
 
     <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut animate-pulse space-y-4">
-      <div class="h-5 bg-surface-2 rounded-brut w-1/4"></div>
-      <div class="h-20 bg-surface-2 rounded-brut w-full"></div>
+    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut space-y-4">
+      <BaseSkeleton class="h-6 w-1/4 rounded-brut" />
+      <BaseSkeleton class="h-20 w-full rounded-brut" />
     </div>
 
     <!-- SECTION 1: TABS (KHO CÔNG CỘNG vs VĂN BẢN RIÊNG) -->
     <div class="flex items-center gap-2 border-b-2 border-line pb-2">
       <button
         type="button"
-        class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+        class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
         :class="[
           activeTab === 'catalog'
             ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -202,7 +202,7 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
       <button
         id="custom-paste-tab-btn"
         type="button"
-        class="px-5 py-2.5 rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
+        class="px-5 py-2.5 min-h-[44px] rounded-brut border-2 font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2"
         :class="[
           activeTab === 'custom_paste'
             ? 'bg-warn text-on-tone border-line shadow-brut-sm'
@@ -234,7 +234,7 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
           ]"
           :key="cat.id"
           type="button"
-          class="px-2.5 py-1 text-xs font-bold rounded-brut border-2 transition-colors cursor-pointer"
+          class="px-3 py-1.5 min-h-[44px] flex items-center text-xs font-bold rounded-brut border-2 transition-colors cursor-pointer"
           :class="typeFilter === cat.id ? 'bg-warn text-on-tone border-line font-black shadow-brut-sm' : 'bg-surface border-transparent hover:border-line text-ink'"
           @click="typeFilter = cat.id as any"
         >
@@ -247,7 +247,7 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
         <span class="text-xs font-bold text-ink-soft">Trình độ:</span>
         <select
           v-model="levelFilter"
-          class="px-2.5 py-1 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          class="px-3 py-1.5 min-h-[44px] text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
         >
           <option value="all">Tất cả trình độ</option>
           <option value="A2">A2 (Cơ bản)</option>
@@ -261,15 +261,11 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
 
     <!-- SECTION 3: DANH SÁCH BÀI ĐỌC (CÓ "BÌA SÁCH" THEO THỂ LOẠI & PREVIEW 2-3 DÒNG ĐẦU) -->
     <div id="reading-materials-grid">
-      <div
+      <BaseEmptyState
         v-if="filteredMaterials.length === 0"
-        class="p-12 text-center bg-surface rounded-brut border-2 border-line border-dashed space-y-3"
-      >
-        <p class="font-black text-ink text-base">Chưa có bài đọc nào phù hợp bộ lọc</p>
-        <p class="text-xs text-ink-soft">
-          {{ activeTab === 'custom_paste' ? 'Bấm "Dán văn bản riêng" phía trên để dán bài báo hoặc trích đoạn sách của bạn.' : 'Vui lòng chọn thể loại khác để xem tác phẩm.' }}
-        </p>
-      </div>
+        title="Chưa có bài đọc nào phù hợp bộ lọc"
+        :description="activeTab === 'custom_paste' ? 'Bấm \'Dán văn bản riêng\' phía trên để dán bài báo hoặc trích đoạn sách của bạn.' : 'Vui lòng chọn thể loại khác để xem tác phẩm.'"
+      />
 
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
         <div
@@ -365,18 +361,14 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
     </div>
 
     <!-- MODAL DÁN VĂN BẢN RIÊNG -->
-    <div
-      v-if="isCustomModalOpen"
-      class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 animate-in fade-in duration-150"
+    <BaseModal
+      :model-value="isCustomModalOpen"
+      title="Dán văn bản riêng để đọc"
+      max-width="lg"
+      @close="isCustomModalOpen = false"
+      @update:model-value="(val) => { isCustomModalOpen = val }"
     >
-      <div class="bg-surface rounded-brut-lg border-[3px] border-line shadow-brut-lg max-w-lg w-full p-6 space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-line pb-2">
-          <h3 class="font-display font-black text-lg text-ink">Dán văn bản riêng để đọc</h3>
-          <button type="button" class="text-ink-soft hover:text-ink cursor-pointer" @click="isCustomModalOpen = false">
-            ✕
-          </button>
-        </div>
-
+      <div class="space-y-4">
         <div class="space-y-3">
           <div>
             <label class="block text-xs font-black uppercase text-ink-soft mb-1">Tiêu đề:</label>
@@ -393,6 +385,6 @@ const getGenreTheme = (type: ReadingType) => genreThemes[type] || genreThemes.bo
           <BaseButton variant="primary" size="sm" @click="handleAddCustomText">Lưu & Đọc ngay</BaseButton>
         </div>
       </div>
-    </div>
+    </BaseModal>
   </div>
 </template>

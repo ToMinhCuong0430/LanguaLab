@@ -200,7 +200,7 @@ const speakSentence = (text: string) => {
     <div class="flex items-center justify-between">
       <NuxtLink
         to="/doc-dich"
-        class="inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
+        class="inline-flex items-center gap-1.5 min-h-[44px] text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
       >
         <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
         <span>Về kho Luyện đọc</span>
@@ -248,7 +248,7 @@ const speakSentence = (text: string) => {
         <span class="text-xs font-bold text-ink-soft mr-1">Bố cục:</span>
         <button
           type="button"
-          class="px-3 py-1.5 rounded-brut border-2 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+          class="px-3.5 py-2 min-h-[44px] rounded-brut border-2 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
           :class="layoutMode === 'parallel' ? 'bg-warn text-on-tone border-line font-black shadow-brut-sm' : 'bg-surface hover:bg-surface-2 text-ink border-line/40'"
           @click="layoutMode = 'parallel'"
         >
@@ -258,7 +258,7 @@ const speakSentence = (text: string) => {
 
         <button
           type="button"
-          class="px-3 py-1.5 rounded-brut border-2 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+          class="px-3.5 py-2 min-h-[44px] rounded-brut border-2 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
           :class="layoutMode === 'split' ? 'bg-warn text-on-tone border-line font-black shadow-brut-sm' : 'bg-surface hover:bg-surface-2 text-ink border-line/40'"
           @click="layoutMode = 'split'"
         >
@@ -272,7 +272,7 @@ const speakSentence = (text: string) => {
         <button
           id="self-translate-toggle-btn"
           type="button"
-          class="px-3.5 py-1.5 rounded-brut border-2 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+          class="px-4 py-2 min-h-[44px] rounded-brut border-2 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer"
           :class="isSelfTranslateMode ? 'bg-ok text-on-tone border-line shadow-brut-sm' : 'bg-surface hover:bg-surface-2 text-ink border-line'"
           @click="isSelfTranslateMode = !isSelfTranslateMode"
         >
@@ -289,7 +289,7 @@ const speakSentence = (text: string) => {
             v-for="size in ['sm', 'base', 'lg', 'xl']"
             :key="size"
             type="button"
-            class="px-2 py-0.5 text-xs font-mono font-bold rounded-brut transition-all cursor-pointer"
+            class="px-2.5 py-1 min-h-[44px] min-w-[44px] flex items-center justify-center text-xs font-mono font-bold rounded-brut transition-all cursor-pointer"
             :class="fontSize === size ? 'bg-warn text-on-tone border border-line font-black shadow-brut-sm' : 'text-ink hover:text-black'"
             @click="fontSize = size as any"
           >
@@ -335,8 +335,9 @@ const speakSentence = (text: string) => {
               </span>
               <button
                 type="button"
-                class="p-1 rounded-brut border border-line bg-surface hover:bg-surface-2 text-ink cursor-pointer"
+                class="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border border-line bg-surface hover:bg-surface-2 text-ink cursor-pointer"
                 title="Nghe phát âm đoạn này"
+                aria-label="Nghe phát âm đoạn văn"
                 @click.stop="speakSentence(para.targetText)"
               >
                 <Volume2 class="w-3.5 h-3.5 text-accent stroke-[2.5]" />
@@ -346,8 +347,9 @@ const speakSentence = (text: string) => {
             <!-- Nút đánh dấu đoạn -->
             <button
               type="button"
-              class="flex items-center gap-1 cursor-pointer"
+              class="flex items-center gap-1 min-h-[44px] px-2 cursor-pointer"
               :class="bookmarkedParagraphIds.includes(para.id) ? 'text-warn font-black' : 'text-ink-soft hover:text-ink'"
+              aria-label="Đánh dấu đoạn văn"
               @click.stop="toggleBookmarkParagraph(para.id)"
             >
               <Star class="w-4 h-4" :class="{ 'fill-warn': bookmarkedParagraphIds.includes(para.id) }" />
@@ -427,8 +429,9 @@ const speakSentence = (text: string) => {
               <span>Bản gốc #{{ pIdx + 1 }}</span>
               <button
                 type="button"
-                class="p-1 rounded-brut border border-line bg-surface hover:bg-surface-2 text-ink cursor-pointer"
+                class="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border border-line bg-surface hover:bg-surface-2 text-ink cursor-pointer"
                 title="Nghe phát âm"
+                aria-label="Nghe phát âm bản gốc"
                 @click.stop="speakSentence(para.targetText)"
               >
                 <Volume2 class="w-3.5 h-3.5 text-accent stroke-[2.5]" />
@@ -453,8 +456,9 @@ const speakSentence = (text: string) => {
               <span>{{ isSelfTranslateMode ? 'Tự dịch' : 'Bản dịch tiếng Việt' }}</span>
               <button
                 type="button"
-                class="flex items-center gap-1 cursor-pointer"
+                class="flex items-center gap-1 min-h-[44px] px-2 cursor-pointer"
                 :class="bookmarkedParagraphIds.includes(para.id) ? 'text-warn font-black' : 'text-ink-soft hover:text-ink'"
+                aria-label="Đánh dấu đoạn văn"
                 @click.stop="toggleBookmarkParagraph(para.id)"
               >
                 <Star class="w-3.5 h-3.5" :class="{ 'fill-warn': bookmarkedParagraphIds.includes(para.id) }" />
@@ -496,7 +500,12 @@ const speakSentence = (text: string) => {
     >
       <div class="flex items-center justify-between border-b-2 border-line pb-1.5">
         <span class="text-xs font-black uppercase text-accent">Tra từ trong bài đọc</span>
-        <button type="button" class="text-ink-soft hover:text-ink cursor-pointer" @click="selectedLookupWord = null">
+        <button
+          type="button"
+          class="text-ink-soft hover:text-ink cursor-pointer min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
+          aria-label="Đóng bảng tra từ"
+          @click="selectedLookupWord = null"
+        >
           <X class="w-4 h-4" />
         </button>
       </div>
@@ -513,7 +522,7 @@ const speakSentence = (text: string) => {
       <div class="pt-2 flex items-center justify-between border-t border-line/40">
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm cursor-pointer"
           @click="saveWordToVocab"
         >
           <BookmarkPlus class="w-3.5 h-3.5 stroke-[2.5]" />
