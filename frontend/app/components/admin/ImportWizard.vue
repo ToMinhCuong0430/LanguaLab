@@ -411,7 +411,7 @@ const downloadErrorCsv = () => {
         <div class="flex items-center gap-2 mb-4 border-b-2 border-line pb-3">
           <button
             type="button"
-            class="px-3.5 py-1.5 rounded-brut border-2 font-display text-xs font-bold transition-all"
+            class="min-h-[44px] px-3.5 py-2 rounded-brut border-2 font-display text-xs font-bold transition-all"
             :class="rawInputMode === 'file' ? 'border-line bg-surface-2 text-ink shadow-brut-sm' : 'border-transparent text-ink-soft'"
             @click="rawInputMode = 'file'"
           >
@@ -419,7 +419,7 @@ const downloadErrorCsv = () => {
           </button>
           <button
             type="button"
-            class="px-3.5 py-1.5 rounded-brut border-2 font-display text-xs font-bold transition-all"
+            class="min-h-[44px] px-3.5 py-2 rounded-brut border-2 font-display text-xs font-bold transition-all"
             :class="rawInputMode === 'paste' ? 'border-line bg-surface-2 text-ink shadow-brut-sm' : 'border-transparent text-ink-soft'"
             @click="rawInputMode = 'paste'"
           >
@@ -572,7 +572,7 @@ const downloadErrorCsv = () => {
                   <td class="p-2 border-r border-line">
                     <span
                       class="inline-block px-1.5 py-0.5 rounded text-[10px] font-black"
-                      :class="r.error ? 'bg-bad text-white' : 'bg-ok/20 text-ok'"
+                      :class="r.error ? 'bg-bad text-on-tone' : 'bg-ok/20 text-ok'"
                     >
                       {{ r.error ? 'LỖI' : 'HỢP LỆ' }}
                     </span>
@@ -697,7 +697,7 @@ const downloadErrorCsv = () => {
 
             <NuxtLink
               :to="`/admin/${selectedType}`"
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-brut border-2 border-line bg-warn font-display text-xs font-black text-on-tone shadow-brut hover:bg-warn/90 brut-press text-decoration-none"
+              class="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-brut border-2 border-line bg-warn font-display text-xs font-black text-on-tone shadow-brut hover:bg-warn/90 brut-press text-decoration-none"
             >
               <span>Xem và duyệt danh sách vừa nạp</span>
               <ArrowRight class="h-4 w-4" />

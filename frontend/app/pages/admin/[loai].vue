@@ -349,7 +349,7 @@ const exportData = (format: 'csv' | 'json') => {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-[3px] border-line rounded-brut-lg bg-surface p-5 shadow-brut">
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <NuxtLink to="/admin" class="text-xs font-bold text-ink-soft hover:text-ink flex items-center gap-1">
+          <NuxtLink to="/admin" class="min-h-[44px] inline-flex items-center text-xs font-bold text-ink-soft hover:text-ink gap-1">
             <ArrowLeft class="h-3.5 w-3.5" /> Quản trị
           </NuxtLink>
           <span class="text-xs text-ink-soft">/</span>
@@ -362,7 +362,7 @@ const exportData = (format: 'csv' | 'json') => {
       <div class="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-brut border-2 border-line bg-surface font-display text-xs font-bold text-ink shadow-brut-sm hover:bg-surface-2 cursor-pointer"
+          class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-brut border-2 border-line bg-surface font-display text-xs font-bold text-ink shadow-brut-sm hover:bg-surface-2 cursor-pointer"
           @click="exportData('csv')"
         >
           <Download class="h-3.5 w-3.5" />
@@ -371,7 +371,7 @@ const exportData = (format: 'csv' | 'json') => {
 
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-brut border-2 border-line bg-surface font-display text-xs font-bold text-ink shadow-brut-sm hover:bg-surface-2 cursor-pointer"
+          class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-brut border-2 border-line bg-surface font-display text-xs font-bold text-ink shadow-brut-sm hover:bg-surface-2 cursor-pointer"
           @click="exportData('json')"
         >
           <Download class="h-3.5 w-3.5" />
@@ -380,7 +380,7 @@ const exportData = (format: 'csv' | 'json') => {
 
         <NuxtLink
           :to="`/admin/import?type=${loai}`"
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-brut border-2 border-line bg-warn font-display text-xs font-black text-on-tone shadow-brut hover:bg-warn/80 brut-press text-decoration-none"
+          class="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-brut border-2 border-line bg-warn font-display text-xs font-black text-on-tone shadow-brut hover:bg-warn/80 brut-press text-decoration-none"
         >
           <Plus class="h-4 w-4" :stroke-width="2.5" />
           <span>Import thêm dữ liệu</span>
@@ -397,16 +397,16 @@ const exportData = (format: 'csv' | 'json') => {
             v-model="searchQuery"
             type="text"
             placeholder="Tìm theo tiêu đề hoặc từ khóa..."
-            class="w-full pl-9 pr-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none focus:border-ink"
+            class="w-full min-h-[44px] pl-9 pr-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none focus:border-ink"
           />
-          <Search class="h-4 w-4 text-ink-soft absolute left-3 top-2.5" />
+          <Search class="h-4 w-4 text-ink-soft absolute left-3 top-3.5" />
         </div>
 
         <!-- Lọc ngôn ngữ nếu có -->
         <div v-if="currentConfig.hasLanguage">
           <select
             v-model="selectedLang"
-            class="w-full px-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none cursor-pointer"
+            class="w-full min-h-[44px] px-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none cursor-pointer"
           >
             <option value="all">Tất cả ngôn ngữ</option>
             <option value="en">Tiếng Anh (en)</option>
@@ -419,7 +419,7 @@ const exportData = (format: 'csv' | 'json') => {
         <div v-if="currentConfig.hasPublish">
           <select
             v-model="selectedStatus"
-            class="w-full px-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none cursor-pointer"
+            class="w-full min-h-[44px] px-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none cursor-pointer"
           >
             <option value="all">Tất cả trạng thái</option>
             <option value="published">Đã xuất bản (Published)</option>
@@ -440,7 +440,7 @@ const exportData = (format: 'csv' | 'json') => {
           <button
             v-if="currentConfig.hasPublish"
             type="button"
-            class="px-2.5 py-1 rounded-brut border border-line bg-ok/20 text-ok font-bold text-xs hover:bg-ok/30 cursor-pointer"
+            class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-ok/20 text-ok font-bold text-xs hover:bg-ok/30 cursor-pointer"
             @click="batchPublish(true)"
           >
             Xuất bản hàng loạt
@@ -448,14 +448,14 @@ const exportData = (format: 'csv' | 'json') => {
           <button
             v-if="currentConfig.hasPublish"
             type="button"
-            class="px-2.5 py-1 rounded-brut border border-line bg-surface text-ink-soft font-bold text-xs hover:bg-surface-2 cursor-pointer"
+            class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-surface text-ink-soft font-bold text-xs hover:bg-surface-2 cursor-pointer"
             @click="batchPublish(false)"
           >
             Gỡ xuất bản
           </button>
           <button
             type="button"
-            class="px-2.5 py-1 rounded-brut border border-line bg-bad/20 text-bad font-bold text-xs hover:bg-bad/30 cursor-pointer"
+            class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-bad/20 text-bad font-bold text-xs hover:bg-bad/30 cursor-pointer"
             @click="batchDelete"
           >
             Xoá hàng loạt
@@ -548,7 +548,7 @@ const exportData = (format: 'csv' | 'json') => {
               <td v-if="currentConfig.hasPublish" class="p-3 border-r border-line text-center">
                 <button
                   type="button"
-                  class="px-2 py-0.5 rounded-brut border text-[10px] font-black cursor-pointer transition-all"
+                  class="min-h-[44px] px-3 py-1.5 rounded-brut border text-[11px] font-black cursor-pointer transition-all inline-flex items-center justify-center"
                   :class="[
                     item.is_published
                       ? 'border-ok bg-ok/20 text-ok hover:bg-ok/30'
@@ -564,11 +564,12 @@ const exportData = (format: 'csv' | 'json') => {
                 <div class="flex items-center justify-center gap-1.5">
                   <button
                     type="button"
-                    class="p-1 rounded hover:bg-surface-2 text-ink cursor-pointer"
+                    class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-2 rounded-brut border border-line hover:bg-surface-2 text-ink cursor-pointer"
                     title="Chỉnh sửa nhanh"
+                    aria-label="Chỉnh sửa nhanh"
                     @click="openEditSlideOver(item)"
                   >
-                    <Edit2 class="h-3.5 w-3.5" />
+                    <Edit2 class="h-4 w-4" />
                   </button>
                 </div>
               </td>
@@ -586,7 +587,7 @@ const exportData = (format: 'csv' | 'json') => {
         <div class="flex items-center gap-1.5">
           <button
             type="button"
-            class="px-2.5 py-1 rounded-brut border-2 border-line text-xs font-bold disabled:opacity-40 cursor-pointer"
+            class="min-h-[44px] px-3 py-1.5 rounded-brut border-2 border-line text-xs font-bold disabled:opacity-40 cursor-pointer"
             :disabled="currentPage <= 1"
             @click="currentPage--"
           >
@@ -594,7 +595,7 @@ const exportData = (format: 'csv' | 'json') => {
           </button>
           <button
             type="button"
-            class="px-2.5 py-1 rounded-brut border-2 border-line text-xs font-bold disabled:opacity-40 cursor-pointer"
+            class="min-h-[44px] px-3 py-1.5 rounded-brut border-2 border-line text-xs font-bold disabled:opacity-40 cursor-pointer"
             :disabled="currentPage * pageSize >= totalRecords"
             @click="currentPage++"
           >
@@ -618,7 +619,8 @@ const exportData = (format: 'csv' | 'json') => {
           </div>
           <button
             type="button"
-            class="p-1.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 cursor-pointer"
+            class="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 cursor-pointer"
+            aria-label="Đóng ngăn chỉnh sửa"
             @click="isSlideOverOpen = false"
           >
             <X class="h-4 w-4 text-ink" />

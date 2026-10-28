@@ -61,10 +61,11 @@ const isActive = (path: string) => {
 
         <NuxtLink
           to="/"
-          class="inline-flex items-center gap-1 text-xs font-bold text-ink-soft hover:text-ink hover:underline"
+          class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-1 text-xs font-bold text-ink-soft hover:text-ink hover:underline p-1"
           title="Về khu học tập"
+          aria-label="Về khu học tập"
         >
-          <ArrowLeft class="h-3.5 w-3.5" />
+          <ArrowLeft class="h-4 w-4" />
           <span class="hidden sm:inline">Về học</span>
         </NuxtLink>
       </div>
@@ -75,7 +76,7 @@ const isActive = (path: string) => {
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-brut border-2 text-xs font-bold transition-all brut-press"
+          class="min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-brut border-2 text-xs font-bold transition-all brut-press"
           :class="[
             isActive(item.path)
               ? 'border-line bg-surface-2 text-ink shadow-brut-sm font-black'
@@ -96,11 +97,12 @@ const isActive = (path: string) => {
           </div>
           <button
             type="button"
-            class="p-1.5 rounded-brut border-2 border-line bg-surface hover:bg-bad/10 text-bad shadow-brut-sm cursor-pointer"
+            class="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-brut border-2 border-line bg-surface hover:bg-bad/10 text-bad shadow-brut-sm cursor-pointer"
             title="Đăng xuất"
+            aria-label="Đăng xuất"
             @click="signOut"
           >
-            <LogOut class="h-3.5 w-3.5" :stroke-width="2.5" />
+            <LogOut class="h-4 w-4" :stroke-width="2.5" />
           </button>
         </div>
       </div>

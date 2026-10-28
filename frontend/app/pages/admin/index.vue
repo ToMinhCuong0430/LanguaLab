@@ -130,7 +130,7 @@ const featureCards = [
       <template #actions>
         <NuxtLink
           to="/admin/import"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-brut border-2 border-line bg-surface font-display text-xs font-black text-ink shadow-brut hover:bg-surface-2 brut-press text-decoration-none"
+          class="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-brut border-2 border-line bg-surface font-display text-xs font-black text-ink shadow-brut hover:bg-surface-2 brut-press text-decoration-none"
         >
           <FileSpreadsheet class="h-4 w-4" :stroke-width="2.5" />
           <span>Mở trình hướng dẫn Import mới</span>
@@ -177,7 +177,7 @@ const featureCards = [
             <div class="flex items-center justify-between pt-2">
               <NuxtLink
                 :to="item.path"
-                class="inline-flex items-center gap-1 text-xs font-bold text-ink hover:underline"
+                class="min-h-[44px] inline-flex items-center gap-1 text-xs font-bold text-ink hover:underline"
               >
                 <span>Quản lý</span>
                 <ArrowRight class="h-3 w-3" />
@@ -185,7 +185,7 @@ const featureCards = [
 
               <NuxtLink
                 :to="`/admin/import?type=${item.key}`"
-                class="text-[11px] font-bold text-ink-soft hover:text-ink underline"
+                class="min-h-[44px] inline-flex items-center text-[11px] font-bold text-ink-soft hover:text-ink underline"
               >
                 + Nạp thêm
               </NuxtLink>
