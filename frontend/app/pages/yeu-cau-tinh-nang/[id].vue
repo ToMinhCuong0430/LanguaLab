@@ -100,7 +100,7 @@ const getStatusBadge = (status?: string) => {
     <div class="flex items-center justify-between">
       <NuxtLink
         to="/yeu-cau-tinh-nang"
-        class="inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
+        class="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-black uppercase text-ink-soft hover:text-ink transition-colors"
       >
         <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
         <span>Về danh sách yêu cầu tính năng</span>
@@ -112,7 +112,7 @@ const getStatusBadge = (status?: string) => {
     <!-- KHÔNG TÌM THẤY YÊU CẦU -->
     <div v-if="!currentRequest" class="p-8 text-center bg-surface rounded-brut border-2 border-line space-y-3">
       <p class="font-black text-lg text-ink">Không tìm thấy yêu cầu tính năng này.</p>
-      <NuxtLink to="/yeu-cau-tinh-nang" class="text-xs font-bold text-accent underline">
+      <NuxtLink to="/yeu-cau-tinh-nang" class="min-h-[44px] inline-flex items-center text-xs font-bold text-accent underline">
         Quay lại danh sách
       </NuxtLink>
     </div>
@@ -147,7 +147,7 @@ const getStatusBadge = (status?: string) => {
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold text-ink">Chuyển trạng thái:</span>
               <select
-                class="px-2.5 py-1 bg-surface border-2 border-line rounded-brut text-xs font-bold font-mono cursor-pointer"
+                class="min-h-[44px] px-3 py-1.5 bg-surface border-2 border-line rounded-brut text-xs font-bold font-mono cursor-pointer"
                 :value="currentRequest.status"
                 @change="(e: any) => updateStatus(currentRequest!.id, e.target.value)"
               >

@@ -331,7 +331,7 @@ const handleDeleteAccount = async () => {
       <div class="flex items-center gap-2 p-1.5 rounded-brut border-2 border-line bg-surface-2 self-start sm:self-auto">
         <button
           type="button"
-          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-brut border-2 font-display text-xs font-bold transition-all cursor-pointer"
+          class="flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold transition-all cursor-pointer"
           :class="activeTab === 'profile' ? 'border-line bg-surface text-ink shadow-brut-sm' : 'border-transparent text-ink-soft hover:text-ink'"
           @click="changeTab('profile')"
         >
@@ -341,7 +341,7 @@ const handleDeleteAccount = async () => {
 
         <button
           type="button"
-          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-brut border-2 font-display text-xs font-bold transition-all cursor-pointer"
+          class="flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold transition-all cursor-pointer"
           :class="activeTab === 'settings' ? 'border-line bg-surface text-ink shadow-brut-sm' : 'border-transparent text-ink-soft hover:text-ink'"
           @click="changeTab('settings')"
         >
@@ -421,8 +421,9 @@ const handleDeleteAccount = async () => {
               <!-- Nút tải ảnh nổi trên avatar -->
               <button
                 type="button"
-                class="absolute bottom-0 right-0 p-2 rounded-full border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
+                class="absolute bottom-0 right-0 h-11 w-11 min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-2 rounded-full border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
                 title="Thay đổi ảnh đại diện"
+                aria-label="Thay đổi ảnh đại diện"
                 @click="triggerAvatarUpload"
               >
                 <Camera class="h-4 w-4" />
@@ -446,7 +447,7 @@ const handleDeleteAccount = async () => {
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="px-2.5 py-1 text-xs font-bold rounded-brut border-2 border-line bg-surface hover:bg-surface-2 cursor-pointer shadow-brut-sm"
+                class="px-3.5 py-2 min-h-[44px] text-xs font-bold rounded-brut border-2 border-line bg-surface hover:bg-surface-2 cursor-pointer shadow-brut-sm inline-flex items-center"
                 :disabled="isUploadingAvatar"
                 @click="triggerAvatarUpload"
               >
@@ -456,8 +457,9 @@ const handleDeleteAccount = async () => {
               <button
                 v-if="profileForm.avatar_url"
                 type="button"
-                class="p-1 text-xs rounded-brut border-2 border-line bg-surface hover:bg-bad/10 text-bad cursor-pointer shadow-brut-sm"
+                class="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-xs rounded-brut border-2 border-line bg-surface hover:bg-bad/10 text-bad cursor-pointer shadow-brut-sm"
                 title="Xoá ảnh hiện tại"
+                aria-label="Xoá ảnh đại diện hiện tại"
                 @click="removeAvatar"
               >
                 <Trash2 class="h-3.5 w-3.5" />
@@ -583,7 +585,7 @@ const handleDeleteAccount = async () => {
             <div class="grid grid-cols-3 gap-3 max-w-md">
               <button
                 type="button"
-                class="flex items-center justify-center gap-2 p-2.5 rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
+                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
                 :class="colorMode.preference === 'light' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
                 @click="colorMode.preference = 'light'"
               >
@@ -593,7 +595,7 @@ const handleDeleteAccount = async () => {
 
               <button
                 type="button"
-                class="flex items-center justify-center gap-2 p-2.5 rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
+                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
                 :class="colorMode.preference === 'dark' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
                 @click="colorMode.preference = 'dark'"
               >
@@ -603,7 +605,7 @@ const handleDeleteAccount = async () => {
 
               <button
                 type="button"
-                class="flex items-center justify-center gap-2 p-2.5 rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
+                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
                 :class="colorMode.preference === 'system' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
                 @click="colorMode.preference = 'system'"
               >
@@ -621,7 +623,7 @@ const handleDeleteAccount = async () => {
             </div>
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 font-display text-xs font-bold text-ink shadow-brut-sm cursor-pointer self-start sm:self-auto"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-brut border-2 border-line bg-surface hover:bg-surface-2 font-display text-xs font-bold text-ink shadow-brut-sm cursor-pointer self-start sm:self-auto"
               @click="resetAllGuides"
             >
               <RotateCcw class="h-3.5 w-3.5" />
@@ -701,7 +703,7 @@ const handleDeleteAccount = async () => {
 
           <button
             type="button"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-brut border-2 border-line bg-bad text-white font-display text-xs font-black shadow-brut hover:bg-bad/90 disabled:opacity-40 cursor-pointer"
+            class="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-brut border-2 border-line bg-bad text-white font-display text-xs font-black shadow-brut hover:bg-bad/90 disabled:opacity-40 cursor-pointer"
             :disabled="!canDeleteAccount || isDeletingAccount"
             @click="handleDeleteAccount"
           >

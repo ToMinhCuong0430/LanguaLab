@@ -141,7 +141,7 @@ const top3Voted = computed(() => {
           <button
             id="new-request-action-btn"
             type="button"
-            class="px-4 py-2 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs sm:text-sm shadow-brut transition-transform active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
+            class="px-4 py-2 min-h-[44px] rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs sm:text-sm shadow-brut transition-transform active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
             @click="isFormOpen = !isFormOpen"
           >
             <PlusCircle class="w-4 h-4 stroke-[2.5]" />
@@ -158,9 +158,9 @@ const top3Voted = computed(() => {
     </div>
 
     <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut animate-pulse space-y-4">
-      <div class="h-5 bg-surface-2 rounded-brut w-1/4"></div>
-      <div class="h-20 bg-surface-2 rounded-brut w-full"></div>
+    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut space-y-4">
+      <BaseSkeleton class="h-6 w-1/4 rounded-brut" />
+      <BaseSkeleton class="h-20 w-full rounded-brut" />
     </div>
 
     <!-- TOP 3 TÍNH NĂNG ĐƯỢC ỦNG HỘ NHIỀU NHẤT -->
@@ -209,7 +209,7 @@ const top3Voted = computed(() => {
             <span class="text-[11px] font-bold text-ink-soft">{{ topReq.authorName }}</span>
             <button
               type="button"
-              class="px-2.5 py-1 rounded-brut border-2 border-line text-xs font-black transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+              class="px-3 py-1.5 min-h-[44px] rounded-brut border-2 border-line text-xs font-black transition-all cursor-pointer flex items-center gap-1 shadow-sm"
               :class="topReq.hasVoted ? 'bg-ok text-on-tone' : 'bg-surface hover:bg-surface-2 text-ink'"
               @click="toggleUpvote(topReq.id)"
             >
@@ -316,7 +316,7 @@ const top3Voted = computed(() => {
           ]"
           :key="st.id"
           type="button"
-          class="px-2.5 py-1 text-xs font-bold rounded-brut border-2 transition-colors cursor-pointer"
+          class="px-3 py-1.5 min-h-[44px] flex items-center text-xs font-bold rounded-brut border-2 transition-colors cursor-pointer"
           :class="selectedStatus === st.id ? 'bg-warn text-on-tone border-line font-black shadow-brut-sm' : 'bg-surface border-transparent hover:border-line text-ink'"
           @click="selectedStatus = st.id"
         >
@@ -331,7 +331,7 @@ const top3Voted = computed(() => {
         </span>
         <select
           v-model="sortBy"
-          class="px-3 py-1 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
+          class="px-3 py-1.5 min-h-[44px] text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
         >
           <option value="votes">Nhiều bình chọn nhất</option>
           <option value="newest">Mới nhất trước</option>
@@ -341,13 +341,11 @@ const top3Voted = computed(() => {
 
     <!-- DANH SÁCH YÊU CẦU TÍNH NĂNG (DẢI MÀU BÊN TRÁI THEO TRẠNG THÁI + KHỐI VOTE MÀU FEATURE TO DỄ BẤM) -->
     <div id="feature-cards-list" class="space-y-4">
-      <div
+      <BaseEmptyState
         v-if="filteredRequests.length === 0"
-        class="p-12 text-center bg-surface rounded-brut border-2 border-line border-dashed space-y-3"
-      >
-        <p class="font-black text-ink text-base">Không tìm thấy yêu cầu nào theo trạng thái này</p>
-        <p class="text-xs text-ink-soft">Hãy chọn bộ lọc "Tất cả" hoặc gửi một đề xuất tính năng mới!</p>
-      </div>
+        title="Không tìm thấy yêu cầu nào theo trạng thái này"
+        description="Hãy chọn bộ lọc 'Tất cả' hoặc gửi một đề xuất tính năng mới!"
+      />
 
       <div
         v-for="req in filteredRequests"
@@ -410,7 +408,7 @@ const top3Voted = computed(() => {
 
             <NuxtLink
               :to="`/yeu-cau-tinh-nang/${req.id}`"
-              class="inline-flex items-center gap-1.5 text-xs font-bold text-c-cyan-ink hover:underline font-black"
+              class="inline-flex items-center min-h-[44px] gap-1.5 text-xs font-bold text-c-cyan-ink hover:underline font-black"
             >
               <MessageSquare class="w-3.5 h-3.5" />
               <span>{{ req.comments?.length || 0 }} bình luận</span>
