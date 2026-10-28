@@ -169,10 +169,10 @@ const targetXp = 50
           <BaseButton
             :to="learnNowPath"
             tone="warn"
-            class="banner-action-btn font-black"
+            class="banner-action-btn font-black whitespace-nowrap"
           >
             <span>Học ngay</span>
-            <ArrowRight class="h-4 w-4 ml-1.5" :stroke-width="2.5" />
+            <ArrowRight class="h-4 w-4 ml-1.5 shrink-0" :stroke-width="2.5" />
           </BaseButton>
 
           <!-- Nút 2: Luyện đề IELTS (Nền trắng viền đen) -->

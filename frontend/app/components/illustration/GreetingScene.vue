@@ -54,48 +54,54 @@ const targetBadgeText = computed(() => {
     <!-- 1. BUỔI SÁNG: Mặt trời vàng tươi, mây trắng, chim én, sao 4 cánh, cốc nước -->
     <g v-if="period === 'sang'">
       <!-- Mặt trời vàng có tia nắng và mặt cười -->
-      <g class="anim-float-sun" transform="translate(380, 50)">
-        <!-- Các tia nắng (đường thẳng viền đen) -->
-        <g stroke="#11141D" stroke-width="3" stroke-linecap="round">
-          <line x1="0" y1="-34" x2="0" y2="-26" />
-          <line x1="24" y1="-24" x2="18" y2="-18" />
-          <line x1="34" y1="0" x2="26" y2="0" />
-          <line x1="24" y1="24" x2="18" y2="18" />
-          <line x1="0" y1="34" x2="0" y2="26" />
-          <line x1="-24" y1="24" x2="-18" y2="18" />
-          <line x1="-34" y1="0" x2="-26" y2="0" />
-          <line x1="-24" y1="-24" x2="-18" y2="-18" />
+      <g transform="translate(380, 50)">
+        <g class="anim-float-sun">
+          <!-- Các tia nắng (đường thẳng viền đen) -->
+          <g stroke="#11141D" stroke-width="3" stroke-linecap="round">
+            <line x1="0" y1="-34" x2="0" y2="-26" />
+            <line x1="24" y1="-24" x2="18" y2="-18" />
+            <line x1="34" y1="0" x2="26" y2="0" />
+            <line x1="24" y1="24" x2="18" y2="18" />
+            <line x1="0" y1="34" x2="0" y2="26" />
+            <line x1="-24" y1="24" x2="-18" y2="18" />
+            <line x1="-34" y1="0" x2="-26" y2="0" />
+            <line x1="-24" y1="-24" x2="-18" y2="-18" />
+          </g>
+          <!-- Vòng tròn mặt trời -->
+          <circle cx="0" cy="0" r="22" fill="#FFD23F" stroke="#11141D" stroke-width="3.5" />
+          <!-- Khuôn mặt cười mặt trời -->
+          <circle cx="-6" cy="-3" r="2.5" fill="#11141D" />
+          <circle cx="6" cy="-3" r="2.5" fill="#11141D" />
+          <path d="M-6 4 Q0 9 6 4" fill="none" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
+          <ellipse cx="-10" cy="1" rx="2.5" ry="1.5" fill="#FF70A6" />
+          <ellipse cx="10" cy="1" rx="2.5" ry="1.5" fill="#FF70A6" />
         </g>
-        <!-- Vòng tròn mặt trời -->
-        <circle cx="0" cy="0" r="22" fill="#FFD23F" stroke="#11141D" stroke-width="3.5" />
-        <!-- Khuôn mặt cười mặt trời -->
-        <circle cx="-6" cy="-3" r="2.5" fill="#11141D" />
-        <circle cx="6" cy="-3" r="2.5" fill="#11141D" />
-        <path d="M-6 4 Q0 9 6 4" fill="none" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
-        <ellipse cx="-10" cy="1" rx="2.5" ry="1.5" fill="#FF70A6" />
-        <ellipse cx="10" cy="1" rx="2.5" ry="1.5" fill="#FF70A6" />
       </g>
 
       <!-- Đám mây 1 bên trái -->
-      <g class="anim-drift-cloud-1" transform="translate(70, 35)">
-        <path
-          d="M10 24 C2 24, 0 16, 8 12 C6 4, 18 0, 26 6 C32 0, 44 2, 46 10 C54 10, 56 20, 48 24 Z"
-          fill="#FFFFFF"
-          stroke="#11141D"
-          stroke-width="3"
-          stroke-linejoin="round"
-        />
+      <g transform="translate(70, 35)">
+        <g class="anim-drift-cloud-1">
+          <path
+            d="M10 24 C2 24, 0 16, 8 12 C6 4, 18 0, 26 6 C32 0, 44 2, 46 10 C54 10, 56 20, 48 24 Z"
+            fill="#FFFFFF"
+            stroke="#11141D"
+            stroke-width="3"
+            stroke-linejoin="round"
+          />
+        </g>
       </g>
 
       <!-- Đám mây 2 bên phải -->
-      <g class="anim-drift-cloud-2" transform="translate(320, 25)">
-        <path
-          d="M8 20 C2 20, 0 14, 6 10 C5 3, 15 0, 22 5 C27 0, 38 1, 40 8 C46 8, 48 16, 42 20 Z"
-          fill="#FFFFFF"
-          stroke="#11141D"
-          stroke-width="3"
-          stroke-linejoin="round"
-        />
+      <g transform="translate(320, 25)">
+        <g class="anim-drift-cloud-2">
+          <path
+            d="M8 20 C2 20, 0 14, 6 10 C5 3, 15 0, 22 5 C27 0, 38 1, 40 8 C46 8, 48 16, 42 20 Z"
+            fill="#FFFFFF"
+            stroke="#11141D"
+            stroke-width="3"
+            stroke-linejoin="round"
+          />
+        </g>
       </g>
 
       <!-- Chim én bay (dấu ^ mềm) -->
@@ -125,33 +131,37 @@ const targetBadgeText = computed(() => {
     <!-- 2. BUỔI CHIỀU: Mặt trời cam đào, ly nước chanh xanh lá, đồi cam -->
     <g v-else-if="period === 'chieu'">
       <!-- Mặt trời cam chiều -->
-      <g class="anim-float-sun" transform="translate(370, 55)">
-        <g stroke="#11141D" stroke-width="3" stroke-linecap="round">
-          <line x1="0" y1="-32" x2="0" y2="-24" />
-          <line x1="22" y1="-22" x2="16" y2="-16" />
-          <line x1="32" y1="0" x2="24" y2="0" />
-          <line x1="22" y1="22" x2="16" y2="16" />
-          <line x1="-22" y1="22" x2="-16" y2="16" />
-          <line x1="-32" y1="0" x2="-24" y2="0" />
-          <line x1="-22" y1="-22" x2="-16" y2="-16" />
+      <g transform="translate(370, 55)">
+        <g class="anim-float-sun">
+          <g stroke="#11141D" stroke-width="3" stroke-linecap="round">
+            <line x1="0" y1="-32" x2="0" y2="-24" />
+            <line x1="22" y1="-22" x2="16" y2="-16" />
+            <line x1="32" y1="0" x2="24" y2="0" />
+            <line x1="22" y1="22" x2="16" y2="16" />
+            <line x1="-22" y1="22" x2="-16" y2="16" />
+            <line x1="-32" y1="0" x2="-24" y2="0" />
+            <line x1="-22" y1="-22" x2="-16" y2="-16" />
+          </g>
+          <circle cx="0" cy="0" r="22" fill="#FF8A3D" stroke="#11141D" stroke-width="3.5" />
+          <circle cx="-6" cy="-3" r="2.5" fill="#11141D" />
+          <circle cx="6" cy="-3" r="2.5" fill="#11141D" />
+          <path d="M-6 4 Q0 9 6 4" fill="none" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
+          <ellipse cx="-10" cy="1" rx="2.5" ry="1.5" fill="#FF4D4D" />
+          <ellipse cx="10" cy="1" rx="2.5" ry="1.5" fill="#FF4D4D" />
         </g>
-        <circle cx="0" cy="0" r="22" fill="#FF8A3D" stroke="#11141D" stroke-width="3.5" />
-        <circle cx="-6" cy="-3" r="2.5" fill="#11141D" />
-        <circle cx="6" cy="-3" r="2.5" fill="#11141D" />
-        <path d="M-6 4 Q0 9 6 4" fill="none" stroke="#11141D" stroke-width="2.5" stroke-linecap="round" />
-        <ellipse cx="-10" cy="1" rx="2.5" ry="1.5" fill="#FF4D4D" />
-        <ellipse cx="10" cy="1" rx="2.5" ry="1.5" fill="#FF4D4D" />
       </g>
 
       <!-- Mây chiều -->
-      <g class="anim-drift-cloud-1" transform="translate(60, 30)">
-        <path
-          d="M10 24 C2 24, 0 16, 8 12 C6 4, 18 0, 26 6 C32 0, 44 2, 46 10 C54 10, 56 20, 48 24 Z"
-          fill="#FFF4E6"
-          stroke="#11141D"
-          stroke-width="3"
-          stroke-linejoin="round"
-        />
+      <g transform="translate(60, 30)">
+        <g class="anim-drift-cloud-1">
+          <path
+            d="M10 24 C2 24, 0 16, 8 12 C6 4, 18 0, 26 6 C32 0, 44 2, 46 10 C54 10, 56 20, 48 24 Z"
+            fill="#FFF4E6"
+            stroke="#11141D"
+            stroke-width="3"
+            stroke-linejoin="round"
+          />
+        </g>
       </g>
 
       <!-- Ly nước quả xanh lá góc phải -->
@@ -170,16 +180,18 @@ const targetBadgeText = computed(() => {
     <!-- 3. BUỔI TỐI: Trăng lưỡi liềm vàng, đèn bàn, nhiều ngôi sao lấp lánh -->
     <g v-else>
       <!-- Mặt trăng lưỡi liềm vàng có mắt nhắm ngủ/cười -->
-      <g class="anim-float-sun" transform="translate(370, 45)">
-        <path
-          d="M10 -22 C-15 -22, -26 0, -10 24 C-3 29, 6 30, 14 26 C-4 22, -10 6, -2 -14 C2 -18, 6 -20, 10 -22 Z"
-          fill="#FFD23F"
-          stroke="#11141D"
-          stroke-width="3.5"
-          stroke-linejoin="round"
-        />
-        <!-- Mắt trăng nhắm dịu dàng -->
-        <path d="M-9 5 Q-6 8 -3 5" fill="none" stroke="#11141D" stroke-width="2" stroke-linecap="round" />
+      <g transform="translate(370, 45)">
+        <g class="anim-float-sun">
+          <path
+            d="M10 -22 C-15 -22, -26 0, -10 24 C-3 29, 6 30, 14 26 C-4 22, -10 6, -2 -14 C2 -18, 6 -20, 10 -22 Z"
+            fill="#FFD23F"
+            stroke="#11141D"
+            stroke-width="3.5"
+            stroke-linejoin="round"
+          />
+          <!-- Mắt trăng nhắm dịu dàng -->
+          <path d="M-9 5 Q-6 8 -3 5" fill="none" stroke="#11141D" stroke-width="2" stroke-linecap="round" />
+        </g>
       </g>
 
       <!-- Các họa tiết hình học phẳng: chấm tròn, dấu cộng, hình thoi -->
@@ -212,69 +224,71 @@ const targetBadgeText = computed(() => {
     </g>
 
     <!-- ==================== MASCOT SÁCH & BONG BÓNG ==================== -->
-    <g class="anim-mascot-bob" transform="translate(115, 20)">
-      <!-- Quyển sách mở MascotBook -->
-      <MascotBook :period="period" />
+    <g transform="translate(115, 20)">
+      <g class="anim-mascot-bob">
+        <!-- Quyển sách mở MascotBook -->
+        <MascotBook :period="period" />
 
-      <!-- BONG BÓNG THOẠI (Bên trái trên đầu Mascot) -->
-      <g transform="translate(10, 10)">
-        <!-- Đuôi bong bóng thoại -->
-        <polygon
-          points="60,34 50,44 68,34"
-          :fill="bubbleBg"
-          stroke="#11141D"
-          stroke-width="3"
-        />
-        <!-- Khung thân bong bóng -->
-        <rect
-          x="0"
-          y="0"
-          width="82"
-          height="34"
-          rx="12"
-          :fill="bubbleBg"
-          stroke="#11141D"
-          stroke-width="3"
-        />
-        <!-- Chữ chào theo ngôn ngữ -->
-        <text
-          x="41"
-          y="23"
-          text-anchor="middle"
-          font-family="var(--font-display)"
-          font-weight="900"
-          font-size="14"
-          fill="#11141D"
-        >
-          {{ speechText }}
-        </text>
-      </g>
+        <!-- BONG BÓNG THOẠI (Bên trái trên đầu Mascot) -->
+        <g transform="translate(10, 10)">
+          <!-- Đuôi bong bóng thoại -->
+          <polygon
+            points="60,34 50,44 68,34"
+            :fill="bubbleBg"
+            stroke="#11141D"
+            stroke-width="3"
+          />
+          <!-- Khung thân bong bóng -->
+          <rect
+            x="0"
+            y="0"
+            width="82"
+            height="34"
+            rx="12"
+            :fill="bubbleBg"
+            stroke="#11141D"
+            stroke-width="3"
+          />
+          <!-- Chữ chào theo ngôn ngữ -->
+          <text
+            x="41"
+            y="23"
+            text-anchor="middle"
+            font-family="var(--font-display)"
+            font-weight="900"
+            font-size="14"
+            fill="#11141D"
+          >
+            {{ speechText }}
+          </text>
+        </g>
 
-      <!-- THẺ MỤC TIÊU KỲ THI (IELTS 7+, TOEIC 800+...) cắm bên phải sách -->
-      <g v-if="targetBadgeText" transform="translate(162, 50) rotate(12)">
-        <!-- Thẻ tím nhạt viền đen -->
-        <rect
-          x="0"
-          y="0"
-          width="88"
-          height="28"
-          rx="6"
-          fill="#EAE0FF"
-          stroke="#11141D"
-          stroke-width="3"
-        />
-        <text
-          x="44"
-          y="18"
-          text-anchor="middle"
-          font-family="var(--font-display)"
-          font-weight="900"
-          font-size="11"
-          letter-spacing="0.5"
-          fill="#11141D"
-        >
-          {{ targetBadgeText }}
-        </text>
+        <!-- THẺ MỤC TIÊU KỲ THI (IELTS 7+, TOEIC 800+...) cắm bên phải sách -->
+        <g v-if="targetBadgeText" transform="translate(162, 50) rotate(12)">
+          <!-- Thẻ tím nhạt viền đen -->
+          <rect
+            x="0"
+            y="0"
+            width="88"
+            height="28"
+            rx="6"
+            fill="#EAE0FF"
+            stroke="#11141D"
+            stroke-width="3"
+          />
+          <text
+            x="44"
+            y="18"
+            text-anchor="middle"
+            font-family="var(--font-display)"
+            font-weight="900"
+            font-size="11"
+            letter-spacing="0.5"
+            fill="#11141D"
+          >
+            {{ targetBadgeText }}
+          </text>
+        </g>
       </g>
     </g>
   </svg>
