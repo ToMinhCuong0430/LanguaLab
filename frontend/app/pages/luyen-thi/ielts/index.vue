@@ -6,6 +6,8 @@ import {
   Target,
   ArrowRight,
   Clock,
+  TrendingUp,
+  ClipboardCheck,
 } from '@lucide/vue'
 import PageBanner from '~/components/common/PageBanner.vue'
 import SkillCard from '~/components/ielts/SkillCard.vue'
@@ -147,6 +149,36 @@ const ieltsGuideSteps: GuideStep[] = [
           :overview="ov"
         />
       </div>
+    </div>
+
+    <!-- Tiến độ, kiểm tra đầu vào & lộ trình -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <NuxtLink
+        to="/tien-do"
+        class="flex items-center gap-4 rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut brut-press"
+      >
+        <span class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-brut border-2 border-line bg-c-violet text-on-tone">
+          <TrendingUp class="h-5 w-5" :stroke-width="2.5" aria-hidden="true" />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block font-display text-base font-black text-ink">Tiến độ của tôi</span>
+          <span class="block text-xs text-ink-soft">Band theo thời gian, độ chính xác theo dạng bài và điểm yếu.</span>
+        </span>
+        <ArrowRight class="h-4 w-4 flex-shrink-0 text-ink" :stroke-width="2.5" aria-hidden="true" />
+      </NuxtLink>
+      <NuxtLink
+        to="/tien-do/kiem-tra-dau-vao"
+        class="flex items-center gap-4 rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut brut-press"
+      >
+        <span class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-brut border-2 border-line bg-warn text-on-tone">
+          <ClipboardCheck class="h-5 w-5" :stroke-width="2.5" aria-hidden="true" />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block font-display text-base font-black text-ink">Kiểm tra đầu vào</span>
+          <span class="block text-xs text-ink-soft">Khoảng 15 phút, nhận lộ trình 7, 14 hoặc 30 ngày.</span>
+        </span>
+        <ArrowRight class="h-4 w-4 flex-shrink-0 text-ink" :stroke-width="2.5" aria-hidden="true" />
+      </NuxtLink>
     </div>
 
     <!-- Lịch sử làm bài gần đây -->

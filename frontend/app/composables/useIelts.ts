@@ -195,11 +195,11 @@ export const useIelts = () => {
       }
 
       // 2. Tải lịch sử làm bài gần đây của người dùng
-      if (authUser.value?.id) {
+      if (authUser.value?.sub) {
         const { data: attemptsData } = await client
           .from('exam_attempts')
           .select('*, exam_tests(title, skill)')
-          .eq('user_id', authUser.value.id)
+          .eq('user_id', authUser.value.sub)
           .order('completed_at', { ascending: false })
           .limit(10)
 
@@ -250,7 +250,7 @@ export const useIelts = () => {
     xpEarned?: number
     questionsResult?: any[]
   }> => {
-    if (isUseMock.value || !authUser.value?.id) {
+    if (isUseMock.value || !authUser.value?.sub) {
       return {
         success: true,
         rawScore: payload.rawScore,
@@ -263,7 +263,7 @@ export const useIelts = () => {
 
       // Upload file ghi âm Speaking nếu có
       if (payload.speakingAudioBlob) {
-        const fileName = `${authUser.value.id}/${payload.testId}_${Date.now()}.webm`
+        const fileName = `${authUser.value.sub}/${payload.testId}_${Date.now()}.webm`
         const { data: storageData, error: uploadErr } = await client.storage
           .from('speaking-recordings')
           .upload(fileName, payload.speakingAudioBlob, {
@@ -278,13 +278,15 @@ export const useIelts = () => {
 
       // Chuẩn bị payload câu trả lời cho RPC submit_exam_attempt
       const currentTest = getTestById(payload.testId)
-      const formattedAnswers: { question_id: string; user_answer: string }[] = []
+      // q.id ở frontend là số thứ tự câu; RPC khớp theo question_number (hoặc UUID nếu có)
+      const formattedAnswers: { question_id: string; question_number: number; user_answer: string }[] = []
       if (currentTest?.questions && payload.answers) {
         for (const q of currentTest.questions) {
           const ans = payload.answers[q.id]
           if (ans !== undefined) {
             formattedAnswers.push({
               question_id: String(q.id),
+              question_number: q.id,
               user_answer: ans,
             })
           }

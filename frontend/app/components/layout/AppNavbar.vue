@@ -13,6 +13,7 @@ import {
   Laptop,
   Clock,
   Check,
+  TrendingUp,
 } from '@lucide/vue'
 import OnboardingModal from '~/components/auth/OnboardingModal.vue'
 import { BRAND_NAME } from '~/constants/brand'
@@ -183,6 +184,15 @@ onUnmounted(() => {
               >
                 <User class="h-4 w-4" :stroke-width="2.5" />
                 <span>Hồ sơ học tập</span>
+              </NuxtLink>
+
+              <NuxtLink
+                to="/tien-do"
+                class="flex w-full items-center gap-2 rounded-brut border border-transparent p-2 text-xs font-bold text-ink hover:border-line hover:bg-surface-2 cursor-pointer transition-all"
+                @click="closeUserMenu"
+              >
+                <TrendingUp class="h-4 w-4" :stroke-width="2.5" />
+                <span>Tiến độ & Lộ trình học</span>
               </NuxtLink>
 
               <NuxtLink
