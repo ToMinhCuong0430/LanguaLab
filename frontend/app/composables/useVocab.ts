@@ -535,14 +535,6 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
-
   // Tab: 'curated' (Bộ đề xuất) | 'my_sets' (Bộ của tôi)
   const activeTab = ref<'curated' | 'my_sets'>('curated')
   const isLoading = ref(false)
@@ -557,8 +549,6 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
 
   // Tải dữ liệu từ Supabase
   const fetchVocabData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMessage.value = null
 
@@ -662,9 +652,9 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     }
   }
 
-  // Bộ đề xuất theo ngôn ngữ
+  // Bộ đề xuất theo ngôn ngữ (lấy từ Supabase)
   const curatedSets = computed(() => {
-    if (!isUseMock.value && dbCuratedSets.value.length > 0) {
+    if (dbCuratedSets.value.length > 0) {
       return dbCuratedSets.value
     }
     return CURATED_VOCAB_SETS.filter(s => s.lang === currentLang.value)
@@ -672,7 +662,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
 
   // Bộ của tôi
   const mySets = computed(() => {
-    if (!isUseMock.value && authUser.value?.id) {
+    if (authUser.value?.id) {
       return dbMySets.value
     }
     return localMySets.value.filter(s => s.lang === currentLang.value)
@@ -682,7 +672,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   const createMySet = async (title: string, description: string, level: string) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid) {
+    if (uid) {
       try {
         const { data, error } = await client
           .from('vocab_sets')
@@ -740,7 +730,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   const updateMySet = async (id: string, title: string, description: string) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid && !id.startsWith('custom-set-')) {
+    if (uid && !id.startsWith('custom-set-')) {
       try {
         const { error } = await client
           .from('vocab_sets')
@@ -765,7 +755,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   const deleteMySet = async (id: string) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid && !id.startsWith('custom-set-')) {
+    if (uid && !id.startsWith('custom-set-')) {
       try {
         const { error } = await client
           .from('vocab_sets')
@@ -791,7 +781,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   const addWordToMySet = async (setId: string, word: Omit<VocabWord, 'id'>) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid && !setId.startsWith('custom-set-')) {
+    if (uid && !setId.startsWith('custom-set-')) {
       try {
         const { data, error } = await client
           .from('vocab_words')
@@ -844,7 +834,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   const removeWordFromMySet = async (setId: string, wordId: string) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid && !wordId.startsWith('word-')) {
+    if (uid && !wordId.startsWith('word-')) {
       try {
         await client.from('vocab_words').delete().eq('id', wordId)
       } catch (err: any) {
@@ -954,8 +944,8 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
       easy: 4,
     }
 
-    if (isUseMock.value || !authUser.value?.id || wordId.startsWith('w-')) {
-      return { success: true, srsState: rating }
+    if (!authUser.value?.id) {
+      return { success: false, error: 'Vui lòng đăng nhập để lưu kết quả ôn tập' }
     }
 
     try {

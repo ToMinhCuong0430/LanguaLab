@@ -556,14 +556,6 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
-
   const isLoading = ref(false)
   const errorMessage = ref<string | null>(null)
   const dbRoadmapNodes = ref<RoadmapNode[]>([])
@@ -571,8 +563,6 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
 
   // Tải dữ liệu từ Supabase
   const fetchTypingData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMessage.value = null
 
@@ -663,7 +653,7 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
     } catch (err: any) {
       if (handleAuthExpired(err)) return
       errorMessage.value = translateSupabaseError(err)
-      console.warn('Lỗi khi tải dữ liệu gõ câu từ Supabase, dùng mock fallback:', err.message)
+      console.error('Lỗi khi tải dữ liệu gõ câu từ Supabase:', err.message)
     } finally {
       isLoading.value = false
     }
@@ -678,17 +668,17 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
     fetchTypingData()
   })
 
-  // Roadmap nodes: ưu tiên DB nếu có, fallback mock
+  // Roadmap nodes: lấy từ DB thật
   const roadmapNodes = computed<RoadmapNode[]>(() => {
-    if (!isUseMock.value && dbRoadmapNodes.value.length > 0) {
+    if (dbRoadmapNodes.value.length > 0) {
       return dbRoadmapNodes.value
     }
     return ROADMAP_NODES[currentLang.value] || ROADMAP_NODES.en
   })
 
-  // Topics: ưu tiên DB nếu có, fallback mock
+  // Topics: lấy từ DB thật
   const topicsForCurrentLang = computed<TypingTopic[]>(() => {
-    if (!isUseMock.value && dbTopics.value.length > 0) {
+    if (dbTopics.value.length > 0) {
       return dbTopics.value
     }
     return MOCK_TYPING_TOPICS.filter(t => t.lang === currentLang.value)
@@ -717,8 +707,8 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
     accuracy: number,
     durationSeconds: number
   ) => {
-    if (isUseMock.value || !authUser.value?.id) {
-      return { success: true, xpEarned: accuracy >= 80 ? 30 : 0 }
+    if (!authUser.value?.id) {
+      return { success: false, error: 'Vui lòng đăng nhập để lưu kết quả bài gõ' }
     }
 
     try {
@@ -745,8 +735,8 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
 
   // RPC: Hoàn thành chặng học
   const completeStage = async (stageId: string) => {
-    if (isUseMock.value || !authUser.value?.id) {
-      return { success: true }
+    if (!authUser.value?.id) {
+      return { success: false, error: 'Vui lòng đăng nhập để hoàn thành chặng' }
     }
 
     try {

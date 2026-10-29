@@ -312,14 +312,6 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
-
   // Filters
   const activeTab = ref<'explore' | 'my_videos'>('explore')
   const typeFilter = ref<'all' | 'video' | 'podcast'>('all')
@@ -336,8 +328,6 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
 
   // Tải Media từ Supabase
   const fetchMediaData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMessage.value = null
 
@@ -501,8 +491,8 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
 
     const uid = authUser.value?.id
 
-    // 4. Lưu vào Supabase nếu đã đăng nhập và không dùng mock
-    if (!isUseMock.value && uid) {
+    // 4. Lưu vào Supabase nếu đã đăng nhập
+    if (uid) {
       try {
         // Lưu user_videos
         const { data: vidRow, error: vidErr } = await client
@@ -582,7 +572,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
   const deleteCustomVideo = async (id: string) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid && !id.startsWith('custom-video-')) {
+    if (uid && !id.startsWith('custom-video-')) {
       try {
         await client.from('user_videos').delete().eq('id', id).eq('user_id', uid)
       } catch (err: any) {
@@ -597,7 +587,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
 
   // Danh sách video của tôi
   const myCustomVideos = computed(() => {
-    if (!isUseMock.value && authUser.value?.id) {
+    if (authUser.value?.id) {
       return dbCustomVideos.value
     }
     return localCustomVideos.value
@@ -605,7 +595,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
 
   // Danh sách video hiển thị theo filter
   const filteredMediaList = computed(() => {
-    const curated = !isUseMock.value && dbCuratedMedia.value.length > 0
+    const curated = dbCuratedMedia.value.length > 0
       ? dbCuratedMedia.value
       : CURATED_MEDIA_LIST.filter(m => m.lang === currentLang.value)
 
@@ -638,7 +628,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
     quizScore?: number
   ) => {
     const uid = authUser.value?.id
-    if (!uid || isUseMock.value) return
+    if (!uid) return
 
     clearTimeout(saveTimer)
     saveTimer = setTimeout(async () => {
@@ -677,7 +667,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
   const saveVocabToMySet = async (word: string, meaning: string, mediaId?: string) => {
     const uid = authUser.value?.id
 
-    if (!isUseMock.value && uid) {
+    if (uid) {
       try {
         await client.from('user_saved_words').upsert(
           {

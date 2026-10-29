@@ -26,127 +26,15 @@ export interface FeatureRequest {
   comments: FeatureComment[]
 }
 
-// Mock dữ liệu đủ cả 5 trạng thái: new, under_review, in_progress, completed, rejected
-export const MOCK_FEATURE_REQUESTS_V2: FeatureRequest[] = [
-  {
-    id: 'feat-1',
-    title: 'Hỗ trợ xuất bộ thẻ Flashcard Anki (.apkg)',
-    description: 'Cho phép người học export trực tiếp các từ vựng đã lưu hoặc bộ từ theo chủ đề ra định dạng của Anki để ôn offline trên điện thoại.',
-    category: 'tu_vung',
-    status: 'in_progress', // ĐANG LÀM
-    upvotes: 142,
-    authorName: 'Minh Hoàng',
-    createdAt: '2026-10-18',
-    tags: ['Anki', 'SRS', 'Export'],
-    comments: [
-      {
-        id: 'c1',
-        authorName: 'Thu Trang',
-        avatarText: 'TT',
-        content: 'Rất cần tính năng này ạ! Em hay đi tàu điện ngầm không có mạng 4G, xuất ra Anki ôn thì tiện tuyệt vời.',
-        createdAt: '2026-10-19 09:30',
-      },
-      {
-        id: 'c2',
-        authorName: 'Đội ngũ LanguaLab',
-        avatarText: 'LA',
-        content: 'Chào bạn, đội ngũ đang tích hợp thư viện tạo file .apkg trực tiếp trên trình duyệt, dự kiến sẽ ra mắt trong tuần tới!',
-        createdAt: '2026-10-20 14:15',
-      },
-    ],
-  },
-  {
-    id: 'feat-2',
-    title: 'Chấm điểm phát âm chi tiết từng âm vị (Phoneme scoring)',
-    description: 'Sử dụng phân tích sóng âm để chỉ ra chính xác âm nào người học phát âm chưa chuẩn (ví dụ âm /θ/, /ð/, /r/ và /l/) thay vì chỉ chấm chung chung.',
-    category: 'nghe_noi',
-    status: 'under_review', // ĐANG XEM XÉT
-    upvotes: 98,
-    authorName: 'Thanh Thảo',
-    createdAt: '2026-10-15',
-    tags: ['Phát âm', 'IPA', 'Speech'],
-    comments: [
-      {
-        id: 'c3',
-        authorName: 'Văn Hải',
-        avatarText: 'VH',
-        content: 'Ủng hộ 1 vote! Nhiều khi phát âm sai 1 âm đuôi mà không biết mình sai ở đâu.',
-        createdAt: '2026-10-16 18:20',
-      },
-    ],
-  },
-  {
-    id: 'feat-3',
-    title: 'Tích hợp bộ đề thi thử TOEIC Format mới 200 câu',
-    description: 'Mở rộng khu vực luyện thi có thêm bộ đề TOEIC 2 kỹ năng (Listening & Reading) chuẩn kỳ thi thật kèm đồng hồ bấm giờ.',
-    category: 'luyen_thi',
-    status: 'new', // MỚI
-    upvotes: 76,
-    authorName: 'Quốc Bảo',
-    createdAt: '2026-10-22',
-    tags: ['TOEIC', 'Đề thi thật'],
-    comments: [],
-  },
-  {
-    id: 'feat-4',
-    title: 'Chế độ giao diện tương phản cao & Phông chữ OpenDyslexic',
-    description: 'Hỗ trợ tuỳ chọn font chữ thân thiện cho người mắc chứng khó đọc và nâng cao độ tương phản màu sắc giúp đỡ mỏi mắt.',
-    category: 'tien_ich',
-    status: 'completed', // HOÀN THÀNH
-    upvotes: 115,
-    authorName: 'Đức Anh',
-    createdAt: '2026-09-30',
-    tags: ['Accessibility', 'A11y'],
-    comments: [
-      {
-        id: 'c4',
-        authorName: 'Bảo Ngọc',
-        avatarText: 'BN',
-        content: 'Tính năng rất nhân văn, cảm ơn đội ngũ phát triển!',
-        createdAt: '2026-10-02 11:00',
-      },
-    ],
-  },
-  {
-    id: 'feat-5',
-    title: 'Thêm tính năng Chat AI tự động tạo bài viết hộ người học',
-    description: 'Đề xuất thêm nút chatbot AI để tự động viết văn mẫu và dịch toàn bộ văn bản cho học viên mà không cần tự tư duy.',
-    category: 'tien_ich',
-    status: 'rejected', // TỪ CHỐI
-    upvotes: 12,
-    authorName: 'Người dùng ẩn danh',
-    createdAt: '2026-10-05',
-    tags: ['AI bot'],
-    comments: [
-      {
-        id: 'c5',
-        authorName: 'Đội ngũ LanguaLab',
-        avatarText: 'LA',
-        content: 'LanguaLab kiên định với triết lý rèn luyện tư duy ngôn ngữ trực tiếp và phản xạ tự thân của người học, không biến nền tảng thành công cụ "AI làm hộ". Do đó yêu cầu này xin phép từ chối.',
-        createdAt: '2026-10-06 08:00',
-      },
-    ],
-  },
-]
-
 export const useFeatureRequests = () => {
   const client = useSupabaseClient<Database>()
   const authUser = useSupabaseUser()
-  const config = useRuntimeConfig()
-
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
 
   const isLoading = ref(false)
   const errorMessage = ref<string | null>(null)
 
-  // Danh sách yêu cầu
-  const requests = ref<FeatureRequest[]>([...MOCK_FEATURE_REQUESTS_V2])
+  // Danh sách yêu cầu (Đọc trực tiếp từ cơ sở dữ liệu thật)
+  const requests = ref<FeatureRequest[]>([])
   const selectedStatus = ref<string>('all')
   const sortBy = ref<'votes' | 'newest'>('votes')
 
@@ -155,7 +43,7 @@ export const useFeatureRequests = () => {
 
   // Kiểm tra quyền Admin
   const checkAdminRole = async () => {
-    if (!authUser.value?.id || isUseMock.value) {
+    if (!authUser.value?.id) {
       isAdmin.value = false
       return
     }
@@ -171,8 +59,6 @@ export const useFeatureRequests = () => {
 
   // Tải danh sách yêu cầu từ View công khai feature_requests_public
   const fetchRequests = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMessage.value = null
 
@@ -188,262 +74,211 @@ export const useFeatureRequests = () => {
 
       if (reqErr) throw reqErr
 
-      // 2. Lấy danh sách phiếu vote của người dùng hiện tại
+      if (!publicRows || publicRows.length === 0) {
+        requests.value = []
+        return
+      }
+
+      // 2. Lấy danh sách request_id mà user đã vote (nếu đã đăng nhập)
       let userVotedIds = new Set<string>()
       if (uid) {
-        const { data: votesData } = await client
+        const { data: voteRows } = await client
           .from('feature_request_votes')
           .select('request_id')
           .eq('user_id', uid)
 
-        if (votesData) {
-          userVotedIds = new Set(votesData.map((v: any) => v.request_id))
+        if (voteRows) {
+          userVotedIds = new Set(voteRows.map((v) => v.request_id))
         }
       }
 
-      // 3. Lấy tất cả comments kèm profile tác giả
+      // 3. Tải bình luận cho các yêu cầu
+      const requestIds = publicRows.map((r) => r.id)
       const { data: commentsData } = await client
         .from('feature_request_comments')
         .select('*, profiles(full_name, avatar_text)')
+        .in('request_id', requestIds)
         .order('created_at', { ascending: true })
 
-      const commentsMap: Record<string, FeatureComment[]> = {}
-      if (commentsData) {
-        commentsData.forEach((c: any) => {
-          if (!commentsMap[c.request_id]) commentsMap[c.request_id] = []
-          const prof = c.profiles as any
-          commentsMap[c.request_id].push({
-            id: c.id,
-            authorName: prof?.full_name || 'Học viên LanguaLab',
-            avatarText: prof?.avatar_text || 'LA',
-            content: c.content,
-            createdAt: c.created_at ? c.created_at.replace('T', ' ').substring(0, 16) : '',
-          })
+      const commentsByReqId: Record<string, FeatureComment[]> = {}
+      ;(commentsData || []).forEach((c: any) => {
+        if (!commentsByReqId[c.request_id]) commentsByReqId[c.request_id] = []
+        const author = c.profiles?.full_name || 'Người dùng ẩn danh'
+        commentsByReqId[c.request_id].push({
+          id: c.id,
+          authorName: author,
+          avatarText: c.profiles?.avatar_text || author.substring(0, 2).toUpperCase(),
+          content: c.content,
+          createdAt: c.created_at ? c.created_at.replace('T', ' ').substring(0, 16) : '',
         })
-      }
+      })
 
-      if (publicRows && publicRows.length > 0) {
-        requests.value = publicRows.map((r: any) => ({
-          id: r.id,
-          title: r.title,
-          description: r.description,
-          category: r.category as FeatureCategory,
-          status: r.status as FeatureStatus,
-          upvotes: r.vote_count || 0,
-          hasVoted: userVotedIds.has(r.id),
-          authorName: r.author_name || 'Học viên',
-          createdAt: r.created_at ? r.created_at.split('T')[0] : '',
-          tags: Array.isArray(r.tags) ? r.tags : [],
-          comments: commentsMap[r.id] || [],
-        }))
-      }
+      // 4. Map thành mảng FeatureRequest hoàn chỉnh
+      requests.value = publicRows.map((r: any) => ({
+        id: r.id,
+        title: r.title,
+        description: r.description || '',
+        category: (r.category as FeatureCategory) || 'tien_ich',
+        status: (r.status as FeatureStatus) || 'new',
+        upvotes: r.vote_count || 0,
+        hasVoted: userVotedIds.has(r.id),
+        authorName: r.author_name || 'Người dùng',
+        createdAt: r.created_at ? r.created_at.split('T')[0] : '',
+        tags: r.category ? [r.category] : [],
+        comments: commentsByReqId[r.id] || [],
+      }))
     } catch (err: any) {
       if (handleAuthExpired(err)) return
       errorMessage.value = translateSupabaseError(err)
-      console.warn('Lỗi khi tải yêu cầu tính năng từ Supabase, dùng mock fallback:', err.message)
+      console.error('Lỗi khi tải yêu cầu tính năng từ Supabase:', err.message)
     } finally {
       isLoading.value = false
     }
   }
 
   onMounted(() => {
-    if (import.meta.client) {
-      const savedVoted = localStorage.getItem('langua_voted_features')
-      if (savedVoted) {
-        try {
-          const votedIds: string[] = JSON.parse(savedVoted)
-          requests.value.forEach((r) => {
-            if (votedIds.includes(r.id)) r.hasVoted = true
-          })
-        } catch {}
-      }
-    }
     fetchRequests()
   })
 
-  // Toggle Upvote với Optimistic UI & Rollback khi lỗi
-  const toggleUpvote = async (id: string) => {
-    const item = requests.value.find(r => r.id === id)
+  // Thả tim / vote yêu cầu qua RPC server an toàn
+  const toggleVote = async (id: string) => {
+    const item = requests.value.find((r) => r.id === id)
     if (!item) return
 
-    // 1. Optimistic Update ngay lập tức trên giao diện
-    const prevVoted = !!item.hasVoted
+    const uid = authUser.value?.id
+    if (!uid) {
+      alert('Vui lòng đăng nhập để bình chọn tính năng!')
+      return
+    }
+
+    // Optimistic UI update
+    const prevVoted = item.hasVoted
     const prevUpvotes = item.upvotes
-    item.hasVoted = !prevVoted
+    item.hasVoted = !item.hasVoted
     item.upvotes += item.hasVoted ? 1 : -1
 
-    const uid = authUser.value?.id
+    try {
+      const { data, error } = await client.rpc('toggle_feature_vote', {
+        p_request_id: id,
+      })
 
-    // 2. Gọi RPC toggle_feature_vote lên Supabase nếu có đăng nhập
-    if (!isUseMock.value && uid && !id.startsWith('feat-mock')) {
-      try {
-        const { data, error } = await client.rpc('toggle_feature_vote', {
-          p_request_id: id,
-        })
-
-        if (error) {
-          // Rollback nếu RPC lỗi
-          item.hasVoted = prevVoted
-          item.upvotes = prevUpvotes
-          if (handleAuthExpired(error)) return
-          alert(translateSupabaseError(error))
-        } else if (data && typeof data === 'object') {
-          const res = data as Record<string, any>
-          item.hasVoted = res.has_voted
-          item.upvotes = res.vote_count
-        }
-      } catch (err: any) {
-        // Rollback
+      if (error) {
+        // Rollback nếu lỗi
         item.hasVoted = prevVoted
         item.upvotes = prevUpvotes
-        alert(translateSupabaseError(err))
+        if (handleAuthExpired(error)) return
+        alert(translateSupabaseError(error))
+      } else if (data && typeof data === 'object') {
+        const res = data as Record<string, any>
+        item.hasVoted = res.has_voted
+        item.upvotes = res.vote_count
       }
-    } else if (import.meta.client) {
-      const votedIds = requests.value.filter(r => r.hasVoted).map(r => r.id)
-      localStorage.setItem('langua_voted_features', JSON.stringify(votedIds))
+    } catch (err: any) {
+      item.hasVoted = prevVoted
+      item.upvotes = prevUpvotes
+      alert(translateSupabaseError(err))
     }
   }
 
   // Gửi đề xuất mới
   const addRequest = async (data: { title: string; description: string; category: FeatureCategory }) => {
     const uid = authUser.value?.id
+    if (!uid) {
+      throw new Error('Vui lòng đăng nhập để gửi đề xuất tính năng')
+    }
 
-    if (!isUseMock.value && uid) {
-      try {
-        const { data: newRow, error } = await client
-          .from('feature_requests')
-          .insert({
-            user_id: uid,
-            title: data.title,
-            description: data.description,
-            category: data.category,
-            status: 'new',
-          })
-          .select()
-          .single()
+    try {
+      const { data: newRow, error } = await client
+        .from('feature_requests')
+        .insert({
+          user_id: uid,
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          status: 'new',
+        })
+        .select()
+        .single()
 
-        if (error) throw error
+      if (error) throw error
 
-        if (newRow) {
-          // Tự vote cho bài của mình qua RPC
-          await client.rpc('toggle_feature_vote', { p_request_id: newRow.id })
+      if (newRow) {
+        // Tự vote cho bài của mình qua RPC
+        await client.rpc('toggle_feature_vote', { p_request_id: newRow.id })
 
-          const createdItem: FeatureRequest = {
-            id: newRow.id,
-            title: newRow.title,
-            description: newRow.description,
-            category: newRow.category as FeatureCategory,
-            status: 'new',
-            upvotes: 1,
-            hasVoted: true,
-            authorName: authUser.value?.user_metadata?.full_name || 'Bạn',
-            createdAt: newRow.created_at.split('T')[0],
-            tags: ['Đề xuất mới'],
-            comments: [],
-          }
-          requests.value.unshift(createdItem)
-          return createdItem
-        }
-      } catch (err: any) {
-        if (handleAuthExpired(err)) throw new Error('Hết phiên đăng nhập')
-        throw new Error(translateSupabaseError(err))
+        // Tải lại danh sách
+        await fetchRequests()
+
+        return newRow
       }
+    } catch (err: any) {
+      if (handleAuthExpired(err)) throw new Error('Hết phiên đăng nhập')
+      throw new Error(translateSupabaseError(err))
     }
-
-    // Local fallback
-    const newReq: FeatureRequest = {
-      id: `feat-${Date.now()}`,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      status: 'new',
-      upvotes: 1,
-      hasVoted: true,
-      authorName: 'Bạn (Người học)',
-      createdAt: new Date().toISOString().split('T')[0],
-      tags: ['Đề xuất mới'],
-      comments: [],
-    }
-
-    requests.value.unshift(newReq)
-    return newReq
   }
 
   // Thêm bình luận vào yêu cầu
   const addComment = async (requestId: string, content: string, authorName = 'Bạn') => {
-    const item = requests.value.find(r => r.id === requestId)
+    const item = requests.value.find((r) => r.id === requestId)
     if (!item || !content.trim()) return
 
     const uid = authUser.value?.id
+    if (!uid) {
+      throw new Error('Vui lòng đăng nhập để gửi bình luận')
+    }
 
-    if (!isUseMock.value && uid && !requestId.startsWith('feat-mock')) {
-      try {
-        const { data: cRow, error } = await client
-          .from('feature_request_comments')
-          .insert({
-            request_id: requestId,
-            user_id: uid,
-            content: content.trim(),
-          })
-          .select()
-          .single()
+    try {
+      const { data: cRow, error } = await client
+        .from('feature_request_comments')
+        .insert({
+          request_id: requestId,
+          user_id: uid,
+          content: content.trim(),
+        })
+        .select()
+        .single()
 
-        if (error) throw error
+      if (error) throw error
 
-        if (cRow) {
-          const newComment: FeatureComment = {
-            id: cRow.id,
-            authorName: authUser.value?.user_metadata?.full_name || authorName,
-            avatarText: (authUser.value?.user_metadata?.full_name || authorName).substring(0, 2).toUpperCase(),
-            content: cRow.content,
-            createdAt: cRow.created_at.replace('T', ' ').substring(0, 16),
-          }
-          item.comments.push(newComment)
-          return newComment
+      if (cRow) {
+        const newComment: FeatureComment = {
+          id: cRow.id,
+          authorName: authUser.value?.user_metadata?.full_name || authorName,
+          avatarText: (authUser.value?.user_metadata?.full_name || authorName).substring(0, 2).toUpperCase(),
+          content: cRow.content,
+          createdAt: cRow.created_at ? cRow.created_at.replace('T', ' ').substring(0, 16) : '',
         }
-      } catch (err: any) {
-        if (handleAuthExpired(err)) throw new Error('Hết phiên đăng nhập')
-        throw new Error(translateSupabaseError(err))
+        item.comments.push(newComment)
+        return newComment
       }
+    } catch (err: any) {
+      if (handleAuthExpired(err)) throw new Error('Hết phiên đăng nhập')
+      throw new Error(translateSupabaseError(err))
     }
-
-    // Local fallback
-    const newComment: FeatureComment = {
-      id: `comment-${Date.now()}`,
-      authorName,
-      avatarText: authorName.substring(0, 2).toUpperCase(),
-      content: content.trim(),
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-    }
-
-    item.comments.push(newComment)
-    return newComment
   }
 
   // Admin cập nhật trạng thái yêu cầu
   const updateStatus = async (requestId: string, newStatus: FeatureStatus) => {
     if (!isAdmin.value) throw new Error('Chỉ Quản trị viên (Admin) mới có quyền đổi trạng thái yêu cầu.')
 
-    const item = requests.value.find(r => r.id === requestId)
+    const item = requests.value.find((r) => r.id === requestId)
     if (item) item.status = newStatus
 
-    if (!isUseMock.value) {
-      try {
-        const { error } = await client
-          .from('feature_requests')
-          .update({ status: newStatus })
-          .eq('id', requestId)
+    try {
+      const { error } = await client
+        .from('feature_requests')
+        .update({ status: newStatus })
+        .eq('id', requestId)
 
-        if (error) throw error
-      } catch (err: any) {
-        throw new Error(translateSupabaseError(err))
-      }
+      if (error) throw error
+    } catch (err: any) {
+      throw new Error(translateSupabaseError(err))
     }
   }
 
   // Lấy chi tiết yêu cầu
   const getRequestById = (id: string): FeatureRequest | undefined => {
-    return requests.value.find(r => r.id === id)
+    return requests.value.find((r) => r.id === id)
   }
 
   // Danh sách đã lọc và sắp xếp
@@ -461,14 +296,14 @@ export const useFeatureRequests = () => {
 
   return {
     requests,
-    filteredRequests,
     selectedStatus,
     sortBy,
-    isAdmin,
     isLoading,
     errorMessage,
+    isAdmin,
+    filteredRequests,
     fetchRequests,
-    toggleUpvote,
+    toggleVote,
     addRequest,
     addComment,
     updateStatus,

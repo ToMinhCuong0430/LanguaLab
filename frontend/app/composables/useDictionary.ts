@@ -238,18 +238,8 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
-
-  // Chọn Provider: nếu có kết nối Supabase thì đọc bảng dictionary_entries, ngược lại dùng Mock
-  const provider: DictionaryProvider = !isUseMock.value
-    ? new SupabaseDictionaryProvider(client)
-    : new MockDictionaryProvider()
+  // Chọn Provider: Đọc trực tiếp từ bảng dictionary_entries của Supabase
+  const provider: DictionaryProvider = new SupabaseDictionaryProvider(client)
 
   // State tra từ
   const searchQuery = ref('')
@@ -325,7 +315,7 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
 
       // Gọi RPC complete_stage trên server để nhận XP an toàn
       const uid = authUser.value?.id
-      if (!isUseMock.value && uid) {
+      if (uid) {
         try {
           await client.rpc('complete_stage', { p_stage_id: nodeId })
         } catch (err: any) {
