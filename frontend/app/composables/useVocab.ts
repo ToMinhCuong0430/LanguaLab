@@ -29,7 +29,7 @@ export interface VocabSet {
 export const CURATED_VOCAB_SETS: VocabSet[] = [
   // ========== TIẾNG ANH (3 bộ đề xuất x 10 từ) ==========
   {
-    id: 'curated-en-1',
+    id: 'a0000000-0000-0000-0000-000000000001',
     title: 'Oxford 3000 từ vựng học thuật cốt lõi',
     description: 'Nền tảng từ vựng học thuật quan trọng nhất xuất hiện trong mọi bài thi và văn bản quốc tế.',
     level: 'B1 - B2',
@@ -128,7 +128,7 @@ export const CURATED_VOCAB_SETS: VocabSet[] = [
     ],
   },
   {
-    id: 'curated-en-2',
+    id: 'a0000000-0000-0000-0000-000000000002',
     title: 'Từ vựng tinh hoa IELTS 7.5+ Writing & Speaking',
     description: 'Các từ vựng học thuật cao cấp C1 giúp tăng điểm tiêu chí Lexical Resource trong kỳ thi IELTS.',
     level: 'C1 - C2',
@@ -227,7 +227,7 @@ export const CURATED_VOCAB_SETS: VocabSet[] = [
     ],
   },
   {
-    id: 'curated-en-3',
+    id: 'a0000000-0000-0000-0000-000000000003',
     title: 'Tiếng Anh thương mại & Giao tiếp công sở',
     description: 'Bộ từ vựng giao tiếp thực chiến nơi làm việc: đàm phán hợp đồng, quản lý dự án và báo cáo.',
     level: 'B2',
@@ -328,7 +328,7 @@ export const CURATED_VOCAB_SETS: VocabSet[] = [
 
   // ========== TIẾNG TRUNG ==========
   {
-    id: 'curated-zh-1',
+    id: 'a0000000-0000-0000-0000-000000000004',
     title: 'HSK 3 - 4 Từ vựng cốt lõi khẩu ngữ & đời sống',
     description: 'Bộ từ vựng Hán ngữ thông dụng nhất trong giao tiếp hàng ngày và thương mại.',
     level: 'HSK 3 - 4',
@@ -429,7 +429,7 @@ export const CURATED_VOCAB_SETS: VocabSet[] = [
 
   // ========== TIẾNG NHẬT ==========
   {
-    id: 'curated-ja-1',
+    id: 'a0000000-0000-0000-0000-000000000005',
     title: 'JLPT N3 - N2 Từ vựng thông dụng trong đời sống & Công ty',
     description: 'Từ vựng thiết yếu giúp bạn vượt qua kỳ thi năng lực tiếng Nhật và làm việc tại Nhật.',
     level: 'N3 - N2',
