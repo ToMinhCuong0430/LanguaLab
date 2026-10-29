@@ -22,10 +22,89 @@ const props = withDefaults(
   },
 )
 
+// Transcript từng Part (dùng để chấm Speaking bằng AI)
+const transcripts = defineModel<string[]>('transcripts', { default: () => [] })
+
 const activePromptIndex = ref(0)
 const isRecording = ref(false)
 const recordedAudioUrls = ref<Record<number, string>>({})
 const micError = ref<string | null>(null)
+
+// Nhận dạng giọng nói trên trình duyệt (Chrome / Edge / Safari). Không hỗ trợ thì người học gõ lại câu trả lời.
+type SpeechRecognitionLike = {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  onresult: ((e: any) => void) | null
+  onerror: ((e: any) => void) | null
+  onend: (() => void) | null
+  start: () => void
+  stop: () => void
+}
+const speechSupported = ref(false)
+const interimText = ref('')
+let recognition: SpeechRecognitionLike | null = null
+let recognitionPart = 0
+let keepListening = false
+
+onMounted(() => {
+  const w = window as any
+  speechSupported.value = Boolean(w.SpeechRecognition || w.webkitSpeechRecognition)
+})
+
+const setTranscript = (idx: number, text: string) => {
+  const next = [...transcripts.value]
+  while (next.length <= idx) next.push('')
+  next[idx] = text
+  transcripts.value = next
+}
+
+const startRecognition = () => {
+  const w = window as any
+  const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition
+  if (!Ctor) return
+  recognitionPart = activePromptIndex.value
+  keepListening = true
+  recognition = new Ctor() as SpeechRecognitionLike
+  recognition.lang = 'en-US'
+  recognition.continuous = true
+  recognition.interimResults = true
+  recognition.onresult = (event: any) => {
+    let interim = ''
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const res = event.results[i]
+      if (res.isFinal) {
+        const current = (transcripts.value[recognitionPart] || '').trim()
+        setTranscript(recognitionPart, `${current} ${res[0].transcript.trim()}`.trim())
+      } else {
+        interim += res[0].transcript
+      }
+    }
+    interimText.value = interim
+  }
+  recognition.onerror = (event: any) => {
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      keepListening = false
+    }
+  }
+  // Chrome tự dừng sau một quãng im lặng: khởi động lại khi vẫn đang ghi âm
+  recognition.onend = () => {
+    interimText.value = ''
+    if (keepListening && recognition) {
+      try { recognition.start() } catch { /* đã chạy lại */ }
+    }
+  }
+  try { recognition.start() } catch { /* bỏ qua nếu trình duyệt chặn */ }
+}
+
+const activeWordCount = computed(() => ((transcripts.value[activePromptIndex.value] || '').trim().match(/\S+/g) || []).length)
+
+const stopRecognition = () => {
+  keepListening = false
+  interimText.value = ''
+  recognition?.stop()
+  recognition = null
+}
 
 // Bộ đếm giờ chuẩn bị & nói cho Part 2
 const timerMode = ref<'idle' | 'prep' | 'speak'>('idle')
@@ -84,6 +163,7 @@ const startRecording = async () => {
     }
 
     mediaRecorder.start()
+    startRecognition()
     isRecording.value = true
     timerMode.value = 'speak'
     timeLeft.value = props.speakTimeSeconds
@@ -106,6 +186,7 @@ const stopRecording = () => {
   if (mediaRecorder && mediaRecorder.state !== 'inactive') {
     mediaRecorder.stop()
   }
+  stopRecognition()
   isRecording.value = false
   stopTimer()
   timerMode.value = 'idle'
@@ -119,6 +200,7 @@ const formattedTimeLeft = computed(() => {
 
 onUnmounted(() => {
   stopTimer()
+  stopRecognition()
   if (mediaRecorder && mediaRecorder.state !== 'inactive') {
     mediaRecorder.stop()
   }
@@ -217,6 +299,34 @@ onUnmounted(() => {
           class="h-9 max-w-[220px]"
         />
       </div>
+    </div>
+
+    <!-- Transcript của Part đang chọn: tự điền khi nói, có thể sửa tay -->
+    <div class="space-y-2 border-t-2 border-line pt-5">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <label :for="`transcript-${activePromptIndex}`" class="font-display text-sm font-black text-ink">
+          Transcript Part {{ activePromptIndex + 1 }}
+        </label>
+        <span class="text-xs font-bold text-ink-soft tabular-nums">
+          {{ activeWordCount }} từ
+        </span>
+      </div>
+      <p class="text-xs text-ink-soft">
+        {{ speechSupported
+          ? 'Lời nói được chuyển thành chữ trong lúc ghi âm. Sửa lại những chỗ nhận dạng sai trước khi nộp bài.'
+          : 'Trình duyệt này không hỗ trợ chuyển giọng nói thành chữ. Hãy gõ lại câu trả lời bạn vừa nói để được chấm.' }}
+      </p>
+      <textarea
+        :id="`transcript-${activePromptIndex}`"
+        :value="transcripts[activePromptIndex] || ''"
+        rows="5"
+        class="w-full rounded-brut border-2 border-line bg-surface-2 p-3 text-sm leading-relaxed text-ink outline-none focus:bg-surface focus:shadow-brut-sm"
+        placeholder="Câu trả lời bằng tiếng Anh của bạn..."
+        @input="(e) => setTranscript(activePromptIndex, (e.target as HTMLTextAreaElement).value)"
+      />
+      <p v-if="isRecording && interimText" class="text-xs italic text-ink-soft" aria-live="polite">
+        Đang nghe: {{ interimText }}
+      </p>
     </div>
   </div>
 </template>

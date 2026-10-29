@@ -29,6 +29,10 @@ const initialMode = (route.query.mode as TestMode) || 'practice'
 const { getTestById, saveAttempt, convertRawToBand } = useIelts()
 const test = computed(() => getTestById(testId))
 
+// Chấm Writing / Speaking bằng AI theo 4 tiêu chí IELTS
+const aiScoring = useAiScoring()
+const isProductive = computed(() => test.value?.skill === 'writing' || test.value?.skill === 'speaking')
+
 // Chế độ: practice (Luyện tập) | exam (Thi thử)
 const mode = ref<TestMode>(initialMode)
 
@@ -37,7 +41,25 @@ const currentQuestionIndex = ref(0)
 const userAnswers = ref<Record<number, string>>({})
 const flaggedQuestions = ref<Record<number, boolean>>({})
 const essayContent = ref('') // Dành cho Writing
+const speakingTranscripts = ref<string[]>([]) // Dành cho Speaking, mỗi phần tử là một Part
 const isSubmitted = ref(false)
+
+// Bài làm gửi đi chấm: essay (Writing) hoặc transcript ghép các Part (Speaking)
+const productiveSubmission = computed(() => {
+  if (test.value?.skill === 'writing') return essayContent.value.trim()
+  if (test.value?.skill === 'speaking') {
+    return speakingTranscripts.value
+      .map((t, i) => (t?.trim() ? `Part ${i + 1}:\n${t.trim()}` : ''))
+      .filter(Boolean)
+      .join('\n\n')
+  }
+  return ''
+})
+const productiveWordCount = computed(() => {
+  const text = test.value?.skill === 'speaking' ? speakingTranscripts.value.join(' ') : essayContent.value
+  return (text.trim().match(/\S+/g) || []).length
+})
+const minWordsForAi = computed(() => (test.value?.skill === 'speaking' ? 20 : 50))
 const showConfirmModal = ref(false)
 
 // Tab trên mobile cho Reading: 'passage' | 'questions'
@@ -147,12 +169,13 @@ const submitTest = async () => {
     }
   })
 
-  const band = test.value?.skill === 'writing' || test.value?.skill === 'speaking'
-    ? 6.5
+  // Writing / Speaking: band do AI chấm sau khi lưu lượt làm bài
+  const band = isProductive.value
+    ? undefined
     : convertRawToBand(correctCount, totalQuestions.value, test.value?.skill || 'reading')
 
   // Ghi nhận vào Supabase
-  await saveAttempt({
+  const saved = await saveAttempt({
     testId,
     mode: mode.value,
     rawScore: correctCount,
@@ -166,12 +189,22 @@ const submitTest = async () => {
   if (import.meta.client) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  if (isProductive.value && test.value) {
+    await aiScoring.score({
+      attemptId: saved.attemptId,
+      testId,
+      skill: test.value.skill as 'writing' | 'speaking',
+      submission: productiveSubmission.value,
+    })
+  }
 }
 
 const retryTest = () => {
   userAnswers.value = {}
   flaggedQuestions.value = {}
   essayContent.value = ''
+  speakingTranscripts.value = []
   currentQuestionIndex.value = 0
   isSubmitted.value = false
   timeSpentSeconds.value = 0
@@ -238,7 +271,13 @@ const examRoomGuideSteps: GuideStep[] = [
       :user-answers="userAnswers"
       :time-spent-seconds="timeSpentSeconds"
       :mode="mode"
+      :submission="productiveSubmission"
+      :ai-state="aiScoring.state.value"
+      :ai-feedback="aiScoring.feedback.value"
+      :ai-error="aiScoring.error.value"
+      :ai-can-retry="aiScoring.canRetry.value"
       @retry="retryTest"
+      @retry-ai="aiScoring.retry"
     />
 
     <!-- MÀN HÌNH LÀM BÀI CHÍNH -->
@@ -570,6 +609,7 @@ const examRoomGuideSteps: GuideStep[] = [
         <!-- 4. GIAO DIỆN SPEAKING (Hỏi đáp từng Part + Ghi âm MediaRecorder + Đếm giờ) -->
         <div v-else-if="test.skill === 'speaking'">
           <SpeakingRecorder
+            v-model:transcripts="speakingTranscripts"
             :prompts="test.prompts || ['Part 1...', 'Part 2...', 'Part 3...']"
             :prep-time-seconds="test.prepTimeSeconds || 60"
             :speak-time-seconds="test.speakTimeSeconds || 120"
@@ -607,7 +647,22 @@ const examRoomGuideSteps: GuideStep[] = [
           </span>
         </div>
 
-        <p class="text-xs text-ink-soft">
+        <!-- Writing / Speaking: cảnh báo bài quá ngắn để AI chấm -->
+        <div
+          v-if="isProductive && productiveWordCount < minWordsForAi"
+          class="flex items-start gap-2.5 rounded-brut border-2 border-bad bg-bad/10 p-3 text-xs font-bold text-bad"
+        >
+          <AlertCircle class="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>
+            {{ test.skill === 'writing' ? 'Bài viết' : 'Transcript' }} mới có <strong>{{ productiveWordCount }} từ</strong>.
+            Cần ít nhất {{ minWordsForAi }} từ để AI chấm được.
+          </span>
+        </div>
+
+        <p v-if="isProductive" class="text-xs text-ink-soft">
+          Sau khi nộp, bài làm được chấm theo 4 tiêu chí IELTS kèm nhận xét và cách sửa lỗi. Quá trình chấm thường mất 20 đến 60 giây.
+        </p>
+        <p v-else class="text-xs text-ink-soft">
           Sau khi nộp, hệ thống sẽ tính điểm thô, quy đổi thang Band chuẩn và hiển thị bảng phân tích giải thích cặn kẽ từng câu.
         </p>
       </div>

@@ -14,6 +14,115 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_feedback: {
+        Row: {
+          attempt_id: string | null
+          completed_at: string | null
+          created_at: string
+          criteria: Json | null
+          error_code: string | null
+          error_message: string | null
+          id: string
+          input_tokens: number | null
+          model: string | null
+          model_answer: string | null
+          output_tokens: number | null
+          overall_band: number | null
+          prompt_text: string
+          provider: string | null
+          run_count: number
+          skill: Database["public"]["Enums"]["ielts_skill"]
+          started_at: string | null
+          status: string
+          submission_text: string
+          suggestions: Json | null
+          summary: string | null
+          task_number: number | null
+          test_id: string
+          updated_at: string
+          user_id: string
+          word_count: number
+        }
+        Insert: {
+          attempt_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          criteria?: Json | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          model_answer?: string | null
+          output_tokens?: number | null
+          overall_band?: number | null
+          prompt_text: string
+          provider?: string | null
+          run_count?: number
+          skill: Database["public"]["Enums"]["ielts_skill"]
+          started_at?: string | null
+          status?: string
+          submission_text: string
+          suggestions?: Json | null
+          summary?: string | null
+          task_number?: number | null
+          test_id: string
+          updated_at?: string
+          user_id: string
+          word_count?: number
+        }
+        Update: {
+          attempt_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          criteria?: Json | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          model_answer?: string | null
+          output_tokens?: number | null
+          overall_band?: number | null
+          prompt_text?: string
+          provider?: string | null
+          run_count?: number
+          skill?: Database["public"]["Enums"]["ielts_skill"]
+          started_at?: string | null
+          status?: string
+          submission_text?: string
+          suggestions?: Json | null
+          summary?: string | null
+          task_number?: number | null
+          test_id?: string
+          updated_at?: string
+          user_id?: string
+          word_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "exam_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "exam_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_import_logs: {
         Row: {
           admin_id: string
