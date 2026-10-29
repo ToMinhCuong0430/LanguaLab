@@ -1,0 +1,3564 @@
+{
+  "extractedAt": "2026-10-29T03:54:51.724Z",
+  "grammarLevels": {
+    "en": [
+      {
+        "levelCode": "A1",
+        "levelName": "Cấp độ A1 - Nền tảng sơ cấp",
+        "description": "Làm quen với cấu trúc câu đơn, động từ To Be, thì hiện tại đơn và đại từ nhân xưng.",
+        "points": [
+          {
+            "id": "en-a1-tobe",
+            "level": "A1",
+            "title": "Động từ \"To Be\" ở thì Hiện tại đơn",
+            "vietnameseTitle": "Cấu trúc Am / Is / Are trong câu khẳng định, phủ định và nghi vấn",
+            "summary": "Động từ \"to be\" biểu thị trạng thái, tính chất hoặc danh tính của chủ ngữ.",
+            "formula": {
+              "pattern": "S + am / is / are + Noun / Adjective",
+              "tokens": [
+                {
+                  "label": "Subject (I/He/She/They...)",
+                  "role": "subject"
+                },
+                {
+                  "label": "am / is / are",
+                  "role": "verb"
+                },
+                {
+                  "label": "Danh từ / Tính từ bổ nghĩa",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Chủ ngữ \"I\" đi với \"am\".",
+              "Chủ ngữ số ít (He, She, It, danh từ số ít) đi với \"is\".",
+              "Chủ ngữ số nhiều (You, We, They, danh từ số nhiều) đi với \"are\".",
+              "Phủ định: thêm \"not\" ngay sau động từ to be (am not, isn't, aren't)."
+            ],
+            "examples": [
+              {
+                "target": "She is a talented architect.",
+                "vi": "Cô ấy là một kiến trúc sư tài năng.",
+                "phonetic": "/ʃiː ɪz ə ˈtæləntɪd ˈɑːrkɪtekt/"
+              },
+              {
+                "target": "They are very friendly to newcomers.",
+                "vi": "Họ rất thân thiện với những người mới đến.",
+                "phonetic": "/ðeɪ ɑːr ˈveri ˈfrendli tuː ˈnuːkʌmərz/"
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "They is teachers at my local school.",
+                "correct": "They are teachers at my local school.",
+                "explanation": "Chủ ngữ \"They\" là ngôi thứ 3 số nhiều nên bắt buộc dùng \"are\", không dùng \"is\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a1-1-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn dạng đúng của to be:",
+                "question": "My brother and I _____ big fans of science fiction movies.",
+                "options": [
+                  "am",
+                  "is",
+                  "are",
+                  "be"
+                ],
+                "correctIndex": 2,
+                "explanation": "\"My brother and I\" tương đương với đại từ \"We\" (chúng tôi - số nhiều), do đó dùng \"are\"."
+              },
+              {
+                "id": "ex-a1-1-2",
+                "type": "fill_in_blank",
+                "prompt": "Điền dạng đúng của động từ to be (phủ định ngắn gọn):",
+                "question": "He _____ (not be) ready for the final exam yet.",
+                "correctAnswer": "isn't",
+                "hint": "Viết dạng viết tắt isn't",
+                "explanation": "Ngôi \"He\" đi với \"is not\", dạng viết tắt là \"isn't\"."
+              },
+              {
+                "id": "ex-a1-1-3",
+                "type": "word_reorder",
+                "prompt": "Sắp xếp các từ sau thành câu hoàn chỉnh:",
+                "question": "very / the weather / pleasant / today / is",
+                "scrambledWords": [
+                  "pleasant",
+                  "today",
+                  "is",
+                  "The weather",
+                  "very"
+                ],
+                "correctOrder": [
+                  "The weather",
+                  "is",
+                  "very",
+                  "pleasant",
+                  "today"
+                ],
+                "explanation": "Trật tự câu: Chủ ngữ (The weather) + Động từ (is) + Trạng từ + Tính từ (very pleasant) + Thời gian (today)."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "en-a1-present-simple",
+            "level": "A1",
+            "title": "Thì Hiện tại đơn (Present Simple)",
+            "vietnameseTitle": "Diễn tả thói quen thường nhật và chân lý bất biến",
+            "summary": "Dùng động từ nguyên mẫu (V) cho I/You/We/They và thêm -s/-es cho He/She/It.",
+            "formula": {
+              "pattern": "S + V(s/es) + Object",
+              "tokens": [
+                {
+                  "label": "Subject",
+                  "role": "subject"
+                },
+                {
+                  "label": "Verb (thêm -s / -es khi cần)",
+                  "role": "verb"
+                },
+                {
+                  "label": "Object / Complement",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Thêm \"-es\" vào sau các động từ tận cùng bằng: -o, -s, -z, -ch, -x, -sh (ví dụ: go -> goes, watch -> watches).",
+              "Câu phủ định mượn trợ động từ \"do not (don't)\" hoặc \"does not (doesn't)\".",
+              "Các trạng từ chỉ tần suất hay đi kèm: always, usually, often, sometimes, never."
+            ],
+            "examples": [
+              {
+                "target": "My father reads the morning newspaper every single day.",
+                "vi": "Bố tôi đọc báo buổi sáng vào mỗi ngày.",
+                "phonetic": "/maɪ ˈfɑːðər riːdz ðə ˈmɔːrnɪŋ ˈnjuːzpeɪpər ˈevri ˈsɪŋɡl deɪ/"
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "He don't likes waking up early.",
+                "correct": "He doesn't like waking up early.",
+                "explanation": "Với ngôi \"He\", trợ động từ phủ định là \"doesn't\", và động từ chính trở về nguyên mẫu \"like\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a1-2-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn đáp án đúng:",
+                "question": "Water _____ at 100 degrees Celsius under standard atmospheric pressure.",
+                "options": [
+                  "boil",
+                  "boils",
+                  "is boiling",
+                  "boiled"
+                ],
+                "correctIndex": 1,
+                "explanation": "Sự thật hiển nhiên/chân lý khoa học dùng thì hiện tại đơn, \"Water\" là danh từ không đếm được nên chia \"boils\"."
+              },
+              {
+                "id": "ex-a1-2-2",
+                "type": "word_reorder",
+                "prompt": "Sắp xếp các từ thành câu đúng:",
+                "question": "breakfast / always / at seven / eats / David",
+                "scrambledWords": [
+                  "always",
+                  "eats",
+                  "David",
+                  "breakfast",
+                  "at seven"
+                ],
+                "correctOrder": [
+                  "David",
+                  "always",
+                  "eats",
+                  "breakfast",
+                  "at seven"
+                ],
+                "explanation": "Trạng từ tần suất \"always\" đứng trước động từ thường \"eats\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "en-a1-articles",
+            "level": "A1",
+            "title": "Mạo từ A, An, The trong tiếng Anh",
+            "vietnameseTitle": "Quy tắc phân biệt mạo từ không xác định và mạo từ xác định",
+            "summary": "Dùng \"a/an\" cho danh từ đếm được số ít chưa xác định, dùng \"the\" cho đối tượng đã biết rõ.",
+            "formula": {
+              "pattern": "A / An (nguyên âm) + Danh từ đếm được số ít",
+              "tokens": [
+                {
+                  "label": "a / an / the",
+                  "role": "particle"
+                },
+                {
+                  "label": "Noun (Danh từ)",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Dùng \"an\" trước các từ phát âm bắt đầu bằng một nguyên âm (/e/, /æ/, /aɪ/, /ɒ/...) ví dụ: an hour (h câm), an apple.",
+              "Dùng \"a\" trước từ phát âm bắt đầu bằng phụ âm, ví dụ: a university (/juː.../ là bán phụ âm).",
+              "Dùng \"the\" khi đối tượng là duy nhất (the sun, the earth) hoặc đã được nhắc đến ở câu trước."
+            ],
+            "examples": [
+              {
+                "target": "I saw an owl sitting on the roof last night.",
+                "vi": "Tối qua tôi nhìn thấy một con cú đang đậu trên mái nhà."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "She wants to study at an university in Europe.",
+                "correct": "She wants to study at a university in Europe.",
+                "explanation": "\"University\" phiên âm bắt đầu bằng âm phụ âm /j/ nên phải dùng \"a\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a1-3-1",
+                "type": "multiple_choice",
+                "prompt": "Điền mạo từ thích hợp:",
+                "question": "It took us almost _____ hour to reach the train station.",
+                "options": [
+                  "a",
+                  "an",
+                  "the",
+                  "no article"
+                ],
+                "correctIndex": 1,
+                "explanation": "\"Hour\" có âm \"h\" câm, phát âm bắt đầu bằng nguyên âm /ˈaʊər/ nên dùng \"an\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "en-a1-pronouns",
+            "level": "A1",
+            "title": "Đại từ nhân xưng & Tính từ sở hữu",
+            "vietnameseTitle": "Phân biệt Subject, Object Pronouns và Possessive Adjectives",
+            "summary": "Đại từ làm chủ ngữ (I, you, he), tân ngữ (me, you, him) và tính từ sở hữu (my, your, his).",
+            "formula": {
+              "pattern": "Subject Pronoun + Verb + Object Pronoun",
+              "tokens": [
+                {
+                  "label": "S-Pronoun (I/He/She)",
+                  "role": "subject"
+                },
+                {
+                  "label": "Verb",
+                  "role": "verb"
+                },
+                {
+                  "label": "O-Pronoun (me/him/them)",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Tính từ sở hữu (my, his, her, their) bắt buộc phải đi kèm một danh từ phía sau.",
+              "Tân ngữ (me, him, her, us, them) đứng sau động từ hoặc giới từ."
+            ],
+            "examples": [
+              {
+                "target": "Our teacher gave us very helpful advice.",
+                "vi": "Giáo viên của chúng tôi đã cho chúng tôi lời khuyên rất hữu ích."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "Her invited me and he to the party.",
+                "correct": "She invited me and him to the party.",
+                "explanation": "Đầu câu làm chủ ngữ phải là \"She\", sau động từ làm tân ngữ phải là \"him\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a1-4-1",
+                "type": "fill_in_blank",
+                "prompt": "Điền tính từ sở hữu thích hợp (của họ):",
+                "question": "The students forgot to bring _____ textbooks to class.",
+                "correctAnswer": "their",
+                "hint": "Tính từ sở hữu của They",
+                "explanation": "Tính từ sở hữu tương ứng với \"The students\" (They) là \"their\"."
+              }
+            ],
+            "xpReward": 30
+          }
+        ]
+      },
+      {
+        "levelCode": "A2",
+        "levelName": "Cấp độ A2 - Giao tiếp mở rộng",
+        "description": "Nắm vững thì quá khứ đơn, so sánh hơn/nhất, động từ khuyết thiếu và thì hiện tại tiếp diễn.",
+        "points": [
+          {
+            "id": "en-a2-past-simple",
+            "level": "A2",
+            "title": "Thì Quá khứ đơn (Past Simple)",
+            "vietnameseTitle": "Diễn tả hành động đã kết thúc hoàn toàn trong quá khứ",
+            "summary": "Thêm -ed cho động từ có quy tắc hoặc dùng dạng V2 của bảng động từ bất quy tắc.",
+            "formula": {
+              "pattern": "S + V2 / V-ed + (thời gian quá khứ: yesterday, in 2020...)",
+              "tokens": [
+                {
+                  "label": "Subject",
+                  "role": "subject"
+                },
+                {
+                  "label": "Verb (V-ed / V2 bất quy tắc)",
+                  "role": "verb"
+                },
+                {
+                  "label": "Thời gian quá khứ",
+                  "role": "modifier"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Dấu hiệu nhận biết: yesterday, last night/week, ago, in the past, in + năm quá khứ.",
+              "Phủ định dùng: did not (didn't) + V-nguyên mẫu.",
+              "Nghi vấn: Did + S + V-nguyên mẫu?"
+            ],
+            "examples": [
+              {
+                "target": "We bought a cozy little house by the sea two years ago.",
+                "vi": "Chúng tôi đã mua một căn nhà nhỏ ấm cúng bên bờ biển hai năm trước.",
+                "phonetic": "/wiː bɔːt ə ˈkoʊzi ˈlɪtl haʊs baɪ ðə siː tuː jɪərz əˈɡoʊ/"
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "We didn't went to the concert last Saturday.",
+                "correct": "We didn't go to the concert last Saturday.",
+                "explanation": "Sau trợ động từ \"didn't\", động từ chính bắt buộc phải trở về nguyên mẫu \"go\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a2-1-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn đáp án đúng:",
+                "question": "Alexander Fleming _____ penicillin by accident in 1928.",
+                "options": [
+                  "discover",
+                  "discovered",
+                  "has discovered",
+                  "discovering"
+                ],
+                "correctIndex": 1,
+                "explanation": "Sự kiện lịch sử có mốc năm xác định trong quá khứ (in 1928) bắt buộc chia quá khứ đơn \"discovered\"."
+              },
+              {
+                "id": "ex-a2-1-2",
+                "type": "word_reorder",
+                "prompt": "Sắp xếp các từ thành câu đúng:",
+                "question": "yesterday / finish / she / her homework / did not",
+                "scrambledWords": [
+                  "did not",
+                  "her homework",
+                  "finish",
+                  "She",
+                  "yesterday"
+                ],
+                "correctOrder": [
+                  "She",
+                  "did not",
+                  "finish",
+                  "her homework",
+                  "yesterday"
+                ],
+                "explanation": "Cấu trúc S + did not + V + O + Time."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "en-a2-comparatives",
+            "level": "A2",
+            "title": "So sánh hơn và So sánh nhất của Tính từ",
+            "vietnameseTitle": "Quy tắc thêm -er/-est và dùng more/most cho tính từ ngắn/dài",
+            "summary": "Tính từ ngắn thêm -er/-est (tall -> taller -> tallest); tính từ dài dùng more/most.",
+            "formula": {
+              "pattern": "S1 + be + Adj-er / more Adj + than + S2",
+              "tokens": [
+                {
+                  "label": "Subject 1",
+                  "role": "subject"
+                },
+                {
+                  "label": "Adj-er / More Adj",
+                  "role": "verb"
+                },
+                {
+                  "label": "than",
+                  "role": "particle"
+                },
+                {
+                  "label": "Subject 2",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Tính từ bất quy tắc cần nhớ: good -> better -> best, bad -> worse -> worst, far -> further -> furthest.",
+              "So sánh nhất luôn có mạo từ \"the\" đứng trước (the most expensive, the fastest)."
+            ],
+            "examples": [
+              {
+                "target": "Tokyo is significantly more crowded than Kyoto.",
+                "vi": "Tokyo đông đúc hơn Kyoto một cách rõ rệt."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "This smartphone is more cheaper than that one.",
+                "correct": "This smartphone is cheaper than that one.",
+                "explanation": "\"Cheap\" là tính từ ngắn nên chỉ thêm đuôi -er thành \"cheaper\", không dùng đồng thời \"more\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a2-2-1",
+                "type": "fill_in_blank",
+                "prompt": "Điền dạng so sánh hơn của tính từ \"good\":",
+                "question": "Today the weather is much _____ than it was yesterday.",
+                "correctAnswer": "better",
+                "hint": "Bất quy tắc của good",
+                "explanation": "So sánh hơn của \"good\" là \"better\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "en-a2-modals",
+            "level": "A2",
+            "title": "Động từ khuyết thiếu: Can, Could, Must, Should",
+            "vietnameseTitle": "Biểu thị khả năng, xin phép, lời khuyên và sự bắt buộc",
+            "summary": "Sau động từ khuyết thiếu (Modal verbs) luôn là một động từ nguyên mẫu không \"to\".",
+            "formula": {
+              "pattern": "S + can / should / must + V-bare",
+              "tokens": [
+                {
+                  "label": "Subject",
+                  "role": "subject"
+                },
+                {
+                  "label": "can / should / must",
+                  "role": "particle"
+                },
+                {
+                  "label": "V-nguyên mẫu không To",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Can: chỉ khả năng ở hiện tại; Could: khả năng trong quá khứ hoặc lời đề nghị lịch sự.",
+              "Should: khuyên nhủ nên làm gì.",
+              "Must: bắt buộc phải làm theo quy định luật lệ."
+            ],
+            "examples": [
+              {
+                "target": "You should consult a doctor if the fever persists.",
+                "vi": "Bạn nên đi khám bác sĩ nếu cơn sốt vẫn kéo dài."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "He must to wear a safety helmet on site.",
+                "correct": "He must wear a safety helmet on site.",
+                "explanation": "Sau \"must\" là động từ nguyên mẫu không to (bare infinitive)."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a2-3-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn đáp án thích hợp:",
+                "question": "It is raining cats and dogs. You _____ take an umbrella.",
+                "options": [
+                  "should",
+                  "should to",
+                  "must to",
+                  "can to"
+                ],
+                "correctIndex": 0,
+                "explanation": "Đưa ra lời khuyên hợp lý và theo sau là V-bare nên dùng \"should\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "en-a2-future-goingto",
+            "level": "A2",
+            "title": "Thì Tương lai gần: \"Be going to\" vs \"Will\"",
+            "vietnameseTitle": "Phân biệt kế hoạch dự định trước và quyết định nảy sinh tức thì",
+            "summary": "\"Be going to\" dùng cho kế hoạch đã dự tính từ trước hoặc có bằng chứng thấy rõ.",
+            "formula": {
+              "pattern": "S + am / is / are + going to + V-infinitive",
+              "tokens": [
+                {
+                  "label": "Subject",
+                  "role": "subject"
+                },
+                {
+                  "label": "am/is/are + going to",
+                  "role": "verb"
+                },
+                {
+                  "label": "V-nguyên mẫu",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Dùng \"be going to\" khi có dấu hiệu nhìn thấy: \"Look at those dark clouds! It is going to rain.\"",
+              "Dùng \"will\" cho quyết định bộc phát ngay lúc nói: \"The phone is ringing. I will answer it.\""
+            ],
+            "examples": [
+              {
+                "target": "They are going to launch the new application next Monday.",
+                "vi": "Họ dự định sẽ phát hành ứng dụng mới vào thứ Hai tới."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "I am going to meeting him tomorrow.",
+                "correct": "I am going to meet him tomorrow.",
+                "explanation": "Sau \"be going to\" là động từ nguyên mẫu \"meet\", không dùng V-ing."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-a2-4-1",
+                "type": "word_reorder",
+                "prompt": "Sắp xếp các từ thành câu đúng:",
+                "question": "visit / to / are / going / grandparents / we / our",
+                "scrambledWords": [
+                  "our",
+                  "visit",
+                  "are",
+                  "going",
+                  "We",
+                  "grandparents",
+                  "to"
+                ],
+                "correctOrder": [
+                  "We",
+                  "are",
+                  "going",
+                  "to",
+                  "visit",
+                  "our",
+                  "grandparents"
+                ],
+                "explanation": "Cấu trúc S + are going to + V + O."
+              }
+            ],
+            "xpReward": 30
+          }
+        ]
+      }
+    ],
+    "zh": [
+      {
+        "levelCode": "HSK 1",
+        "levelName": "HSK 1 - Nhập môn Hán ngữ",
+        "description": "Đại từ nhân xưng, trợ từ 是 (shì), 的 (de) và trợ từ nghi vấn 吗 (ma).",
+        "points": [
+          {
+            "id": "zh-hsk1-shi",
+            "level": "HSK 1",
+            "title": "Câu phán đoán với chữ \"是\" (shì)",
+            "vietnameseTitle": "Cách dùng chữ 是 tương đương động từ \"là\" trong tiếng Việt",
+            "summary": "Dùng để nối chủ ngữ với danh từ biểu thị danh tính, nghề nghiệp hoặc quốc tịch.",
+            "formula": {
+              "pattern": "Chủ ngữ + 是 + Danh từ bổ ngữ",
+              "tokens": [
+                {
+                  "label": "主语 (S)",
+                  "role": "subject"
+                },
+                {
+                  "label": "是 (shì)",
+                  "role": "verb"
+                },
+                {
+                  "label": "名词 (Danh từ)",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Phủ định dùng \"不是\" (bù shì).",
+              "Không dùng \"是\" trước tính từ (Ví dụ: \"Cô ấy rất đẹp\" là 她很漂亮, không nói 她是漂亮)."
+            ],
+            "examples": [
+              {
+                "target": "我是越南人，他是中国人。",
+                "vi": "Tôi là người Việt Nam, anh ấy là người Trung Quốc.",
+                "phonetic": "Wǒ shì Yuènán rén, tā shì Zhōngguó rén."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "今天天气是很好。",
+                "correct": "今天天气很好。",
+                "explanation": "Tính từ làm vị ngữ không cần dùng chữ \"是\", chỉ cần phó từ chỉ mức độ như \"很\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-1-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn từ thích hợp điền vào chỗ trống:",
+                "question": "李老师 _____ 我们学校的汉语老师。",
+                "options": [
+                  "很",
+                  "在",
+                  "是",
+                  "有"
+                ],
+                "correctIndex": 2,
+                "explanation": "Câu biểu thị nghề nghiệp/danh tính dùng \"是\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "zh-hsk1-de",
+            "level": "HSK 1",
+            "title": "Trợ từ kết cấu \"的\" (de)",
+            "vietnameseTitle": "Biểu thị quan hệ sở hữu và định ngữ bổ nghĩa cho danh từ",
+            "summary": "Đứng giữa định ngữ và trung tâm ngữ (A 的 B nghĩa là B của A).",
+            "formula": {
+              "pattern": "Định ngữ + 的 + Trung tâm ngữ",
+              "tokens": [
+                {
+                  "label": "Người sở hữu / Tính chất",
+                  "role": "modifier"
+                },
+                {
+                  "label": "的 (de)",
+                  "role": "particle"
+                },
+                {
+                  "label": "Danh từ chính",
+                  "role": "object"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Biểu thị sở hữu: 我的书 (Sách của tôi).",
+              "Quan hệ thân thuộc ruột thịt có thể lược bỏ 的: 我妈妈 (Mẹ tôi)."
+            ],
+            "examples": [
+              {
+                "target": "这是我朋友的新手机。",
+                "vi": "Đây là điện thoại mới của bạn tôi.",
+                "phonetic": "Zhè shì wǒ péngyou de xīn shǒujī."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "这是我书。",
+                "correct": "这是我的书。",
+                "explanation": "Quan hệ sở hữu đồ vật thông thường bắt buộc phải có trợ từ \"的\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-1-2",
+                "type": "word_reorder",
+                "prompt": "Sắp xếp các từ thành câu đúng:",
+                "question": "汉语词典 / 的 / 这 / 是 / 我",
+                "scrambledWords": [
+                  "汉语词典",
+                  "我",
+                  "的",
+                  "这",
+                  "是"
+                ],
+                "correctOrder": [
+                  "这",
+                  "是",
+                  "我",
+                  "的",
+                  "汉语词典"
+                ],
+                "explanation": "Trật tự: 这是 (Đây là) + 我的 (của tôi) + 汉语词典 (từ điển tiếng Hán)."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "zh-hsk1-ma",
+            "level": "HSK 1",
+            "title": "Trợ từ nghi vấn \"吗\" (ma)",
+            "vietnameseTitle": "Biến câu trần thuật thành câu hỏi Có/Không",
+            "summary": "Đặt ở cuối câu khẳng định để tạo câu hỏi nghi vấn.",
+            "formula": {
+              "pattern": "Câu khẳng định + 吗？",
+              "tokens": [
+                {
+                  "label": "Câu hoàn chỉnh",
+                  "role": "subject"
+                },
+                {
+                  "label": "吗 (ma)",
+                  "role": "particle"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Khi câu đã có đại từ nghi vấn (什么, 谁, 哪) thì không dùng \"吗\" nữa."
+            ],
+            "examples": [
+              {
+                "target": "你喜欢喝中国茶吗？",
+                "vi": "Bạn có thích uống trà Trung Quốc không?"
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "他是谁吗？",
+                "correct": "他是谁？",
+                "explanation": "Đã có đại từ nghi vấn \"谁\" (ai) thì không dùng thêm \"吗\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-1-3",
+                "type": "multiple_choice",
+                "prompt": "Chọn từ thích hợp:",
+                "question": "你明天去学校 _____ ？",
+                "options": [
+                  "呢",
+                  "吧",
+                  "吗",
+                  "的"
+                ],
+                "correctIndex": 2,
+                "explanation": "Câu hỏi có/không đặt \"吗\" ở cuối."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "zh-hsk1-zai",
+            "level": "HSK 1",
+            "title": "Giới từ nơi chốn \"在\" (zài)",
+            "vietnameseTitle": "Biểu thị vị trí \"ở / tại đâu đó\"",
+            "summary": "Trong tiếng Hán, trạng ngữ chỉ nơi chốn (在 + Nơi chốn) luôn đứng trước động từ hành động.",
+            "formula": {
+              "pattern": "Chủ ngữ + 在 + Nơi chốn + Động từ",
+              "tokens": [
+                {
+                  "label": "Chủ ngữ",
+                  "role": "subject"
+                },
+                {
+                  "label": "在 + Nơi chốn",
+                  "role": "modifier"
+                },
+                {
+                  "label": "Động từ chính",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Khác tiếng Việt: Ta nói \"Tôi học ở thư viện\", tiếng Trung nói \"Tôi ở thư viện học\" (我在图书馆学习)."
+            ],
+            "examples": [
+              {
+                "target": "我们在家吃晚饭。",
+                "vi": "Chúng tôi ăn cơm tối ở nhà."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "我看书在图书馆。",
+                "correct": "我在图书馆看书。",
+                "explanation": "Trạng ngữ nơi chốn bắt buộc phải đặt trước động từ."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-1-4",
+                "type": "word_reorder",
+                "prompt": "Sắp xếp thành câu đúng:",
+                "question": "在 / 他 / 公司 / 工作",
+                "scrambledWords": [
+                  "工作",
+                  "他",
+                  "在",
+                  "公司"
+                ],
+                "correctOrder": [
+                  "他",
+                  "在",
+                  "公司",
+                  "工作"
+                ],
+                "explanation": "Cấu trúc Chủ ngữ + 在 Nơi chốn + Động từ."
+              }
+            ],
+            "xpReward": 30
+          }
+        ]
+      },
+      {
+        "levelCode": "HSK 2",
+        "levelName": "HSK 2 - Cấu trúc mở rộng",
+        "description": "Bổ ngữ chỉ thời lượng, câu so sánh 比 (bǐ), câu chữ 把 (bǎ) cơ bản.",
+        "points": [
+          {
+            "id": "zh-hsk2-bi",
+            "level": "HSK 2",
+            "title": "Câu so sánh chữ \"比\" (bǐ)",
+            "vietnameseTitle": "Cấu trúc so sánh hơn giữa hai sự vật",
+            "summary": "A 比 B + Tính từ (A hơn B về mặt nào đó).",
+            "formula": {
+              "pattern": "A + 比 + B + Tính từ (+ 一点儿 / 得多)",
+              "tokens": [
+                {
+                  "label": "A",
+                  "role": "subject"
+                },
+                {
+                  "label": "比 (bǐ)",
+                  "role": "particle"
+                },
+                {
+                  "label": "B",
+                  "role": "object"
+                },
+                {
+                  "label": "Tính từ",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Không dùng phó từ \"很\", \"非常\" trong câu chữ 比."
+            ],
+            "examples": [
+              {
+                "target": "今天比昨天冷得多。",
+                "vi": "Hôm nay lạnh hơn hôm qua rất nhiều."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "他比我很高。",
+                "correct": "他比我高。",
+                "explanation": "Trong câu chữ 比 không được dùng chữ \"很\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-2-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn đáp án đúng:",
+                "question": "妹妹 _____ 姐姐更喜欢听音乐。",
+                "options": [
+                  "跟",
+                  "比",
+                  "对",
+                  "在"
+                ],
+                "correctIndex": 1,
+                "explanation": "Câu so sánh dùng \"比\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "zh-hsk2-le",
+            "level": "HSK 2",
+            "title": "Trợ từ ngữ khí \"了\" (le)",
+            "vietnameseTitle": "Biểu thị sự hoàn thành của động tác hoặc sự thay đổi trạng thái",
+            "summary": "Đứng sau động từ hoặc ở cuối câu để báo hiệu trạng thái mới xuất hiện.",
+            "formula": {
+              "pattern": "S + V + 了 + O",
+              "tokens": [
+                {
+                  "label": "S",
+                  "role": "subject"
+                },
+                {
+                  "label": "V + 了",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Phủ định không dùng \"不\" mà dùng \"没/没有 + V\" (khi đó bỏ 了)."
+            ],
+            "examples": [
+              {
+                "target": "我吃过早饭了。",
+                "vi": "Tôi đã ăn sáng xong rồi."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "我没买了这本书。",
+                "correct": "我没买这本书。",
+                "explanation": "Khi đã dùng \"没\" thì không dùng \"了\" nữa."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-2-2",
+                "type": "fill_in_blank",
+                "prompt": "Điền từ phủ định quá khứ:",
+                "question": "他昨天 _____ 来上课。",
+                "correctAnswer": "没",
+                "hint": "Phủ định của đã làm",
+                "explanation": "Hành động chưa diễn ra trong quá khứ dùng \"没\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "zh-hsk2-guò",
+            "level": "HSK 2",
+            "title": "Trợ từ động thái \"过\" (guo)",
+            "vietnameseTitle": "Diễn tả trải nghiệm từng làm điều gì trong đời",
+            "summary": "V + 过 = đã từng làm gì đó trong quá khứ.",
+            "formula": {
+              "pattern": "S + V + 过 + O",
+              "tokens": [
+                {
+                  "label": "S",
+                  "role": "subject"
+                },
+                {
+                  "label": "V + 过",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Nhấn mạnh vào kinh nghiệm, trải nghiệm bản thân."
+            ],
+            "examples": [
+              {
+                "target": "我去过两次北京。",
+                "vi": "Tôi đã từng đi Bắc Kinh hai lần."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "我没去北京过。",
+                "correct": "我没去过北京。",
+                "explanation": "Trợ từ \"过\" phải gắn liền ngay sau động từ."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-2-3",
+                "type": "multiple_choice",
+                "prompt": "Chọn đáp án đúng:",
+                "question": "你吃 _____ 烤鸭吗？",
+                "options": [
+                  "了",
+                  "过",
+                  "着",
+                  "得"
+                ],
+                "correctIndex": 1,
+                "explanation": "Hỏi kinh nghiệm đã từng ăn chưa dùng \"过\"."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "zh-hsk2-jiu-cai",
+            "level": "HSK 2",
+            "title": "Phân biệt \"就\" (jiù) và \"才\" (cái)",
+            "vietnameseTitle": "Diễn tả hành động diễn ra sớm/nhanh (就) hay muộn/chậm (才)",
+            "summary": "就 nhấn mạnh tính thuận lợi, nhanh chóng; 才 biểu thị sự chậm trễ, khó khăn mới đạt được.",
+            "formula": {
+              "pattern": "Thời gian + 就 / 才 + Động từ",
+              "tokens": [
+                {
+                  "label": "Thời gian",
+                  "role": "modifier"
+                },
+                {
+                  "label": "就 / 才",
+                  "role": "particle"
+                },
+                {
+                  "label": "V",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Sau \"才\" cuối câu không dùng \"了\"."
+            ],
+            "examples": [
+              {
+                "target": "他八点就到了，我九点才来。",
+                "vi": "Anh ấy 8 giờ đã đến rồi, còn tôi 9 giờ mới tới."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "他昨天十点才睡了。",
+                "correct": "他昨天十点才睡。",
+                "explanation": "Sau \"才\" không dùng trợ từ \"了\"."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-zh-2-4",
+                "type": "multiple_choice",
+                "prompt": "Chọn từ đúng:",
+                "question": "作业太难了，我花了一个晚上 _____ 做完。",
+                "options": [
+                  "就",
+                  "才",
+                  "也",
+                  "还"
+                ],
+                "correctIndex": 1,
+                "explanation": "Nhấn mạnh sự khó khăn, mất nhiều thời gian dùng \"才\"."
+              }
+            ],
+            "xpReward": 30
+          }
+        ]
+      }
+    ],
+    "ja": [
+      {
+        "levelCode": "N5",
+        "levelName": "Cấp độ JLPT N5 - Nhập môn",
+        "description": "Các trợ từ cơ bản は, が, を, に, で và các thể lịch sự です / ます.",
+        "points": [
+          {
+            "id": "ja-n5-particles-wa-ga",
+            "level": "N5",
+            "title": "Phân biệt Trợ từ は (Wa) và が (Ga)",
+            "vietnameseTitle": "Chủ đề câu (は) đối lập với chủ ngữ nhấn mạnh (が)",
+            "summary": "は nêu lên chủ đề của câu, còn が nhấn mạnh chính đối tượng đứng trước nó.",
+            "formula": {
+              "pattern": "A は B です / A が V-ます",
+              "tokens": [
+                {
+                  "label": "Danh từ",
+                  "role": "subject"
+                },
+                {
+                  "label": "は / が",
+                  "role": "particle"
+                },
+                {
+                  "label": "Vị ngữ",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Trong câu có từ để hỏi (誰, 何) làm chủ ngữ, bắt buộc dùng が: 誰が来ましたか？"
+            ],
+            "examples": [
+              {
+                "target": "私は学生です。田中さんが先生です。",
+                "vi": "Tôi là học sinh. Anh Tanaka là giáo viên."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "誰は来ましたか？",
+                "correct": "誰が来ましたか？",
+                "explanation": "Từ để hỏi đứng đầu làm chủ ngữ bắt buộc đi với が."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-1-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn trợ từ thích hợp:",
+                "question": "どれ _____ あなたの傘ですか。",
+                "options": [
+                  "は",
+                  "が",
+                  "を",
+                  "に"
+                ],
+                "correctIndex": 1,
+                "explanation": "Từ để hỏi \"どれ\" đi với trợ từ が."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "ja-n5-te-form",
+            "level": "N5",
+            "title": "Thể Te (〜てください / 〜ています)",
+            "vietnameseTitle": "Chia thể Te để nhờ vả lịch sự hoặc diễn tả hành động đang diễn ra",
+            "summary": "Thể Te là thể biến đổi quan trọng bậc nhất của động từ tiếng Nhật.",
+            "formula": {
+              "pattern": "V-て + ください / います",
+              "tokens": [
+                {
+                  "label": "V-て",
+                  "role": "verb"
+                },
+                {
+                  "label": "ください / います",
+                  "role": "particle"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Nhóm 1: chia theo vần đuôi (ku -> ite, su -> shite, mu/bu/nu -> nde)."
+            ],
+            "examples": [
+              {
+                "target": "ちょっと待ってください。",
+                "vi": "Xin vui lòng đợi một chút."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "待ってをください。",
+                "correct": "待ってください。",
+                "explanation": "Sau thể Te không chèn thêm trợ từ を."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-1-2",
+                "type": "fill_in_blank",
+                "prompt": "Chia động từ 読む (đọc) sang thể Te:",
+                "question": "本を _____ ください。",
+                "correctAnswer": "読んで",
+                "hint": "đuôi mu biến thành nde",
+                "explanation": "Nhóm 1 đuôi む chuyển thành んで: 読んで."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "ja-n5-ni-de",
+            "level": "N5",
+            "title": "Trợ từ chỉ nơi chốn: に (Ni) vs で (De)",
+            "vietnameseTitle": "Nơi tồn tại (に) và Nơi diễn ra hành động (で)",
+            "summary": "Dùng に với động từ tồn tại (いる, ある); dùng で với động từ hành động (食べる, 勉強する).",
+            "formula": {
+              "pattern": "Nơi chốn + に (Tồn tại) / で (Hành động)",
+              "tokens": [
+                {
+                  "label": "Địa điểm",
+                  "role": "modifier"
+                },
+                {
+                  "label": "に / で",
+                  "role": "particle"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Ví dụ: 図書館で本を読む (Hành động) vs 図書館に本がある (Tồn tại)."
+            ],
+            "examples": [
+              {
+                "target": "公園で散歩をします。",
+                "vi": "Tôi đi dạo ở công viên."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "部屋で猫がいます。",
+                "correct": "部屋に猫がいます。",
+                "explanation": "Động từ tồn tại \"います\" bắt buộc đi với に."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-1-3",
+                "type": "multiple_choice",
+                "prompt": "Chọn trợ từ đúng:",
+                "question": "机の上 _____ ノートがあります。",
+                "options": [
+                  "で",
+                  "に",
+                  "を",
+                  "へ"
+                ],
+                "correctIndex": 1,
+                "explanation": "Chỉ nơi tồn tại của đồ vật (ある) dùng に."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "ja-n5-adjectives",
+            "level": "N5",
+            "title": "Tính từ đuôi い (I) và đuôi な (Na)",
+            "vietnameseTitle": "Quy tắc chia phủ định và quá khứ của 2 nhóm tính từ",
+            "summary": "Tính từ đuôi い: bỏ い thêm くない / かった; tính từ đuôi な thêm じゃない / でした.",
+            "formula": {
+              "pattern": "Adj-i -> くない / Adj-na -> じゃない",
+              "tokens": [
+                {
+                  "label": "Tính từ",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Lưu ý tính từ bất quy tắc いい (tốt) -> よくない, よかった."
+            ],
+            "examples": [
+              {
+                "target": "昨日はあまり寒くなかったです。",
+                "vi": "Hôm qua trời không lạnh lắm."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "昨日は寒くないでした。",
+                "correct": "昨日は寒くなかったです。",
+                "explanation": "Quá khứ tính từ đuôi i phải đổi thành かった."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-1-4",
+                "type": "multiple_choice",
+                "prompt": "Chọn dạng đúng:",
+                "question": "この部屋はとても _____ です。",
+                "options": [
+                  "静かな",
+                  "静か",
+                  "静かに",
+                  "静かだ"
+                ],
+                "correctIndex": 1,
+                "explanation": "Tính từ đuôi na đứng trước です thì bỏ な."
+              }
+            ],
+            "xpReward": 30
+          }
+        ]
+      },
+      {
+        "levelCode": "N4",
+        "levelName": "Cấp độ JLPT N4 - Trung sơ cấp",
+        "description": "Thể điều kiện (たら, ば), thể khả năng, thể bị động và thể sai khiến.",
+        "points": [
+          {
+            "id": "ja-n4-potential",
+            "level": "N4",
+            "title": "Thể Khả năng (可能形 - Kanoukei)",
+            "vietnameseTitle": "Diễn tả năng lực có thể làm được việc gì",
+            "summary": "Nhóm 1: cột u -> e + る; Nhóm 2: bỏ る + られる; Nhóm 3: できる, こられる.",
+            "formula": {
+              "pattern": "N + が + V-khả năng",
+              "tokens": [
+                {
+                  "label": "Tân ngữ",
+                  "role": "object"
+                },
+                {
+                  "label": "が",
+                  "role": "particle"
+                },
+                {
+                  "label": "V-khả năng",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Trong thể khả năng, trợ từ を thường chuyển thành が: 日本語が話せる."
+            ],
+            "examples": [
+              {
+                "target": "私は漢字が少し読めます。",
+                "vi": "Tôi có thể đọc được một chút chữ Hán."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "漢字を読めます。",
+                "correct": "漢字が読めます。",
+                "explanation": "Tân ngữ của thể khả năng ưu tiên dùng trợ từ が."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-2-1",
+                "type": "multiple_choice",
+                "prompt": "Chọn dạng khả năng:",
+                "question": "一人で病院へ _____ か。",
+                "options": [
+                  "行けます",
+                  "行きます",
+                  "行かれます",
+                  "行かせます"
+                ],
+                "correctIndex": 0,
+                "explanation": "Động từ 行く nhóm 1 chuyển cột e thành 行ける -> 行けます."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "ja-n4-tara",
+            "level": "N4",
+            "title": "Thể Điều kiện 〜たら (Tara)",
+            "vietnameseTitle": "Cấu trúc \"Nếu... thì...\" hoặc \"Sau khi làm A thì làm B\"",
+            "summary": "Động từ chia thể Quá khứ Ta + ら (V-た + ら).",
+            "formula": {
+              "pattern": "V-たら + Kết quả",
+              "tokens": [
+                {
+                  "label": "V-たら",
+                  "role": "modifier"
+                },
+                {
+                  "label": "Mệnh đề sau",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Có tính ứng dụng rộng nhất trong các mẫu câu điều kiện tiếng Nhật."
+            ],
+            "examples": [
+              {
+                "target": "時間があったら、映画を見に行きましょう。",
+                "vi": "Nếu có thời gian thì chúng ta cùng đi xem phim nhé."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "時間があるたら、行きます。",
+                "correct": "時間があったら、行きます。",
+                "explanation": "Phải chia về thể Ta rồi mới thêm ら (あったら)."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-2-2",
+                "type": "fill_in_blank",
+                "prompt": "Chia điều kiện tara của 降る (mưa rơi):",
+                "question": "雨が _____ 、試合は中止です。",
+                "correctAnswer": "降ったら",
+                "hint": "đuôi ru chia ta thành futta",
+                "explanation": "降る -> 降った -> 降ったら."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "ja-n4-passive",
+            "level": "N4",
+            "title": "Thể Bị động (受身形 - Ukemi)",
+            "vietnameseTitle": "Chủ ngữ bị/được tác động bởi người khác",
+            "summary": "Nhóm 1: cột a + れる; Nhóm 2: られる; Nhóm 3: される, こられる.",
+            "formula": {
+              "pattern": "Chủ ngữ + は + Tác nhân + に + V-bị động",
+              "tokens": [
+                {
+                  "label": "Chủ ngữ",
+                  "role": "subject"
+                },
+                {
+                  "label": "Tác nhân + に",
+                  "role": "object"
+                },
+                {
+                  "label": "V-bị động",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "Bị động phiền toái (Meiwaku ukemi): 雨に降られた (Bị dính mưa phiền toái)."
+            ],
+            "examples": [
+              {
+                "target": "先生に名前を呼ばれました。",
+                "vi": "Tôi đã được giáo viên gọi tên."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "先生を呼ばれました。",
+                "correct": "先生に呼ばれました。",
+                "explanation": "Tác nhân gây tác động đi với trợ từ に."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-2-3",
+                "type": "multiple_choice",
+                "prompt": "Chọn trợ từ thích hợp:",
+                "question": "妹は母 _____ 叱られました。",
+                "options": [
+                  "に",
+                  "を",
+                  "で",
+                  "から"
+                ],
+                "correctIndex": 0,
+                "explanation": "Người mắng (tác nhân) đi với trợ từ に."
+              }
+            ],
+            "xpReward": 30
+          },
+          {
+            "id": "ja-n4-causative",
+            "level": "N4",
+            "title": "Thể Sai khiến (使役形 - Shieki)",
+            "vietnameseTitle": "Cho phép hoặc bắt buộc ai đó làm việc gì",
+            "summary": "Nhóm 1: cột a + せる; Nhóm 2: させる; Nhóm 3: させる, こさせる.",
+            "formula": {
+              "pattern": "A は B に + V-sai khiến",
+              "tokens": [
+                {
+                  "label": "Người ra lệnh",
+                  "role": "subject"
+                },
+                {
+                  "label": "Người nhận lệnh + に",
+                  "role": "object"
+                },
+                {
+                  "label": "V-sai khiến",
+                  "role": "verb"
+                }
+              ]
+            },
+            "explanationNotes": [
+              "〜させてください dùng để xin phép cho bản thân mình được làm gì một cách lịch thiệp."
+            ],
+            "examples": [
+              {
+                "target": "私にその仕事をやらせてください。",
+                "vi": "Xin hãy cho phép tôi được làm công việc đó."
+              }
+            ],
+            "pitfalls": [
+              {
+                "wrong": "私をやらせてください。",
+                "correct": "私にやらせてください。",
+                "explanation": "Đối tượng được cho phép nhận trợ từ に."
+              }
+            ],
+            "exercises": [
+              {
+                "id": "ex-ja-2-4",
+                "type": "multiple_choice",
+                "prompt": "Chọn dạng đúng:",
+                "question": "母は子どもに野菜を _____ 。",
+                "options": [
+                  "食べさせました",
+                  "食べられました",
+                  "食べました",
+                  "食べたがりました"
+                ],
+                "correctIndex": 0,
+                "explanation": "Mẹ bắt con ăn rau (sai khiến) dùng 食べさせました."
+              }
+            ],
+            "xpReward": 30
+          }
+        ]
+      }
+    ]
+  },
+  "typingTopics": [
+    {
+      "id": "topic-en-shopping",
+      "slug": "mua-sam",
+      "lang": "en",
+      "title": "Mua sắm & Trả giá",
+      "description": "Hỏi giá, kích cỡ, khuyến mãi và cách trả giá khéo léo trong cửa hàng.",
+      "group": "life",
+      "level": "A2 - B1",
+      "iconName": "ShoppingBag",
+      "sentences": [
+        {
+          "id": "s-en-shop-1",
+          "sourceText": "Bạn có cái áo len này với kích thước nhỏ hơn không?",
+          "targetText": "Do you have this sweater in a smaller size?",
+          "phonetic": "/duː juː hæv ðɪs ˈswetər ɪn ə ˈsmɔːlər saɪz/",
+          "hintWord": "sweater",
+          "grammarNote": "Cấu trúc hỏi đồ vật ở kích thước khác: \"in a smaller/larger size\"."
+        },
+        {
+          "id": "s-en-shop-2",
+          "sourceText": "Món đồ này có đang được áp dụng giảm giá không?",
+          "targetText": "Is this item currently on sale?",
+          "phonetic": "/ɪz ðɪs ˈaɪtəm ˈkɜːrəntli ɒn seɪl/",
+          "hintWord": "currently",
+          "grammarNote": "\"on sale\" có nghĩa là đang được giảm giá, khác với \"for sale\" (đang rao bán)."
+        },
+        {
+          "id": "s-en-shop-3",
+          "sourceText": "Tôi có thể thử chiếc áo sơ mi này trong phòng thay đồ được không?",
+          "targetText": "Can I try on this shirt in the fitting room?",
+          "phonetic": "/kæn aɪ traɪ ɒn ðɪs ʃɜːrt ɪn ðə ˈfɪtɪŋ ruːm/",
+          "hintWord": "try on",
+          "grammarNote": "Cụm động từ \"try on\" dùng khi thử quần áo, giày dép."
+        },
+        {
+          "id": "s-en-shop-4",
+          "sourceText": "Nếu tôi mua hai chiếc, bạn có thể giảm giá thêm chút không?",
+          "targetText": "If I buy two, could you give me a slight discount?",
+          "phonetic": "/ɪf aɪ baɪ tuː kʊd juː ɡɪv miː ə slaɪt ˈdɪskaʊnt/",
+          "hintWord": "slight discount",
+          "grammarNote": "Dùng \"could you\" thể hiện lời đề nghị lịch sự, tế nhị."
+        },
+        {
+          "id": "s-en-shop-5",
+          "sourceText": "Chính sách đổi trả hàng của cửa hàng là trong vòng bao nhiêu ngày?",
+          "targetText": "What is your return policy for damaged goods?",
+          "phonetic": "/wɒt ɪz jʊər rɪˈtɜːrn ˈpɒləsi fɔːr ˈdæmɪdʒd ɡʊdz/",
+          "hintWord": "return policy",
+          "grammarNote": "\"return policy\" là cụm danh từ chỉ chính sách đổi trả hàng."
+        },
+        {
+          "id": "s-en-shop-6",
+          "sourceText": "Tôi có thể thanh toán bằng thẻ tín dụng không trả phí phụ thu chứ?",
+          "targetText": "Can I pay by credit card without any surcharge?",
+          "phonetic": "/kæn aɪ peɪ baɪ ˈkredɪt kɑːrd wɪˈðaʊt ˈeni ˈsɜːrtʃɑːrdʒ/",
+          "hintWord": "surcharge",
+          "grammarNote": "\"surcharge\" là phụ phí dịch vụ hoặc phí cà thẻ."
+        },
+        {
+          "id": "s-en-shop-7",
+          "sourceText": "Làm ơn gói món này làm quà tặng giúp tôi nhé.",
+          "targetText": "Could you please gift wrap this item for me?",
+          "phonetic": "/kʊd juː pliːz ɡɪft ræp ðɪs ˈaɪtəm fɔːr miː/",
+          "hintWord": "gift wrap",
+          "grammarNote": "\"gift wrap\" có thể dùng như động từ nghĩa là gói quà trang trọng."
+        },
+        {
+          "id": "s-en-shop-8",
+          "sourceText": "Tôi đang tìm kiếm một đôi giày chạy bộ có độ bám tốt.",
+          "targetText": "I am looking for a pair of running shoes with good grip.",
+          "phonetic": "/aɪ æm ˈlʊkɪŋ fɔːr ə peər əv ˈrʌnɪŋ ʃuːz wɪð ɡʊd ɡrɪp/",
+          "hintWord": "good grip",
+          "grammarNote": "\"grip\" chỉ độ ma sát, độ bám đường chống trượt của đế giày."
+        }
+      ]
+    },
+    {
+      "id": "topic-en-restaurant",
+      "slug": "nha-hang",
+      "lang": "en",
+      "title": "Gọi món tại nhà hàng",
+      "description": "Đặt bàn trước, hỏi món đặc trưng, yêu cầu gia vị và thanh toán hoá đơn.",
+      "group": "life",
+      "level": "A2 - B1",
+      "iconName": "Utensils",
+      "sentences": [
+        {
+          "id": "s-en-rest-1",
+          "sourceText": "Tôi đã đặt một bàn cho bốn người dưới tên David lúc 7 giờ tối.",
+          "targetText": "I have a reservation for four under the name David at seven.",
+          "phonetic": "/aɪ hæv ə ˌrezərˈveɪʃn fɔːr fɔːr ˈʌndər ðə neɪm ˈdeɪvɪd æt ˈsevn/",
+          "hintWord": "reservation",
+          "grammarNote": "Cấu trúc đặt chỗ: \"have a reservation for [số người] under the name [tên]\"."
+        },
+        {
+          "id": "s-en-rest-2",
+          "sourceText": "Hôm nay nhà hàng có món đặc biệt nào gợi ý cho chúng tôi không?",
+          "targetText": "What do you recommend as the chef special today?",
+          "phonetic": "/wɒt duː juː ˌrekəˈmend æz ðə ʃef ˈspeʃl təˈdeɪ/",
+          "hintWord": "chef special",
+          "grammarNote": "\"chef special\" chỉ món sở trường đặc sắc trong ngày của bếp trưởng."
+        },
+        {
+          "id": "s-en-rest-3",
+          "sourceText": "Tôi bị dị ứng với hải sản, món này có chứa tôm hay cua không?",
+          "targetText": "I am allergic to seafood, does this contain shrimp or crab?",
+          "phonetic": "/aɪ æm əˈlɜːrdʒɪk tuː ˈsiːfuːd dʌz ðɪs kənˈteɪn ʃrɪmp ɔːr kræb/",
+          "hintWord": "allergic to",
+          "grammarNote": "Cấu trúc \"be allergic to something\" diễn tả tình trạng dị ứng."
+        },
+        {
+          "id": "s-en-rest-4",
+          "sourceText": "Làm ơn cho tôi nước sốt để riêng ở đĩa nhỏ bên cạnh nhé.",
+          "targetText": "Could we please have the dressing on the side?",
+          "phonetic": "/kʊd wiː pliːz hæv ðə ˈdresɪŋ ɒn ðə saɪd/",
+          "hintWord": "on the side",
+          "grammarNote": "\"on the side\" nghĩa là để nước chấm/nước sốt riêng không tưới trực tiếp."
+        },
+        {
+          "id": "s-en-rest-5",
+          "sourceText": "Bạn có thể mang thêm cho chúng tôi một chai nước suối ướp lạnh không?",
+          "targetText": "Could you bring us another bottle of chilled still water?",
+          "phonetic": "/kʊd juː brɪŋ ʌs əˈnʌðər ˈbɒtl əv tʃɪld stɪl ˈwɔːtər/",
+          "hintWord": "still water",
+          "grammarNote": "\"still water\" là nước lọc không ga, đối lập với \"sparkling water\" (nước có ga)."
+        },
+        {
+          "id": "s-en-rest-6",
+          "sourceText": "Thịt bò bít tết này được chế biến hơi chín quá so với yêu cầu của tôi.",
+          "targetText": "This steak is slightly overcooked compared to medium rare.",
+          "phonetic": "/ðɪs steɪk ɪz ˈslaɪtli ˌoʊvərˈkʊkt kəmˈpeərd tuː ˈmiːdiəm reər/",
+          "hintWord": "overcooked",
+          "grammarNote": "\"overcooked\" nghĩa là nấu quá lửa, \"medium rare\" là chín tái."
+        },
+        {
+          "id": "s-en-rest-7",
+          "sourceText": "Chúng tôi có thể xin hoá đơn thanh toán và chia đôi tiền được không?",
+          "targetText": "Could we please have the bill and split the check evenly?",
+          "phonetic": "/kʊd wiː pliːz hæv ðə bɪl ænd splɪt ðə tʃek ˈiːvnli/",
+          "hintWord": "split the check",
+          "grammarNote": "\"split the check/bill\" là cách nói người Mỹ để chia đều hoá đơn."
+        },
+        {
+          "id": "s-en-rest-8",
+          "sourceText": "Bữa tối hôm nay thực sự rất ngon miệng, cảm ơn sự phục vụ chu đáo!",
+          "targetText": "Everything was absolutely delicious, thank you for the wonderful service!",
+          "phonetic": "/ˈevriθɪŋ wɒz ˌæbsəˈluːtli dɪˈlɪʃəs θæŋk juː fɔːr ðə ˈwʌndərfʊl ˈsɜːrvɪs/",
+          "hintWord": "absolutely",
+          "grammarNote": "Dùng \"absolutely\" đi với các tính từ cực hạn (extreme adjectives) như \"delicious\"."
+        }
+      ]
+    },
+    {
+      "id": "topic-en-email",
+      "slug": "email-cong-viec",
+      "lang": "en",
+      "title": "Soạn email công việc chuyên nghiệp",
+      "description": "Mở đầu thư, đính kèm tài liệu, xác nhận lịch hẹn và lời kết trang trọng.",
+      "group": "work",
+      "level": "B1 - B2",
+      "iconName": "Mail",
+      "sentences": [
+        {
+          "id": "s-en-mail-1",
+          "sourceText": "Tôi viết email này để xác nhận lịch họp của chúng ta vào thứ Sáu tới.",
+          "targetText": "I am writing to confirm our upcoming meeting this Friday.",
+          "phonetic": "/aɪ æm ˈraɪtɪŋ tuː kənˈfɜːrm ˈaʊər ˈʌpˌkʌmɪŋ ˈmiːtɪŋ ðɪs ˈfraɪdeɪ/",
+          "hintWord": "upcoming",
+          "grammarNote": "Mẫu câu mở đầu chuẩn tắc: \"I am writing to + V-infinitive\"."
+        },
+        {
+          "id": "s-en-mail-2",
+          "sourceText": "Vui lòng xem tập tin đính kèm để biết thêm chi tiết dự thảo hợp đồng.",
+          "targetText": "Please find attached the draft agreement for your review.",
+          "phonetic": "/pliːz faɪnd əˈtætʃt ðə dræft əˈɡriːmənt fɔːr jʊər rɪˈvjuː/",
+          "hintWord": "attached",
+          "grammarNote": "Cách diễn đạt trang trọng khi đính kèm file trong thư thương mại."
+        },
+        {
+          "id": "s-en-mail-3",
+          "sourceText": "Tôi thành thật xin lỗi vì sự chậm trễ trong việc phản hồi thư của bạn.",
+          "targetText": "I sincerely apologize for the delay in getting back to you.",
+          "phonetic": "/aɪ sɪnˈsɪərli əˈpɒlədʒaɪz fɔːr ðə dɪˈleɪ ɪn ˈɡetɪŋ bæk tuː juː/",
+          "hintWord": "apologize",
+          "grammarNote": "\"get back to someone\" là phản hồi lại thư hoặc cuộc gọi."
+        },
+        {
+          "id": "s-en-mail-4",
+          "sourceText": "Nếu bạn cần thêm bất kỳ thông tin nào, xin đừng ngần ngại liên hệ tôi.",
+          "targetText": "Should you require any further assistance, please do not hesitate to contact me.",
+          "phonetic": "/ʃʊd juː rɪˈkwaɪər ˈeni ˈfɜːrðər əˈsɪstəns pliːz duː nɒt ˈhezɪteɪt tuː ˈkɒntækt miː/",
+          "hintWord": "hesitate",
+          "grammarNote": "Đảo ngữ câu điều kiện loại 1 trang trọng: \"Should you require...\"."
+        },
+        {
+          "id": "s-en-mail-5",
+          "sourceText": "Chúng tôi rất trân trọng sự hợp tác kịp thời của bạn trong dự án này.",
+          "targetText": "We greatly appreciate your prompt cooperation on this urgent matter.",
+          "phonetic": "/wiː ˈɡreɪtli əˈpriːʃieɪt jʊər prɒmpt koʊˌɒpəˈreɪʃn ɒn ðɪs ˈɜːrdʒənt ˈmætər/",
+          "hintWord": "prompt cooperation",
+          "grammarNote": "\"prompt\" có nghĩa là nhanh chóng, không chậm trễ."
+        },
+        {
+          "id": "s-en-mail-6",
+          "sourceText": "Tôi mong nhận được phản hồi và ý kiến đóng góp quý báu từ bạn sớm.",
+          "targetText": "I look forward to hearing your valuable feedback very soon.",
+          "phonetic": "/aɪ lʊk ˈfɔːrwərd tuː ˈhɪərɪŋ jʊər ˈvæljuəbl ˈfiːdbæk ˈveri suːn/",
+          "hintWord": "feedback",
+          "grammarNote": "Nhớ dùng \"hearing\" (V-ing) sau giới từ \"to\" trong cấu trúc \"look forward to\"."
+        },
+        {
+          "id": "s-en-mail-7",
+          "sourceText": "Bạn có thể vui lòng cập nhật lại ngân sách trước cuối ngày mai không?",
+          "targetText": "Could you please provide the updated budget by tomorrow afternoon?",
+          "phonetic": "/kʊd juː pliːz prəˈvaɪd ðiː ʌpˈdeɪtɪd ˈbʌdʒɪt baɪ təˈmɒroʊ ˌæftərˈnuːn/",
+          "hintWord": "budget",
+          "grammarNote": "Giới từ \"by\" chỉ hạn chót (deadline) phải hoàn tất việc."
+        },
+        {
+          "id": "s-en-mail-8",
+          "sourceText": "Trân trọng kính thư, David Nguyen - Trưởng phòng kỹ thuật.",
+          "targetText": "Best regards, David Nguyen - Technical Lead.",
+          "phonetic": "/best rɪˈɡɑːrdz ˈdeɪvɪd ŋuːˈjen ˈteknɪkl liːd/",
+          "hintWord": "regards",
+          "grammarNote": "\"Best regards\" là lời chào kết thúc thư phổ biến và lịch thiệp nhất."
+        }
+      ]
+    },
+    {
+      "id": "topic-en-meeting",
+      "slug": "hop-bao-cao",
+      "lang": "en",
+      "title": "Họp nhóm & Báo cáo tiến độ",
+      "description": "Nêu ý kiến, ngắt lời lịch sự, trình bày biểu đồ và kết luận phiên họp.",
+      "group": "work",
+      "level": "B2 - C1",
+      "iconName": "Users",
+      "sentences": [
+        {
+          "id": "s-en-meet-1",
+          "sourceText": "Chúng ta hãy bắt đầu cuộc họp bằng việc điểm lại các mục tiêu quý trước.",
+          "targetText": "Let us kick off the meeting by reviewing our quarterly milestones.",
+          "phonetic": "/let ʌs kɪk ɒf ðə ˈmiːtɪŋ baɪ rɪˈvjuːɪŋ ˈaʊər ˈkwɔːrtərli ˈmaɪlstoʊnz/",
+          "hintWord": "milestones",
+          "grammarNote": "\"kick off\" là cụm động từ tương đương \"start / begin\"."
+        },
+        {
+          "id": "s-en-meet-2",
+          "sourceText": "Tôi hoàn toàn đồng tình với quan điểm của bạn về vấn đề này.",
+          "targetText": "I could not agree more with your perspective on this strategy.",
+          "phonetic": "/aɪ kʊd nɒt əˈɡriː mɔːr wɪð jʊər pərˈspektɪv ɒn ðɪs ˈstrætədʒi/",
+          "hintWord": "perspective",
+          "grammarNote": "\"could not agree more\" là cách diễn tả sự đồng ý tuyệt đối."
+        },
+        {
+          "id": "s-en-meet-3",
+          "sourceText": "Xin lỗi vì đã cắt ngang lời, nhưng tôi có một điểm mấu chốt cần làm rõ.",
+          "targetText": "Sorry to interrupt, but I have a crucial point to clarify.",
+          "phonetic": "/ˈsɒri tuː ˌɪntəˈrʌpt bʌt aɪ hæv ə ˈkruːʃl pɔɪnt tuː ˈklærɪfaɪ/",
+          "hintWord": "interrupt",
+          "grammarNote": "Cách ngắt lời chuyên nghiệp mà vẫn giữ phép lịch thiệp."
+        },
+        {
+          "id": "s-en-meet-4",
+          "sourceText": "Theo như biểu đồ thể hiện, lượng người dùng tích cực đã tăng mạnh.",
+          "targetText": "As shown on the chart, active user engagement has surged dramatically.",
+          "phonetic": "/æz ʃoʊn ɒn ðə tʃɑːrt ˈæktɪv ˈjuːzər ɪnˈɡeɪdʒmənt hæz sɜːrdʒd drəˈmætɪkli/",
+          "hintWord": "surged",
+          "grammarNote": "\"surge\" nghĩa là dâng cao đột biến, rất hay dùng trong báo cáo kinh doanh."
+        },
+        {
+          "id": "s-en-meet-5",
+          "sourceText": "Chúng ta cần phân bổ thêm nhân lực để kịp tiến độ phát hành.",
+          "targetText": "We must allocate more resources to meet the product launch deadline.",
+          "phonetic": "/wiː mʌst ˈæləkeɪt mɔːr rɪˈsɔːrsɪz tuː miːt ðə ˈprɒdʌkt lɔːntʃ ˈdedlaɪn/",
+          "hintWord": "allocate",
+          "grammarNote": "\"allocate resources\" = phân bổ nguồn lực/nhân sự."
+        },
+        {
+          "id": "s-en-meet-6",
+          "sourceText": "Để tôi tóm tắt lại các đầu việc chính mà từng thành viên phụ trách.",
+          "targetText": "Let me summarize the action items assigned to each team member.",
+          "phonetic": "/let miː ˈsʌməraɪz ðiː ˈækʃn ˈaɪtəmz əˈsaɪnd tuː iːtʃ tiːm ˈmembər/",
+          "hintWord": "action items",
+          "grammarNote": "\"action items\" là thuật ngữ chỉ các nhiệm vụ cụ thể được giao sau cuộc họp."
+        },
+        {
+          "id": "s-en-meet-7",
+          "sourceText": "Có ai còn câu hỏi nào trước khi chúng ta kết thúc buổi họp không?",
+          "targetText": "Does anyone have any further questions before we wrap up today?",
+          "phonetic": "/dʌz ˈeniwʌn hæv ˈeni ˈfɜːrðər ˈkwestʃənz bɪˈfɔːr wiː ræp ʌp təˈdeɪ/",
+          "hintWord": "wrap up",
+          "grammarNote": "\"wrap up\" là cụm động từ thân mật để kết thúc một công việc hay cuộc họp."
+        },
+        {
+          "id": "s-en-meet-8",
+          "sourceText": "Biên bản cuộc họp chi tiết sẽ được gửi qua email cho tất cả các bên.",
+          "targetText": "The detailed meeting minutes will be circulated via email shortly.",
+          "phonetic": "/ðə ˈdiːteɪld ˈmiːtɪŋ ˈmɪnɪts wɪl biː ˈsɜːrkjəleɪtɪd ˈvaɪə ˈiːmeɪl ˈʃɔːrtli/",
+          "hintWord": "meeting minutes",
+          "grammarNote": "\"meeting minutes\" là biên bản cuộc họp."
+        }
+      ]
+    },
+    {
+      "id": "topic-zh-shopping",
+      "slug": "mua-sam",
+      "lang": "zh",
+      "title": "Mua sắm & Mặc cả (买东西)",
+      "description": "Hỏi giá, đổi trả và mặc cả tự nhiên tại chợ hoặc trung tâm thương mại.",
+      "group": "life",
+      "level": "HSK 2 - 3",
+      "iconName": "ShoppingBag",
+      "sentences": [
+        {
+          "id": "s-zh-shop-1",
+          "sourceText": "Chiếc áo khoác này bao nhiêu tiền một cái?",
+          "targetText": "这件外套一件多少钱？",
+          "phonetic": "Zhè jiàn wàitào yī jiàn duōshǎo qián?",
+          "hintWord": "多少钱",
+          "grammarNote": "Lượng từ của áo khoác là 件 (jiàn)."
+        },
+        {
+          "id": "s-zh-shop-2",
+          "sourceText": "Đắt quá, bạn có thể tính rẻ hơn một chút được không?",
+          "targetText": "太贵了，能不能便宜一点儿？",
+          "phonetic": "Tài guì le, néng bù néng piányi yīdiǎnr?",
+          "hintWord": "便宜",
+          "grammarNote": "Mẫu câu trả giá kinh điển: 能不能便宜一点儿？"
+        },
+        {
+          "id": "s-zh-shop-3",
+          "sourceText": "Tôi có thể quét mã WeChat hoặc Alipay để thanh toán không?",
+          "targetText": "我可以扫微信或者支付宝付款吗？",
+          "phonetic": "Wǒ kěyǐ sǎo wēixìn huòzhě zhīfùbǎo fùkuǎn ma?",
+          "hintWord": "扫码",
+          "grammarNote": "扫 (sǎo) nghĩa là quét mã QR thanh toán."
+        },
+        {
+          "id": "s-zh-shop-4",
+          "sourceText": "Kích cỡ này hơi chật, bạn có số lớn hơn một chút không?",
+          "targetText": "这个尺码有点儿紧，有大一号的吗？",
+          "phonetic": "Zhège chǐmǎ yǒudiǎnr jǐn, yǒu dà yī hào de ma?",
+          "hintWord": "大一号",
+          "grammarNote": "大一号 (dà yī hào) nghĩa là số/size to hơn 1 cỡ."
+        }
+      ]
+    },
+    {
+      "id": "topic-zh-work",
+      "slug": "email-cong-viec",
+      "lang": "zh",
+      "title": "Giao tiếp công sở & Báo cáo (商务办公)",
+      "description": "Viết email, thảo luận tiến độ và bàn giao công việc với đối tác.",
+      "group": "work",
+      "level": "HSK 3 - 4",
+      "iconName": "Briefcase",
+      "sentences": [
+        {
+          "id": "s-zh-work-1",
+          "sourceText": "Tôi đã gửi hợp đồng dự thảo qua hòm thư điện tử của bạn rồi.",
+          "targetText": "我已经把合同草案发到您的电子邮箱了。",
+          "phonetic": "Wǒ yǐjīng bǎ hétóng cǎo'àn fā dào nín de diànzǐ yóuxiāng le.",
+          "hintWord": "把合同草案",
+          "grammarNote": "Câu chữ 把 nhấn mạnh đối tượng bị chuyển vị trí."
+        },
+        {
+          "id": "s-zh-work-2",
+          "sourceText": "Cuộc họp sáng mai sẽ lùi lại ba mươi phút do sự cố kỹ thuật.",
+          "targetText": "明早的会议因为技术原因推迟三十分钟。",
+          "phonetic": "Míngzǎo de huìyì yīnwèi jìshù yuányīn tuīchí sānshí fēnzhōng.",
+          "hintWord": "推迟",
+          "grammarNote": "推迟 (tuīchí) nghĩa là hoãn lại, lùi giờ lại."
+        },
+        {
+          "id": "s-zh-work-3",
+          "sourceText": "Nếu quý công ty có bất kỳ thắc mắc nào, xin vui lòng liên hệ kịp thời.",
+          "targetText": "如果您有任何疑问，请随时与我们联系。",
+          "phonetic": "Rúguǒ nín yǒu rènhé yíwèn, qǐng suíshí yǔ wǒmen liánxì.",
+          "hintWord": "联系",
+          "grammarNote": "Cách nói trang trọng trong thư tín thương mại Trung Quốc."
+        },
+        {
+          "id": "s-zh-work-4",
+          "sourceText": "Chúng tôi mong muốn thiết lập mối quan hệ hợp tác lâu dài với bạn.",
+          "targetText": "我们期待与贵公司建立长期的合作关系。",
+          "phonetic": "Wǒmen qīdài yǔ guì gōngsī jiànlì chángqī de hézuò guānxì.",
+          "hintWord": "合作关系",
+          "grammarNote": "贵公司 (quý công ty) là đại từ tôn kính đối tác."
+        }
+      ]
+    },
+    {
+      "id": "topic-ja-restaurant",
+      "slug": "nha-hang",
+      "lang": "ja",
+      "title": "Nhà hàng & Quán ăn Nhật (レストラン)",
+      "description": "Vào quán, gọi món theo set, xin thêm nước và gọi thanh toán O-kaikei.",
+      "group": "life",
+      "level": "N5 - N4",
+      "iconName": "Utensils",
+      "sentences": [
+        {
+          "id": "s-ja-rest-1",
+          "sourceText": "Xin lỗi, làm ơn cho tôi xem thực đơn tiếng Anh được không?",
+          "targetText": "すみません、英語のメニューはありますか？",
+          "phonetic": "Sumimasen, eigo no menyuu wa arimasu ka?",
+          "hintWord": "メニュー",
+          "grammarNote": "すみません dùng mở đầu lời nhờ vả lịch sự."
+        },
+        {
+          "id": "s-ja-rest-2",
+          "sourceText": "Làm ơn cho tôi hai suất cơm thịt lợn chiên xù Tonkatsu.",
+          "targetText": "とんかつ定食を二つお願いします。",
+          "phonetic": "Tonkatsu teishoku o futatsu onegaishimasu.",
+          "hintWord": "二つ",
+          "grammarNote": "Cách đếm đồ vật: 一つ (hitotsu), 二つ (futatsu)."
+        },
+        {
+          "id": "s-ja-rest-3",
+          "sourceText": "Món này có cay lắm không ạ?",
+          "targetText": "この料理はとても辛いですか？",
+          "phonetic": "Kono ryouri wa totemo karai desu ka?",
+          "hintWord": "辛い",
+          "grammarNote": "辛い (karai) nghĩa là vị cay."
+        },
+        {
+          "id": "s-ja-rest-4",
+          "sourceText": "Làm ơn tính tiền giúp tôi nhé.",
+          "targetText": "お会計をお願いします。",
+          "phonetic": "O-kaikei o onegaishimasu.",
+          "hintWord": "お会計",
+          "grammarNote": "お会計 (o-kaikei) là từ chuẩn khi thanh toán tại nhà hàng Nhật."
+        }
+      ]
+    },
+    {
+      "id": "topic-ja-work",
+      "slug": "email-cong-viec",
+      "lang": "ja",
+      "title": "Hội thoại công việc & Kính ngữ (ビジネス)",
+      "description": "Chào hỏi đồng nghiệp, báo cáo tiến độ và cảm ơn đối tác trang trọng.",
+      "group": "work",
+      "level": "N4 - N3",
+      "iconName": "Briefcase",
+      "sentences": [
+        {
+          "id": "s-ja-work-1",
+          "sourceText": "Cảm ơn mọi người đã vất vả làm việc ngày hôm nay.",
+          "targetText": "本日もお疲れ様でした。",
+          "phonetic": "Honjitsu mo otsukaresama deshita.",
+          "hintWord": "お疲れ様",
+          "grammarNote": "Câu chào cửa miệng chuẩn tắc khi hết ca làm việc."
+        },
+        {
+          "id": "s-ja-work-2",
+          "sourceText": "Tôi xin phép được gửi tài liệu buổi họp qua thư đính kèm.",
+          "targetText": "会議の資料をメールにてお送りいたします。",
+          "phonetic": "Kaigi no shiryou o meeru nite o-okuri itashimasu.",
+          "hintWord": "お送りいたします",
+          "grammarNote": "Khiêm nhường ngữ (Kenjougo): お + V-bỏ-masu + いたします."
+        },
+        {
+          "id": "s-ja-work-3",
+          "sourceText": "Rất mong nhận được sự chỉ giáo và giúp đỡ tận tình từ quý vị.",
+          "targetText": "今後とも何卒よろしくお願い申し上げます。",
+          "phonetic": "Kongo tomo nanitazo yoroshiku onegai moushiagemasu.",
+          "hintWord": "何卒",
+          "grammarNote": "Lời kết email trang trọng bậc nhất trong văn hóa kinh doanh Nhật."
+        },
+        {
+          "id": "s-ja-work-4",
+          "sourceText": "Về dự án lần này, chúng tôi sẽ nỗ lực hết mình để kịp tiến độ.",
+          "targetText": "今回のプロジェクトについて、全力を尽くします。",
+          "phonetic": "Konkai no purojekuto ni tsuite, zenryoku o tsukushimasu.",
+          "hintWord": "全力を尽くす",
+          "grammarNote": "Cụm thành ngữ \"全力を尽くす\" nghĩa là nỗ lực dốc toàn lực."
+        }
+      ]
+    }
+  ],
+  "curatedVocabSets": [
+    {
+      "id": "a0000000-0000-0000-0000-000000000001",
+      "title": "Oxford 3000 từ vựng học thuật cốt lõi",
+      "description": "Nền tảng từ vựng học thuật quan trọng nhất xuất hiện trong mọi bài thi và văn bản quốc tế.",
+      "level": "B1 - B2",
+      "lang": "en",
+      "words": [
+        {
+          "id": "w-en-1-1",
+          "term": "Resilient",
+          "phonetic": "/rɪˈzɪliənt/",
+          "partOfSpeech": "adj",
+          "meaning": "Kiên cường, có khả năng phục hồi nhanh chóng sau nghịch cảnh.",
+          "exampleTarget": "Local communities have proven remarkably resilient in the face of natural disasters.",
+          "exampleMeaning": "Các cộng đồng địa phương đã chứng minh sự kiên cường đáng nể trước thiên tai."
+        },
+        {
+          "id": "w-en-1-2",
+          "term": "Allocate",
+          "phonetic": "/ˈæləkeɪt/",
+          "partOfSpeech": "verb",
+          "meaning": "Phân bổ, chỉ định nguồn vốn hoặc tài nguyên cho mục đích cụ thể.",
+          "exampleTarget": "The government decided to allocate more funds to renewable energy research.",
+          "exampleMeaning": "Chính phủ đã quyết định phân bổ thêm ngân quỹ cho nghiên cứu năng lượng tái tạo."
+        },
+        {
+          "id": "w-en-1-3",
+          "term": "Comprehensive",
+          "phonetic": "/ˌkɒmprɪˈhensɪv/",
+          "partOfSpeech": "adj",
+          "meaning": "Toàn diện, bao hàm đầy đủ mọi khía cạnh.",
+          "exampleTarget": "The university offers a comprehensive guide to international student admissions.",
+          "exampleMeaning": "Trường đại học cung cấp một cuốn cẩm nang toàn diện về tuyển sinh du học sinh."
+        },
+        {
+          "id": "w-en-1-4",
+          "term": "Diminish",
+          "phonetic": "/dɪˈmɪnɪʃ/",
+          "partOfSpeech": "verb",
+          "meaning": "Làm giảm bớt, suy yếu về số lượng hoặc tầm ảnh hưởng.",
+          "exampleTarget": "His influence in the company did not diminish despite recent controversies.",
+          "exampleMeaning": "Ảnh hưởng của ông ấy tại công ty không hề giảm sút dù vướng phải những tranh cãi gần đây."
+        },
+        {
+          "id": "w-en-1-5",
+          "term": "Facilitate",
+          "phonetic": "/fəˈsɪlɪteɪt/",
+          "partOfSpeech": "verb",
+          "meaning": "Tạo điều kiện thuận lợi, làm cho một quá trình trở nên dễ dàng hơn.",
+          "exampleTarget": "Digital tools help facilitate smoother communication among remote employees.",
+          "exampleMeaning": "Các công cụ kỹ thuật số giúp tạo điều kiện giao tiếp trôi chảy hơn giữa nhân viên làm việc từ xa."
+        },
+        {
+          "id": "w-en-1-6",
+          "term": "Implicit",
+          "phonetic": "/ɪmˈplɪsɪt/",
+          "partOfSpeech": "adj",
+          "meaning": "Ngấm ngầm, ẩn ý, không nói toạc ra nhưng ai cũng hiểu.",
+          "exampleTarget": "There was an implicit agreement that no one would bring up the painful topic.",
+          "exampleMeaning": "Có một sự ngầm đồng thuận rằng không ai được phép nhắc lại chủ đề đau buồn ấy."
+        },
+        {
+          "id": "w-en-1-7",
+          "term": "Legitimate",
+          "phonetic": "/lɪˈdʒɪtɪmət/",
+          "partOfSpeech": "adj",
+          "meaning": "Hợp pháp, chính đáng, có căn cứ xác đáng.",
+          "exampleTarget": "The consumers raised legitimate concerns regarding data privacy violations.",
+          "exampleMeaning": "Người tiêu dùng đã nêu lên những quan ngại chính đáng liên quan đến vi phạm quyền riêng tư."
+        },
+        {
+          "id": "w-en-1-8",
+          "term": "Perspective",
+          "phonetic": "/pərˈspektɪv/",
+          "partOfSpeech": "noun",
+          "meaning": "Góc nhìn, quan điểm cá nhân đối với một sự vật hiện tượng.",
+          "exampleTarget": "Traveling abroad helps people gain a much broader perspective on diverse cultures.",
+          "exampleMeaning": "Đi du lịch nước ngoài giúp con người có được góc nhìn rộng mở hơn về các nền văn hóa đa dạng."
+        },
+        {
+          "id": "w-en-1-9",
+          "term": "Subsequent",
+          "phonetic": "/ˈsʌbsɪkwənt/",
+          "partOfSpeech": "adj",
+          "meaning": "Xảy ra sau đó, tiếp theo theo trình tự thời gian.",
+          "exampleTarget": "Subsequent investigations confirmed that the initial report was entirely accurate.",
+          "exampleMeaning": "Các cuộc điều tra tiếp theo sau đó đã xác nhận rằng bản báo cáo ban đầu hoàn toàn chính xác."
+        },
+        {
+          "id": "w-en-1-10",
+          "term": "Underlying",
+          "phonetic": "/ˌʌndərˈlaɪɪŋ/",
+          "partOfSpeech": "adj",
+          "meaning": "Căn bản, nằm sâu bên dưới, là gốc rễ của vấn đề.",
+          "exampleTarget": "Stress is often the underlying cause of many chronic health issues.",
+          "exampleMeaning": "Căng thẳng thường là nguyên nhân gốc rễ sâu xa của nhiều vấn đề sức khỏe mãn tính."
+        }
+      ]
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000002",
+      "title": "Từ vựng tinh hoa IELTS 7.5+ Writing & Speaking",
+      "description": "Các từ vựng học thuật cao cấp C1 giúp tăng điểm tiêu chí Lexical Resource trong kỳ thi IELTS.",
+      "level": "C1 - C2",
+      "lang": "en",
+      "words": [
+        {
+          "id": "w-en-2-1",
+          "term": "Plausible",
+          "phonetic": "/ˈplɔːzəbl/",
+          "partOfSpeech": "adj",
+          "meaning": "Hợp lý, có vẻ đúng, đáng tin cậy.",
+          "exampleTarget": "The scientist offered a plausible hypothesis for the sudden extinction event.",
+          "exampleMeaning": "Nhà khoa học đã đưa ra một giả thuyết hợp lý cho sự kiện tuyệt chủng đột ngột."
+        },
+        {
+          "id": "w-en-2-2",
+          "term": "Mitigate",
+          "phonetic": "/ˈmɪtɪɡeɪt/",
+          "partOfSpeech": "verb",
+          "meaning": "Làm giảm nhẹ bớt tác hại hoặc mức độ nghiêm trọng.",
+          "exampleTarget": "Reforestation plays an indispensable role in mitigating climate change impacts.",
+          "exampleMeaning": "Tái trồng rừng đóng vai trò không thể thiếu trong việc giảm nhẹ tác động của biến đổi khí hậu."
+        },
+        {
+          "id": "w-en-2-3",
+          "term": "Detrimental",
+          "phonetic": "/ˌdetrɪˈmentl/",
+          "partOfSpeech": "adj",
+          "meaning": "Có hại, gây tổn hại nghiêm trọng.",
+          "exampleTarget": "Sedentary lifestyles have a distinctly detrimental effect on cognitive functions.",
+          "exampleMeaning": "Lối sống ít vận động gây ra tác hại rõ rệt đối với các chức năng nhận thức não bộ."
+        },
+        {
+          "id": "w-en-2-4",
+          "term": "Ubiquitous",
+          "phonetic": "/juːˈbɪkwɪtəs/",
+          "partOfSpeech": "adj",
+          "meaning": "Có mặt ở khắp mọi nơi, cực kỳ phổ biến.",
+          "exampleTarget": "Artificial intelligence is becoming increasingly ubiquitous in daily applications.",
+          "exampleMeaning": "Trí tuệ nhân tạo đang ngày càng trở nên phổ biến ở khắp nơi trong các ứng dụng thường nhật."
+        },
+        {
+          "id": "w-en-2-5",
+          "term": "Pragmatic",
+          "phonetic": "/præɡˈmætɪk/",
+          "partOfSpeech": "adj",
+          "meaning": "Thực tế, thực dụng, dựa trên tính khả thi thay vì lý thuyết.",
+          "exampleTarget": "Policymakers must adopt a pragmatic mindset when revising public healthcare laws.",
+          "exampleMeaning": "Các nhà hoạch định chính sách phải áp dụng tư duy thực tế khi sửa đổi luật y tế công cộng."
+        },
+        {
+          "id": "w-en-2-6",
+          "term": "Juxtapose",
+          "phonetic": "/ˌdʒʌkstəˈpoʊz/",
+          "partOfSpeech": "verb",
+          "meaning": "Đặt cạnh nhau để so sánh sự tương phản rõ rệt.",
+          "exampleTarget": "The exhibition juxtaposes contemporary modern art with traditional woodcut prints.",
+          "exampleMeaning": "Buổi triển lãm đặt nghệ thuật đương đại cạnh tranh khắc gỗ truyền thống để thấy sự đối lập."
+        },
+        {
+          "id": "w-en-2-7",
+          "term": "Superfluous",
+          "phonetic": "/suːˈpɜːrfluəs/",
+          "partOfSpeech": "adj",
+          "meaning": "Thừa thãi, không cần thiết, vượt quá mức đòi hỏi.",
+          "exampleTarget": "Eliminating superfluous packaging helps reduce millions of tons of plastic waste.",
+          "exampleMeaning": "Cắt giảm bao bì thừa thãi giúp giảm thiểu hàng triệu tấn rác thải nhựa."
+        },
+        {
+          "id": "w-en-2-8",
+          "term": "Discrepancy",
+          "phonetic": "/dɪˈskrepənsi/",
+          "partOfSpeech": "noun",
+          "meaning": "Sự sai lệch, bất đồng giữa hai số liệu hoặc câu chuyện.",
+          "exampleTarget": "Auditors uncovered a noticeable discrepancy between the receipts and bank records.",
+          "exampleMeaning": "Các kiểm toán viên đã phát hiện sự sai lệch đáng chú ý giữa biên lai và sổ sách ngân hàng."
+        },
+        {
+          "id": "w-en-2-9",
+          "term": "Exacerbate",
+          "phonetic": "/ɪɡˈzæsərbeɪt/",
+          "partOfSpeech": "verb",
+          "meaning": "Làm trầm trọng thêm, khiến tình hình xấu đi.",
+          "exampleTarget": "Heavy industrial emissions will inevitably exacerbate the existing smog epidemic.",
+          "exampleMeaning": "Khí thải công nghiệp nặng chắc chắn sẽ làm trầm trọng thêm dịch khói mù hiện tại."
+        },
+        {
+          "id": "w-en-2-10",
+          "term": "Prevalent",
+          "phonetic": "/ˈprevələnt/",
+          "partOfSpeech": "adj",
+          "meaning": "Thịnh hành, lan tràn rộng khắp trong cộng đồng.",
+          "exampleTarget": "Anxiety disorders are increasingly prevalent among urban adolescents today.",
+          "exampleMeaning": "Rối loạn lo âu đang ngày càng lan tràn phổ biến trong giới thanh thiếu niên đô thị ngày nay."
+        }
+      ]
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000003",
+      "title": "Tiếng Anh thương mại & Giao tiếp công sở",
+      "description": "Bộ từ vựng giao tiếp thực chiến nơi làm việc: đàm phán hợp đồng, quản lý dự án và báo cáo.",
+      "level": "B2",
+      "lang": "en",
+      "words": [
+        {
+          "id": "w-en-3-1",
+          "term": "Streamline",
+          "phonetic": "/ˈstriːmlaɪn/",
+          "partOfSpeech": "verb",
+          "meaning": "Tinh gọn hoá, đơn giản hoá quy trình để tăng hiệu suất.",
+          "exampleTarget": "We need to streamline our internal approval process to speed up deliveries.",
+          "exampleMeaning": "Chúng ta cần tinh gọn hoá quy trình phê duyệt nội bộ để đẩy nhanh tiến độ giao hàng."
+        },
+        {
+          "id": "w-en-3-2",
+          "term": "Leverage",
+          "phonetic": "/ˈlevərɪdʒ/",
+          "partOfSpeech": "verb",
+          "meaning": "Tận dụng tối đa đòn bẩy hoặc lợi thế có sẵn.",
+          "exampleTarget": "The startup managed to leverage strategic partnerships to expand overseas.",
+          "exampleMeaning": "Công ty khởi nghiệp đã tận dụng quan hệ đối tác chiến lược để mở rộng ra nước ngoài."
+        },
+        {
+          "id": "w-en-3-3",
+          "term": "Bottleneck",
+          "phonetic": "/ˈbɒtlnek/",
+          "partOfSpeech": "noun",
+          "meaning": "Điểm nghẽn, nơi làm chậm toàn bộ dây chuyền hoạt động.",
+          "exampleTarget": "Manual quality control testing became the main bottleneck in our production line.",
+          "exampleMeaning": "Kiểm thử chất lượng thủ công đã trở thành điểm nghẽn chính trên dây chuyền sản xuất."
+        },
+        {
+          "id": "w-en-3-4",
+          "term": "Consensus",
+          "phonetic": "/kənˈsensəs/",
+          "partOfSpeech": "noun",
+          "meaning": "Sự đồng thuận chung của cả tập thể.",
+          "exampleTarget": "After two hours of intense debate, the board reached a unanimous consensus.",
+          "exampleMeaning": "Sau hai giờ tranh luận căng thẳng, ban giám đốc đã đạt được sự đồng thuận nhất trí."
+        },
+        {
+          "id": "w-en-3-5",
+          "term": "Benchmark",
+          "phonetic": "/ˈbentʃmɑːrk/",
+          "partOfSpeech": "noun",
+          "meaning": "Tiêu chuẩn đối sánh, chuẩn mực để so sánh đánh giá.",
+          "exampleTarget": "Their customer satisfaction rating serves as a reliable benchmark for our industry.",
+          "exampleMeaning": "Tỷ lệ hài lòng khách hàng của họ được dùng làm chuẩn đối sánh đáng tin cậy cho ngành."
+        },
+        {
+          "id": "w-en-3-6",
+          "term": "Viable",
+          "phonetic": "/ˈvaɪəbl/",
+          "partOfSpeech": "adj",
+          "meaning": "Khả thi, có khả năng tồn tại và sinh lời lâu dài.",
+          "exampleTarget": "Subscription pricing turned out to be a financially viable business model.",
+          "exampleMeaning": "Thu phí định kỳ đã chứng minh là một mô hình kinh doanh khả thi về mặt tài chính."
+        },
+        {
+          "id": "w-en-3-7",
+          "term": "Contingency",
+          "phonetic": "/kənˈtɪndʒənsi/",
+          "partOfSpeech": "noun",
+          "meaning": "Kế hoạch dự phòng cho tình huống bất ngờ có thể xảy ra.",
+          "exampleTarget": "Every risk assessment must include a solid contingency plan for server outages.",
+          "exampleMeaning": "Mọi đánh giá rủi ro đều phải bao gồm kế hoạch dự phòng vững chắc cho sự cố sập máy chủ."
+        },
+        {
+          "id": "w-en-3-8",
+          "term": "Scalable",
+          "phonetic": "/ˈskeɪləbl/",
+          "partOfSpeech": "adj",
+          "meaning": "Có khả năng mở rộng quy mô mà không giảm hiệu năng.",
+          "exampleTarget": "Cloud infrastructure provides a highly scalable solution for rapid user growth.",
+          "exampleMeaning": "Hạ tầng điện toán đám mây cung cấp giải pháp mở rộng quy mô linh hoạt khi người dùng tăng."
+        },
+        {
+          "id": "w-en-3-9",
+          "term": "Accountability",
+          "phonetic": "/əˌkaʊntəˈbɪləti/",
+          "partOfSpeech": "noun",
+          "meaning": "Trách nhiệm giải trình, chịu trách nhiệm về kết quả hành động.",
+          "exampleTarget": "Clear ownership fosters individual accountability across cross-functional teams.",
+          "exampleMeaning": "Phân quyền rõ ràng thúc đẩy tinh thần trách nhiệm giải trình cá nhân giữa các phòng ban."
+        },
+        {
+          "id": "w-en-3-10",
+          "term": "Incentive",
+          "phonetic": "/ɪnˈsentɪv/",
+          "partOfSpeech": "noun",
+          "meaning": "Động lực khuyến khích, phần thưởng kích thích làm việc.",
+          "exampleTarget": "Performance-based bonuses provide a strong financial incentive for sales teams.",
+          "exampleMeaning": "Thưởng theo hiệu quả đem lại động lực tài chính mạnh mẽ cho đội ngũ kinh doanh."
+        }
+      ]
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000004",
+      "title": "HSK 3 - 4 Từ vựng cốt lõi khẩu ngữ & đời sống",
+      "description": "Bộ từ vựng Hán ngữ thông dụng nhất trong giao tiếp hàng ngày và thương mại.",
+      "level": "HSK 3 - 4",
+      "lang": "zh",
+      "words": [
+        {
+          "id": "w-zh-1-1",
+          "term": "坚持",
+          "phonetic": "jiān chí",
+          "partOfSpeech": "động từ",
+          "meaning": "Kiên trì, giữ vững quyết tâm không từ bỏ.",
+          "exampleTarget": "只要坚持努力，你终会取得令人瞩目的成绩。",
+          "exampleMeaning": "Chỉ cần kiên trì nỗ lực, bạn cuối cùng sẽ đạt thành tích đáng nể."
+        },
+        {
+          "id": "w-zh-1-2",
+          "term": "深刻",
+          "phonetic": "shēn kè",
+          "partOfSpeech": "tính từ",
+          "meaning": "Sâu sắc, để lại dấu ấn khó phai.",
+          "exampleTarget": "这次经历给我留下了极为深刻的记忆。",
+          "exampleMeaning": "Trải nghiệm lần này đã để lại cho tôi ký ức vô cùng sâu sắc."
+        },
+        {
+          "id": "w-zh-1-3",
+          "term": "适应",
+          "phonetic": "shì yìng",
+          "partOfSpeech": "động từ",
+          "meaning": "Thích nghi, quen dần với môi trường mới.",
+          "exampleTarget": "来到新城市后，他很快便适应了那里的生活节奏。",
+          "exampleMeaning": "Sau khi đến thành phố mới, anh ấy nhanh chóng thích nghi với nhịp sống nơi đó."
+        },
+        {
+          "id": "w-zh-1-4",
+          "term": "积累",
+          "phonetic": "jī lěi",
+          "partOfSpeech": "động từ / danh từ",
+          "meaning": "Tích luỹ từng chút một theo thời gian.",
+          "exampleTarget": "学习语言需要日积月累，不可急于求成。",
+          "exampleMeaning": "Học ngôn ngữ cần tích luỹ từng ngày, không thể nóng vội."
+        },
+        {
+          "id": "w-zh-1-5",
+          "term": "沟通",
+          "phonetic": "gōu tōng",
+          "partOfSpeech": "động từ",
+          "meaning": "Giao tiếp, trao đổi thấu hiểu lẫn nhau.",
+          "exampleTarget": "良好的沟通是解决团队矛盾的关键钥匙。",
+          "exampleMeaning": "Giao tiếp tốt là chìa khoá then chốt để giải quyết mâu thuẫn nhóm."
+        },
+        {
+          "id": "w-zh-1-6",
+          "term": "详细",
+          "phonetic": "xiáng xì",
+          "partOfSpeech": "tính từ",
+          "meaning": "Chi tiết, tường tận, không bỏ sót điều gì.",
+          "exampleTarget": "请为您负责的方案制定一份详细的执行计划。",
+          "exampleMeaning": "Xin vui lòng lập một kế hoạch thực hiện chi tiết cho phương án của bạn."
+        },
+        {
+          "id": "w-zh-1-7",
+          "term": "陪同",
+          "phonetic": "péi tóng",
+          "partOfSpeech": "động từ",
+          "meaning": "Đi cùng, tháp tùng ai đó một cách chu đáo.",
+          "exampleTarget": "总经理在助手的陪同下视察了新建的研发中心。",
+          "exampleMeaning": "Tổng giám đốc dưới sự tháp tùng của trợ lý đã thị sát trung tâm R&D mới xây."
+        },
+        {
+          "id": "w-zh-1-8",
+          "term": "丰富",
+          "phonetic": "fēng fù",
+          "partOfSpeech": "tính từ / động từ",
+          "meaning": "Phong phú, dồi dào về kiến thức hoặc nội dung.",
+          "exampleTarget": "经常阅读课外书籍可以丰富我们的精神世界。",
+          "exampleMeaning": "Thường xuyên đọc sách ngoài giờ có thể làm phong phú thế giới tinh thần của chúng ta."
+        },
+        {
+          "id": "w-zh-1-9",
+          "term": "诚恳",
+          "phonetic": "chéng kěn",
+          "partOfSpeech": "tính từ",
+          "meaning": "Chân thành, thành thật từ tận đáy lòng.",
+          "exampleTarget": "他诚恳的态度打动了在场所有的评委老师。",
+          "exampleMeaning": "Thái độ chân thành của anh ấy đã làm xúc động tất cả thầy cô giám khảo có mặt."
+        },
+        {
+          "id": "w-zh-1-10",
+          "term": "关键",
+          "phonetic": "guān jiàn",
+          "partOfSpeech": "danh từ / tính từ",
+          "meaning": "Then chốt, mấu chốt quyết định thành bại.",
+          "exampleTarget": "在关键时刻保持冷静是优秀领导者的特质。",
+          "exampleMeaning": "Giữ được bình tĩnh vào thời khắc then chốt là phẩm chất của nhà lãnh đạo ưu tú."
+        }
+      ]
+    },
+    {
+      "id": "a0000000-0000-0000-0000-000000000005",
+      "title": "JLPT N3 - N2 Từ vựng thông dụng trong đời sống & Công ty",
+      "description": "Từ vựng thiết yếu giúp bạn vượt qua kỳ thi năng lực tiếng Nhật và làm việc tại Nhật.",
+      "level": "N3 - N2",
+      "lang": "ja",
+      "words": [
+        {
+          "id": "w-ja-1-1",
+          "term": "改善",
+          "phonetic": "かいぜん (Kaizen)",
+          "partOfSpeech": "danh từ / suru",
+          "meaning": "Cải tiến liên tục để ngày càng tốt hơn.",
+          "exampleTarget": "作業の効率を改善するため、新しい手順を導入した。",
+          "exampleMeaning": "Để cải thiện hiệu suất công việc, chúng tôi đã đưa vào quy trình mới."
+        },
+        {
+          "id": "w-ja-1-2",
+          "term": "思いやり",
+          "phonetic": "おもいやり (Omoiyari)",
+          "partOfSpeech": "danh từ",
+          "meaning": "Sự thấu hiểu, chu đáo và biết nghĩ cho người khác.",
+          "exampleTarget": "相手への思いやりを持って接することが信頼につながる。",
+          "exampleMeaning": "Ứng xử với sự quan tâm nghĩ cho đối phương sẽ dẫn đến sự tin tưởng."
+        },
+        {
+          "id": "w-ja-1-3",
+          "term": "柔軟",
+          "phonetic": "じゅうなん (Juunan)",
+          "partOfSpeech": "tính từ na",
+          "meaning": "Mềm dẻo, linh hoạt ứng biến theo tình huống.",
+          "exampleTarget": "予期せぬ変化にも柔軟に対応できる姿勢が求められる。",
+          "exampleMeaning": "Cần có tinh thần ứng biến linh hoạt trước những đổi thay bất ngờ."
+        },
+        {
+          "id": "w-ja-1-4",
+          "term": "妥協",
+          "phonetic": "だきょう (Dakyou)",
+          "partOfSpeech": "danh từ / suru",
+          "meaning": "Thoả hiệp, nhượng bộ để đạt điểm chung.",
+          "exampleTarget": "双方が譲り合い、ようやく妥協点に達した。",
+          "exampleMeaning": "Cả hai bên cùng nhượng bộ và cuối cùng đã đạt được điểm thoả hiệp."
+        },
+        {
+          "id": "w-ja-1-5",
+          "term": "貢献",
+          "phonetic": "こうけん (Kouken)",
+          "partOfSpeech": "danh từ / suru",
+          "meaning": "Cống hiến, đóng góp tích cực cho xã hội.",
+          "exampleTarget": "地域社会の発展に貢献する活動に積極的に参加している。",
+          "exampleMeaning": "Chúng tôi tích cực tham gia các hoạt động đóng góp cho sự phát triển địa phương."
+        },
+        {
+          "id": "w-ja-1-6",
+          "term": "的確",
+          "phonetic": "てきかく (Tekikaku)",
+          "partOfSpeech": "tính từ na",
+          "meaning": "Chính xác, trúng đích, xác đáng.",
+          "exampleTarget": "状況を的確に把握し、速やかに次の手を打つ必要がある。",
+          "exampleMeaning": "Cần nắm bắt tình hình một cách chính xác và nhanh chóng triển khai bước tiếp theo."
+        },
+        {
+          "id": "w-ja-1-7",
+          "term": "把握",
+          "phonetic": "はあく (Haaku)",
+          "partOfSpeech": "danh từ / suru",
+          "meaning": "Nắm vững, thấu suốt toàn diện vấn đề.",
+          "exampleTarget": "プロジェクトの進捗状況をリアルタイムで把握する。",
+          "exampleMeaning": "Nắm bắt tiến độ của dự án theo thời gian thực."
+        },
+        {
+          "id": "w-ja-1-8",
+          "term": "迅速",
+          "phonetic": "じんそく (Jinsoku)",
+          "partOfSpeech": "tính từ na",
+          "meaning": "Nhanh chóng, thần tốc, không chần chừ.",
+          "exampleTarget": "顧客からの問い合わせには迅速に対応しなければならない。",
+          "exampleMeaning": "Phải phản hồi một cách nhanh chóng các thắc mắc từ phía khách hàng."
+        },
+        {
+          "id": "w-ja-1-9",
+          "term": "誠実",
+          "phonetic": "せいじつ (Seijitsu)",
+          "partOfSpeech": "tính từ na",
+          "meaning": "Thành thực, chân thành và đáng tin cậy.",
+          "exampleTarget": "誠実な仕事ぶりが高く評価され、昇進が決まった。",
+          "exampleMeaning": "Tác phong làm việc chân chính được đánh giá cao và anh đã được thăng chức."
+        },
+        {
+          "id": "w-ja-1-10",
+          "term": "綿密",
+          "phonetic": "めんみつ (Menmitsu)",
+          "partOfSpeech": "tính từ na",
+          "meaning": "Tỉ mỉ, chu đáo, cẩn thận từng chi tiết nhỏ.",
+          "exampleTarget": "綿密な計画を立ててから実行に移すことが成功の秘訣だ。",
+          "exampleMeaning": "Lập kế hoạch tỉ mỉ chu đáo trước khi thực hiện là bí quyết của thành công."
+        }
+      ]
+    }
+  ],
+  "curatedMediaList": [
+    {
+      "id": "media-en-ted-memory",
+      "title": "How Memories Form and How We Lose Them",
+      "viTitle": "Ký ức được hình thành và mất đi như thế nào trong não bộ",
+      "speaker": "TED-Ed • Catharine Young",
+      "lang": "en",
+      "type": "video",
+      "level": "B1 - B2",
+      "category": "tech",
+      "durationSec": 154,
+      "subtitles": [
+        {
+          "id": "sub-en-1",
+          "start": 0,
+          "end": 8,
+          "text": "Imagine your brain as a vast library filled with millions of complex memories.",
+          "vi": "Hãy tưởng tượng bộ não của bạn như một thư viện khổng lồ chứa hàng triệu ký ức phức tạp.",
+          "vocabHints": [
+            {
+              "word": "vast",
+              "meaning": "Bao la, rộng lớn khổng lồ"
+            },
+            {
+              "word": "complex",
+              "meaning": "Phức tạp, nhiều tầng lớp"
+            }
+          ]
+        },
+        {
+          "id": "sub-en-2",
+          "start": 8,
+          "end": 17,
+          "text": "Memories are encoded by networks of neurons firing in specific synchronous patterns.",
+          "vi": "Ký ức được mã hoá bởi các mạng lưới tế bào thần kinh kích hoạt theo những mô thức đồng bộ cụ thể.",
+          "vocabHints": [
+            {
+              "word": "encoded",
+              "meaning": "Được mã hoá, lưu trữ"
+            },
+            {
+              "word": "synchronous",
+              "meaning": "Đồng bộ, cùng lúc"
+            }
+          ]
+        },
+        {
+          "id": "sub-en-3",
+          "start": 17,
+          "end": 27,
+          "text": "Short-term memory holds information temporarily, like a scratchpad for immediate calculations.",
+          "vi": "Trí nhớ ngắn hạn lưu giữ thông tin tạm thời, tựa như một cuốn sổ nháp cho những phép tính tức thì.",
+          "vocabHints": [
+            {
+              "word": "temporarily",
+              "meaning": "Tạm thời, ngắn hạn"
+            },
+            {
+              "word": "scratchpad",
+              "meaning": "Sổ nháp ghi nhanh"
+            }
+          ]
+        },
+        {
+          "id": "sub-en-4",
+          "start": 27,
+          "end": 38,
+          "text": "To convert this into long-term memory, the brain undergoes a biochemical process called consolidation.",
+          "vi": "Để chuyển đổi điều này thành trí nhớ dài hạn, não bộ trải qua một quá trình sinh hoá gọi là sự củng cố ký ức.",
+          "vocabHints": [
+            {
+              "word": "consolidation",
+              "meaning": "Sự củng cố, làm bền vững"
+            },
+            {
+              "word": "undergoes",
+              "meaning": "Trải qua, chịu sự biến đổi"
+            }
+          ]
+        },
+        {
+          "id": "sub-en-5",
+          "start": 38,
+          "end": 50,
+          "text": "During sleep, the hippocampus replays these events to strengthen the synaptic connections.",
+          "vi": "Trong giấc ngủ, hồi hải mã tái phát lại các sự kiện này nhằm củng cố các liên kết synap thần kinh.",
+          "vocabHints": [
+            {
+              "word": "hippocampus",
+              "meaning": "Hồi hải mã (vùng não lưu giữ ký ức)"
+            },
+            {
+              "word": "strengthen",
+              "meaning": "Làm mạnh thêm, củng cố"
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "segmentTime": 8,
+          "question": "Ký ức được mã hoá trong não bộ nhờ cơ chế nào?",
+          "options": [
+            "Nhờ sự lưu trữ tĩnh của các tế bào mỡ",
+            "Mạng lưới neuron kích hoạt theo mô thức đồng bộ",
+            "Thông qua việc ghi chép trực tiếp vào võng mạc",
+            "Não bộ không tự mã hoá mà phụ thuộc vào âm thanh"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đoạn thoại nêu rõ: \"Memories are encoded by networks of neurons firing in specific synchronous patterns\"."
+        },
+        {
+          "id": "q2",
+          "segmentTime": 38,
+          "question": "Não bộ củng cố ký ức dài hạn chủ yếu vào thời điểm nào?",
+          "options": [
+            "Khi đang tập thể dục thể thao cường độ cao",
+            "Trong giấc ngủ nhờ hoạt động của vùng hồi hải mã",
+            "Ngay lập tức sau khi uống cà phê",
+            "Vào buổi sáng sớm trước khi ăn sáng"
+          ],
+          "correctIndex": 1,
+          "explanation": "Đoạn thoại chỉ ra: \"During sleep, the hippocampus replays these events to strengthen synaptic connections\"."
+        }
+      ]
+    },
+    {
+      "id": "media-en-bbc-habit",
+      "title": "6 Minute English: Breaking Bad Habits",
+      "viTitle": "Bản tin 6 phút tiếng Anh: Cách từ bỏ những thói quen xấu",
+      "speaker": "BBC Learning English",
+      "lang": "en",
+      "type": "podcast",
+      "level": "B1 - B2",
+      "category": "life",
+      "durationSec": 180,
+      "subtitles": [
+        {
+          "id": "sub-bbc-1",
+          "start": 0,
+          "end": 9,
+          "text": "Hello and welcome to 6 Minute English from BBC Learning English. I am Neil.",
+          "vi": "Xin chào và chào mừng bạn đến với 6 Minute English của BBC Learning English. Tôi là Neil."
+        },
+        {
+          "id": "sub-bbc-2",
+          "start": 9,
+          "end": 19,
+          "text": "And I am Sam. Today we are talking about habits, particularly those annoying habits we want to kick.",
+          "vi": "Và tôi là Sam. Hôm nay chúng ta sẽ thảo luận về thói quen, đặc biệt là những thói quen phiền toái mà ta muốn từ bỏ.",
+          "vocabHints": [
+            {
+              "word": "annoying",
+              "meaning": "Gây phiền toái, bực mình"
+            },
+            {
+              "word": "kick",
+              "meaning": "Từ bỏ, dứt bỏ (thói quen xấu)"
+            }
+          ]
+        },
+        {
+          "id": "sub-bbc-3",
+          "start": 19,
+          "end": 32,
+          "text": "Psychologists suggest that habits form a neurological loop: cue, routine, and reward.",
+          "vi": "Các nhà tâm lý học chỉ ra rằng thói quen hình thành một vòng lặp thần kinh: gợi ý, hành vi và phần thưởng.",
+          "vocabHints": [
+            {
+              "word": "neurological loop",
+              "meaning": "Vòng lặp dẫn truyền thần kinh"
+            },
+            {
+              "word": "cue",
+              "meaning": "Tín hiệu gợi nhắc, kích hoạt"
+            }
+          ]
+        },
+        {
+          "id": "sub-bbc-4",
+          "start": 32,
+          "end": 45,
+          "text": "To replace an unhealthy routine, you must first identify the underlying trigger.",
+          "vi": "Để thay thế một hành vi không lành mạnh, trước tiên bạn phải xác định được tác nhân kích hoạt ẩn sâu bên dưới.",
+          "vocabHints": [
+            {
+              "word": "replace",
+              "meaning": "Thay thế, hoán đổi"
+            },
+            {
+              "word": "trigger",
+              "meaning": "Tác nhân kích hoạt phản xạ"
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "q-bbc-1",
+          "segmentTime": 19,
+          "question": "Vòng lặp thói quen thần kinh bao gồm 3 yếu tố nào?",
+          "options": [
+            "Mục tiêu, Kế hoạch và Thành công",
+            "Tín hiệu (Cue), Hành vi (Routine) và Phần thưởng (Reward)",
+            "Suy nghĩ, Cảm xúc và Hành động",
+            "Bắt đầu, Thử thách và Kết thúc"
+          ],
+          "correctIndex": 1,
+          "explanation": "Bài nói chỉ rõ: \"habits form a neurological loop: cue, routine, and reward\"."
+        }
+      ]
+    },
+    {
+      "id": "media-zh-tea-culture",
+      "title": "中国传统茶艺与慢生活哲学",
+      "viTitle": "Nghệ thuật trà đạo truyền thống Trung Hoa và triết lý sống an nhiên",
+      "speaker": "CCTV 纪录片",
+      "lang": "zh",
+      "type": "video",
+      "level": "HSK 3 - 4",
+      "category": "culture",
+      "durationSec": 160,
+      "subtitles": [
+        {
+          "id": "sub-zh-1",
+          "start": 0,
+          "end": 8,
+          "text": "茶在中国不仅是一种日常饮品，更是千年文化的传承。",
+          "vi": "Trà ở Trung Quốc không chỉ là thức uống thường ngày, mà còn là sự kế thừa văn hoá ngàn năm.",
+          "vocabHints": [
+            {
+              "word": "饮品",
+              "meaning": "Đồ uống, thức uống"
+            },
+            {
+              "word": "传承",
+              "meaning": "Kế thừa, lưu truyền"
+            }
+          ]
+        },
+        {
+          "id": "sub-zh-2",
+          "start": 8,
+          "end": 18,
+          "text": "泡好一壶清茶，需要心平气和与恰到好处的水温。",
+          "vi": "Pha được một ấm trà ngon cần sự tâm bình khí hoà và nhiệt độ nước vừa vặn.",
+          "vocabHints": [
+            {
+              "word": "心平气和",
+              "meaning": "Tâm bình khí hoà, điềm tĩnh"
+            },
+            {
+              "word": "水温",
+              "meaning": "Nhiệt độ của nước"
+            }
+          ]
+        },
+        {
+          "id": "sub-zh-3",
+          "start": 18,
+          "end": 30,
+          "text": "品茶的过程教会人们在快节奏的生活中停下脚步，感受宁静。",
+          "vi": "Quá trình thưởng trà dạy con người dừng bước giữa nhịp sống hối hả để cảm nhận sự tĩnh lặng.",
+          "vocabHints": [
+            {
+              "word": "快节奏",
+              "meaning": "Nhịp sống nhanh, hối hả"
+            },
+            {
+              "word": "宁静",
+              "meaning": "Tĩnh lặng, an yên"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "media-ja-daily-routine",
+      "title": "日本の朝のルーティンと自然な挨拶",
+      "viTitle": "Thói quen buổi sáng tại Nhật Bản và cách chào hỏi tự nhiên",
+      "speaker": "Nihongo no Mori Channel",
+      "lang": "ja",
+      "type": "video",
+      "level": "JLPT N4 - N3",
+      "category": "life",
+      "durationSec": 150,
+      "subtitles": [
+        {
+          "id": "sub-ja-1",
+          "start": 0,
+          "end": 8,
+          "text": "皆さん、おはようございます！今日も清々しい朝ですね。",
+          "vi": "Chào buổi sáng mọi người! Hôm nay quả là một buổi sáng trong lành sảng khoái.",
+          "vocabHints": [
+            {
+              "word": "清々しい",
+              "meaning": "Trong lành, tươi mát sảng khoái"
+            }
+          ]
+        },
+        {
+          "id": "sub-ja-2",
+          "start": 8,
+          "end": 18,
+          "text": "朝起きたら、まずコップ一杯の白湯を飲むのが私のルーティンです。",
+          "vi": "Sau khi thức dậy vào buổi sáng, thói quen của tôi là uống một cốc nước ấm trước tiên.",
+          "vocabHints": [
+            {
+              "word": "白湯",
+              "meaning": "Nước ấm đun sôi để nguội"
+            },
+            {
+              "word": "ルーティン",
+              "meaning": "Thói quen định kỳ hàng ngày"
+            }
+          ]
+        },
+        {
+          "id": "sub-ja-3",
+          "start": 18,
+          "end": 30,
+          "text": "近所の人に笑顔で「いってきます」と声をかけると、気持ちよく一日が始まります。",
+          "vi": "Khi mỉm cười chào \"Tôi đi đây nhé\" với hàng xóm, ngày mới sẽ bắt đầu thật dễ chịu.",
+          "vocabHints": [
+            {
+              "word": "近所",
+              "meaning": "Hàng xóm láng giềng gần nhà"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "readingList": [
+    {
+      "id": "read-en-tortoise-hare",
+      "title": "The Tortoise and the Hare",
+      "viTitle": "Rùa và Thỏ - Truyện ngụ ngôn Aesop",
+      "author": "Aesop (Phạm vi công cộng)",
+      "type": "short_story",
+      "lang": "en",
+      "level": "A2 - B1",
+      "wordCount": 210,
+      "readingTimeMin": 2,
+      "sourceNote": "Nguồn: Truyện ngụ ngôn cổ đại Hy Lạp (Public Domain)",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "targetText": "A Hare was once ridiculing the slow feet of a Tortoise. The Tortoise, smiling quietly, replied that despite his heavy shell, he could beat the nimble Hare in a race across the countryside.",
+          "viTranslation": "Một ngày nọ, chú Thỏ buông lời chế giễu đôi chân chậm chạp của Rùa. Rùa chỉ mỉm cười điềm tĩnh đáp lại rằng bất chấp chiếc mai nặng nề, chú vẫn có thể đánh bại chú Thỏ lanh lợi trong một cuộc đua xuyên qua cánh đồng.",
+          "vocabNotes": [
+            {
+              "word": "ridiculing",
+              "meaning": "Chế giễu, nhạo báng"
+            },
+            {
+              "word": "nimble",
+              "meaning": "Nhanh nhẹn, lanh lẹ"
+            }
+          ]
+        },
+        {
+          "id": "p2",
+          "targetText": "The Hare, overly confident in his natural swiftness, accepted the challenge without hesitation. Soon after the starting signal, the Hare sprinted far ahead and decided to take a brief nap under a shady oak tree.",
+          "viTranslation": "Thỏ vì quá tự phụ vào tốc độ bẩm sinh của mình nên đã nhận lời thách đấu không chút đắn đo. Ngay sau hiệu lệnh xuất phát, Thỏ phóng vụt lên phía trước rồi quyết định đánh một giấc ngủ ngắn dưới bóng râm của cây sồi.",
+          "vocabNotes": [
+            {
+              "word": "swiftness",
+              "meaning": "Sự nhanh nhẹn, tốc độ cao"
+            },
+            {
+              "word": "sprinted",
+              "meaning": "Chạy nước rút, phóng vọt đi"
+            }
+          ]
+        },
+        {
+          "id": "p3",
+          "targetText": "Meanwhile, the Tortoise kept plodding on steadily without pausing for a single moment. When the Hare finally awoke from his slumber, he rushed towards the finish line only to see the Tortoise comfortably resting as the victor.",
+          "viTranslation": "Trong lúc đó, Rùa vẫn kiên trì từng bước vững chắc không ngừng nghỉ một giây nào. Khi Thỏ cuối cùng tỉnh dậy khỏi giấc ngủ, chú vội vã lao về phía vạch đích nhưng chỉ thấy Rùa đã thảnh thơi nghỉ ngơi trong tư cách người chiến thắng.",
+          "vocabNotes": [
+            {
+              "word": "plodding",
+              "meaning": "Bước đi nặng nhọc nhưng kiên trì"
+            },
+            {
+              "word": "slumber",
+              "meaning": "Giấc ngủ say"
+            },
+            {
+              "word": "victor",
+              "meaning": "Người chiến thắng vinh quang"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-en-alice-rabbit-hole",
+      "title": "Down the Rabbit Hole",
+      "viTitle": "Xuống hang thỏ - Trích Alice ở xứ sở diệu kỳ",
+      "author": "Lewis Carroll (1865, Public Domain)",
+      "type": "novel",
+      "lang": "en",
+      "level": "B1 - B2",
+      "wordCount": 260,
+      "readingTimeMin": 3,
+      "sourceNote": "Nguồn: Văn học thiếu nhi kinh điển thế giới (Public Domain)",
+      "paragraphs": [
+        {
+          "id": "p-al-1",
+          "targetText": "Alice was beginning to get very tired of sitting by her sister on the riverbank, and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it.",
+          "viTranslation": "Alice bắt đầu cảm thấy rất mệt mỏi khi phải ngồi cạnh chị gái bên bờ sông mà chẳng có việc gì để làm. Một hai lần cô bé đã liếc nhìn vào cuốn sách chị đang đọc, nhưng trong đó chẳng hề có tranh ảnh hay những lời đối thoại nào.",
+          "vocabNotes": [
+            {
+              "word": "riverbank",
+              "meaning": "Bờ sông, bến nước"
+            },
+            {
+              "word": "peeped",
+              "meaning": "Liếc trộm, nhìn lén"
+            }
+          ]
+        },
+        {
+          "id": "p-al-2",
+          "targetText": "Suddenly, a White Rabbit with curious pink eyes ran close by her. It took a pocket-watch out of its waistcoat pocket, looked at it with anxiety, and hurried away into a large rabbit-hole under the hedge.",
+          "viTranslation": "Bất thình lình, một chú Thỏ Trắng với đôi mắt màu hồng kỳ lạ chạy vụt qua sát cạnh cô. Chú rút một chiếc đồng hồ quả quýt ra khỏi túi áo gi-lê, nhìn vào nó với vẻ bồn chồn lo lắng, rồi vội vã chui tọt vào một chiếc hang thỏ lớn bên dưới hàng rào cây.",
+          "vocabNotes": [
+            {
+              "word": "waistcoat",
+              "meaning": "Áo gi-lê cài khuy"
+            },
+            {
+              "word": "anxiety",
+              "meaning": "Sự lo âu, bồn chồn"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-en-shakespeare-stage",
+      "title": "All the World is a Stage",
+      "viTitle": "Cả thế gian này là một sân khấu kịch",
+      "author": "William Shakespeare (Public Domain)",
+      "type": "play",
+      "lang": "en",
+      "level": "C1",
+      "wordCount": 220,
+      "readingTimeMin": 3,
+      "sourceNote": "Nguồn: Kịch kinh điển William Shakespeare (Public Domain)",
+      "paragraphs": [
+        {
+          "id": "p-sh-1",
+          "targetText": "All the world's a stage, and all the men and women merely players. They have their exits and their entrances, and one man in his time plays many different parts across his life journey.",
+          "viTranslation": "Cả thế gian này tựa như một sân khấu kịch, và mọi đàn ông lẫn đàn bà chỉ là những diễn viên. Họ có những lần bước ra và những lần rút lui, và một con người trong cuộc đời mình sẽ sắm rất nhiều vai diễn khác nhau trong suốt hành trình sống.",
+          "vocabNotes": [
+            {
+              "word": "merely",
+              "meaning": "Chỉ là, thuần tuý"
+            },
+            {
+              "word": "players",
+              "meaning": "Diễn viên sân khấu kịch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-en-science-habits",
+      "title": "The Architecture of Human Habit Loops",
+      "viTitle": "Cấu trúc của vòng lặp thói quen ở con người",
+      "author": "Ban biên tập LanguaLab (Tự biên soạn, Giấy phép mở)",
+      "type": "news",
+      "lang": "en",
+      "level": "B2",
+      "wordCount": 230,
+      "readingTimeMin": 3,
+      "sourceNote": "Nguồn: Bài viết giáo dục phi thương mại do LanguaLab biên soạn",
+      "paragraphs": [
+        {
+          "id": "p-hb-1",
+          "targetText": "Neuroscientists have discovered that habits emerge because the human brain constantly seeks ways to conserve energy. An efficient brain transforms routine behavioral sequences into automatic reflexes.",
+          "viTranslation": "Các nhà khoa học thần kinh phát hiện ra rằng thói quen xuất hiện bởi vì bộ não con người luôn tìm kiếm cách để bảo tồn năng lượng. Một bộ não hoạt động hiệu quả sẽ biến chuỗi hành vi thường nhật thành những phản xạ tự động.",
+          "vocabNotes": [
+            {
+              "word": "conserve",
+              "meaning": "Bảo tồn, gìn giữ năng lượng"
+            },
+            {
+              "word": "sequences",
+              "meaning": "Chuỗi trình tự liên tiếp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-en-walden-woods",
+      "title": "Where I Lived, and What I Lived For",
+      "viTitle": "Tôi đã sống ở đâu và sống vì điều gì - Trích Walden",
+      "author": "Henry David Thoreau (1854, Public Domain)",
+      "type": "book",
+      "lang": "en",
+      "level": "C1",
+      "wordCount": 240,
+      "readingTimeMin": 3,
+      "sourceNote": "Nguồn: Văn học tư tưởng triết học cổ điển (Public Domain)",
+      "paragraphs": [
+        {
+          "id": "p-wd-1",
+          "targetText": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived.",
+          "viTranslation": "Tôi tìm về chốn rừng sâu bởi vì tôi muốn sống một cách có chủ đích, để đối diện trực tiếp với những thực tại cốt lõi của đời sống, và xem liệu tôi có thể học được những điều cuộc đời muốn dạy, để khi nhắm mắt xuôi tay, tôi không nhận ra mình chưa từng thực sự sống.",
+          "vocabNotes": [
+            {
+              "word": "deliberately",
+              "meaning": "Có chủ đích, suy xét cẩn trọng"
+            },
+            {
+              "word": "essential",
+              "meaning": "Cốt lõi, thiết yếu nhất"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-zh-saiweng",
+      "title": "塞翁失马，焉知非福",
+      "viTitle": "Tái ông thất mã, an tri hoạ phúc",
+      "author": "Hoài Nam Tử (Văn ngôn cổ điển, Public Domain)",
+      "type": "short_story",
+      "lang": "zh",
+      "level": "HSK 4",
+      "wordCount": 180,
+      "readingTimeMin": 2,
+      "sourceNote": "Nguồn: Điển tích cổ đại Trung Hoa (Public Domain)",
+      "paragraphs": [
+        {
+          "id": "p-zh-1",
+          "targetText": "从前，边塞住着一位老翁。一天，他家的马无缘无故跑到了胡人的领地，邻居们都来安慰他。老翁却笑着说：“这怎么就不能是一件好事呢？”",
+          "viTranslation": "Thuở xưa, nơi biên ải có một ông lão sinh sống. Một hôm, con ngựa nhà ông chẳng rõ duyên cớ chạy lạc vào lãnh thổ của người Hồ, hàng xóm đều đến an ủi. Ông lão lại cười bảo: \"Việc này biết đâu lại là chuyện tốt?\"",
+          "vocabNotes": [
+            {
+              "word": "无缘无故",
+              "meaning": "Vô duyên vô cớ, không có lý do"
+            },
+            {
+              "word": "领地",
+              "meaning": "Lãnh địa, vùng đất"
+            }
+          ]
+        },
+        {
+          "id": "p-zh-2",
+          "targetText": "过了几个月，那匹马不仅自己回来了，还带回了一匹胡人的骏马。好事与坏事在生活中往往可以相互转化，不可因一时的得失而过于悲喜。",
+          "viTranslation": "Mấy tháng sau, con ngựa đó chẳng những tự quay về, mà còn dẫn theo một con tuấn mã của người Hồ. Chuyện vui và việc buồn trong đời thường chuyển hoá lẫn nhau, chớ nên vì được mất nhất thời mà quá bi luỵ hay mừng rỡ.",
+          "vocabNotes": [
+            {
+              "word": "骏马",
+              "meaning": "Tuấn mã, ngựa tốt chạy nhanh"
+            },
+            {
+              "word": "转化",
+              "meaning": "Chuyển hoá, thay đổi trạng thái"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read-ja-momotaro",
+      "title": "桃太郎（ももたろう）",
+      "viTitle": "Cậu bé quả đào Momotaro - Truyện cổ tích Nhật Bản",
+      "author": "Truyền thuyết dân gian Nhật Bản (Public Domain)",
+      "type": "short_story",
+      "lang": "ja",
+      "level": "JLPT N4",
+      "wordCount": 200,
+      "readingTimeMin": 2,
+      "sourceNote": "Nguồn: Truyện cổ tích dân gian Nhật Bản (Public Domain)",
+      "paragraphs": [
+        {
+          "id": "p-ja-1",
+          "targetText": "昔々、ある所におじいさんとおばあさんが住んでいました。おじいさんは山へ柴刈りに、おばあさんは川へ洗濯に行きました。",
+          "viTranslation": "Ngày xửa ngày xưa, ở một ngôi làng nọ có một ông lão và một bà lão sinh sống. Ông lão lên núi đốn củi, còn bà lão ra bờ sông giặt giũ quần áo.",
+          "vocabNotes": [
+            {
+              "word": "柴刈り",
+              "meaning": "Đốn củi, nhặt cành cây khô"
+            },
+            {
+              "word": "洗濯",
+              "meaning": "Giặt giũ đồ"
+            }
+          ]
+        },
+        {
+          "id": "p-ja-2",
+          "targetText": "おばあさんが洗濯をしていると、川上から大きな桃がどんぶらこ、どんぶらこと流れてきました。家に持ち帰って切ってみると、中から元気な男の子が生まれました。",
+          "viTranslation": "Khi bà lão đang giặt áo thì từ thượng nguồn dòng sông, một quả đào khổng lồ bồng bềnh trôi xuôi về phía bà. Đem về nhà bổ ra xem thì thấy một cậu bé khoẻ mạnh kháu khỉnh sinh ra từ bên trong.",
+          "vocabNotes": [
+            {
+              "word": "どんぶらこ",
+              "meaning": "Từ tượng hình chỉ vật bồng bềnh dập dềnh trôi trên nước"
+            },
+            {
+              "word": "持ち帰る",
+              "meaning": "Mang về nhà"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ielts": {
+    "skills": [
+      {
+        "skill": "listening",
+        "name": "Nghe hiểu",
+        "englishName": "Listening",
+        "currentBand": 6,
+        "targetBand": 7.5,
+        "completedTests": 12,
+        "totalTests": 35,
+        "tone": "accent",
+        "iconName": "Headphones",
+        "description": "Luyện 4 Section: Đối thoại hằng ngày, thuyết minh hướng dẫn, thảo luận học thuật và bài giảng đại học."
+      },
+      {
+        "skill": "reading",
+        "name": "Đọc hiểu",
+        "englishName": "Reading",
+        "currentBand": 5.5,
+        "targetBand": 7,
+        "completedTests": 9,
+        "totalTests": 30,
+        "tone": "warn",
+        "iconName": "BookOpen",
+        "description": "Chiến thuật Skimming & Scanning, xử lý bẫy True/False/Not Given, Matching Headings và Summary Completion."
+      },
+      {
+        "skill": "writing",
+        "name": "Viết học thuật",
+        "englishName": "Writing",
+        "currentBand": 5.5,
+        "targetBand": 6.5,
+        "completedTests": 6,
+        "totalTests": 25,
+        "tone": "ok",
+        "iconName": "PenTool",
+        "description": "Phân tích biểu đồ xu hướng Task 1 và cấu trúc bài luận nghị luận xã hội Task 2 chuẩn mạch lạc Cohesion."
+      },
+      {
+        "skill": "speaking",
+        "name": "Nói trực tiếp",
+        "englishName": "Speaking",
+        "currentBand": 5,
+        "targetBand": 6.5,
+        "completedTests": 4,
+        "totalTests": 20,
+        "tone": "mark",
+        "iconName": "Mic",
+        "description": "Luyện phản xạ Part 1, thuyết trình 2 phút Part 2 theo sườn Cue Card và thảo luận trừu tượng Part 3."
+      }
+    ],
+    "tests": [
+      {
+        "id": "read_cam18_p1",
+        "skill": "reading",
+        "title": "Lịch sử Cây Chè và Con đường Trà Mã Cổ Đạo",
+        "subtitle": "Cambridge IELTS Academic 18 - Passage 1",
+        "difficulty": "Dễ",
+        "timeMinutes": 20,
+        "totalQuestions": 6,
+        "categoryTags": [
+          "True/False/Not Given",
+          "Điền từ",
+          "Lịch sử"
+        ],
+        "status": "da_xong",
+        "bestScore": {
+          "raw": 5,
+          "band": 7
+        },
+        "passageTitle": "The Ancient Tea Horse Road: Heritage and Trade",
+        "passageContent": "Tea has shaped human civilizations for millennia. Originating in the lush highlands of southwestern China, wild tea plants (Camellia sinensis) were first harvested not as a leisurely brew, but as a bitter medicinal herb. According to legendary records dating back to Emperor Shennong around 2737 BCE, leaves fell into a cauldron of boiling water, unleashing a refreshing fragrance that marked the serendipitous birth of tea consumption.\n\nBy the Tang Dynasty (618–907 CE), tea had transformed from an elite remedy into a national obsession. Buddhist monks embraced the beverage to maintain alertness during marathon meditation sessions, fostering an elaborate culture of tea preparation. However, it was during the Song Dynasty that tea acquired geopolitical importance through the creation of the Tea Horse Road (Cha Ma Gu Dao).\n\nStretching across thousands of perilous kilometers through snowy passes, sheer gorges, and dense subtropical jungles, the Tea Horse Road linked Sichuan and Yunnan provinces with the Tibetan plateau. Tibetans required tremendous amounts of brick tea to balance their high-meat, high-fat diet in sub-zero altitudes. In exchange, the Chinese imperial military urgently needed hardy Tibetan mountain horses to defend their northern frontiers against nomadic incursions. An elaborate barter exchange flourished: one prime Tibetan warhorse could command up to sixty kilograms of compressed brick tea.\n\nThe human porters and mule caravans faced unimaginable hardships. Caravans navigated cliffside paths barely two feet wide, suspended precariously over roaring currents of the Yangtze and Mekong rivers. Modern preservationists consider this ancient network a cultural conduit comparable in significance to the Silk Road, demonstrating how a simple beverage bridged disparate geographies and empires.",
+        "questions": [
+          {
+            "id": 1,
+            "type": "true_false_not_given",
+            "questionText": "Wild tea leaves were originally consumed as a medicine rather than a recreational beverage.",
+            "options": [
+              {
+                "id": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "id": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "id": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "correctAnswer": "TRUE",
+            "explanation": "Đoạn 1 nêu rõ: \"wild tea plants were first harvested not as a leisurely brew, but as a bitter medicinal herb\" -> Khớp hoàn toàn với phát biểu.",
+            "categoryTag": "True/False/Not Given",
+            "passageSectionRef": "Đoạn 1"
+          },
+          {
+            "id": 2,
+            "type": "true_false_not_given",
+            "questionText": "Emperor Shennong intentionally conducted experiments to discover tea.",
+            "options": [
+              {
+                "id": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "id": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "id": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "correctAnswer": "FALSE",
+            "explanation": "Đoạn 1 ghi: \"leaves fell into a cauldron of boiling water... marked the serendipitous (tình cờ) birth of tea\", chứng minh đây là việc ngẫu nhiên chứ không phải chủ đích làm thí nghiệm.",
+            "categoryTag": "True/False/Not Given",
+            "passageSectionRef": "Đoạn 1"
+          },
+          {
+            "id": 3,
+            "type": "true_false_not_given",
+            "questionText": "Tibetan warriors taught Chinese soldiers advanced equestrian tactics.",
+            "options": [
+              {
+                "id": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "id": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "id": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "correctAnswer": "NOT GIVEN",
+            "explanation": "Bài đọc chỉ nhắc người Trung Hoa đổi trà lấy ngựa Tây Tạng để phòng thủ biên giới, không hề đề cập việc người Tây Tạng dạy chiến thuật cưỡi ngựa cho quân đội.",
+            "categoryTag": "True/False/Not Given",
+            "passageSectionRef": "Đoạn 3"
+          },
+          {
+            "id": 4,
+            "type": "multiple_choice",
+            "questionText": "Why did Tibetan people have an urgent demand for brick tea?",
+            "options": [
+              {
+                "id": "A",
+                "text": "It was used as religious offering in Buddhist temples"
+              },
+              {
+                "id": "B",
+                "text": "It helped counteract their heavy meat and fat diet in cold weather"
+              },
+              {
+                "id": "C",
+                "text": "It was much cheaper than drinking fresh mountain water"
+              },
+              {
+                "id": "D",
+                "text": "It was required by the Chinese emperor as yearly tax"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "Đoạn 3 giải thích: \"Tibetans required tremendous amounts of brick tea to balance their high-meat, high-fat diet in sub-zero altitudes.\"",
+            "categoryTag": "Multiple Choice",
+            "passageSectionRef": "Đoạn 3"
+          },
+          {
+            "id": 5,
+            "type": "fill_blank",
+            "questionText": "A single high-quality Tibetan warhorse could be traded for approximately sixty kilograms of compressed ______ tea.",
+            "correctAnswer": "brick",
+            "explanation": "Đoạn 3 ghi: \"one prime Tibetan warhorse could command up to sixty kilograms of compressed brick tea.\"",
+            "categoryTag": "Điền từ",
+            "passageSectionRef": "Đoạn 3"
+          },
+          {
+            "id": 6,
+            "type": "fill_blank",
+            "questionText": "Historical experts compare the cultural and commercial importance of the Tea Horse Road to the famous ______ Road.",
+            "correctAnswer": "Silk",
+            "explanation": "Đoạn 4 ghi: \"Modern preservationists consider this ancient network a cultural conduit comparable in significance to the Silk Road.\"",
+            "categoryTag": "Điền từ",
+            "passageSectionRef": "Đoạn 4"
+          }
+        ]
+      },
+      {
+        "id": "read_coral_p2",
+        "skill": "reading",
+        "title": "Bảo Tồn Rạn San Hô và Giải Pháp Công Nghệ Sinh Học",
+        "subtitle": "Cambridge IELTS Academic 17 - Passage 2",
+        "difficulty": "Trung bình",
+        "timeMinutes": 20,
+        "totalQuestions": 5,
+        "categoryTags": [
+          "Matching Headings",
+          "Multiple Choice",
+          "Sinh học môi trường"
+        ],
+        "status": "chua_lam",
+        "passageTitle": "Coral Reef Restoration: Engineering Resilient Ecosystems",
+        "passageContent": "Coral reefs occupy less than one percent of the ocean floor, yet they harbor an astonishing twenty-five percent of all marine species. Often celebrated as the underwater rainforests of our planet, these biological wonderlands provide vital coastal protection, sustain global fishing economies, and generate crucial revenue from eco-tourism.\n\nTragically, rising seawater temperatures triggered by atmospheric greenhouse gas emissions have induced unprecedented global coral bleaching events. When marine temperatures exceed normal thresholds by as little as one degree Celsius for sustained periods, corals expel their symbiotic microalgae (zooxanthellae), stripping them of their vibrant pigmentation and their primary photosynthetic nutrient source. Left untreated, starved coral skeletons turn bone-white and perish.\n\nIn response, marine biologists at the Australian Institute of Marine Science have pioneered assisted gene flow and selective cross-breeding. By cultivating thermally resilient \"super corals\" that have naturally survived in hyper-warm tidal lagoons, scientists can selectively breed larvae with elevated thermal tolerance. When reseeded onto damaged reefs, these engineered colonies demonstrate a significantly reduced susceptibility to bleaching.\n\nNevertheless, conservationists emphasize that localized biological interventions are fundamentally stopgap measures. Without aggressive global commitments to carbon neutrality, even the hardiest laboratory-bred corals will eventually succumb to acidified and overheated seas.",
+        "questions": [
+          {
+            "id": 1,
+            "type": "multiple_choice",
+            "questionText": "What percentage of marine species depend on coral reefs for survival?",
+            "options": [
+              {
+                "id": "A",
+                "text": "Less than one percent"
+              },
+              {
+                "id": "B",
+                "text": "Approximately ten percent"
+              },
+              {
+                "id": "C",
+                "text": "Twenty-five percent"
+              },
+              {
+                "id": "D",
+                "text": "Fifty percent"
+              }
+            ],
+            "correctAnswer": "C",
+            "explanation": "Đoạn 1 nêu: \"yet they harbor an astonishing twenty-five percent of all marine species.\"",
+            "categoryTag": "Multiple Choice",
+            "passageSectionRef": "Đoạn 1"
+          },
+          {
+            "id": 2,
+            "type": "true_false_not_given",
+            "questionText": "Coral bleaching happens when corals lose their symbiotic algae due to elevated temperatures.",
+            "options": [
+              {
+                "id": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "id": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "id": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "correctAnswer": "TRUE",
+            "explanation": "Đoạn 2 giải thích rõ khi nhiệt độ tăng, san hô đào thải vi tảo cộng sinh (zooxanthellae), dẫn tới mất màu và chết đói.",
+            "categoryTag": "True/False/Not Given",
+            "passageSectionRef": "Đoạn 2"
+          },
+          {
+            "id": 3,
+            "type": "fill_blank",
+            "questionText": "Biologists cultivate resilient colonies by sourcing corals that have naturally adapted in warm tidal ______.",
+            "correctAnswer": "lagoons",
+            "explanation": "Đoạn 3 có viết: \"survived in hyper-warm tidal lagoons\".",
+            "categoryTag": "Điền từ",
+            "passageSectionRef": "Đoạn 3"
+          },
+          {
+            "id": 4,
+            "type": "true_false_not_given",
+            "questionText": "Selective breeding has eliminated the need to curb global carbon emissions.",
+            "options": [
+              {
+                "id": "TRUE",
+                "text": "TRUE"
+              },
+              {
+                "id": "FALSE",
+                "text": "FALSE"
+              },
+              {
+                "id": "NOT GIVEN",
+                "text": "NOT GIVEN"
+              }
+            ],
+            "correctAnswer": "FALSE",
+            "explanation": "Đoạn 4 nhấn mạnh đây chỉ là giải pháp tạm thời (stopgap measures) và không thể thay thế việc cắt giảm khí thải.",
+            "categoryTag": "True/False/Not Given",
+            "passageSectionRef": "Đoạn 4"
+          },
+          {
+            "id": 5,
+            "type": "multiple_choice",
+            "questionText": "What is the main conclusion of the passage regarding coral reef preservation?",
+            "options": [
+              {
+                "id": "A",
+                "text": "Marine tourism must be completely prohibited worldwide"
+              },
+              {
+                "id": "B",
+                "text": "Bio-engineering must be paired with aggressive carbon reduction"
+              },
+              {
+                "id": "C",
+                "text": "Natural corals cannot adapt to any thermal variation"
+              },
+              {
+                "id": "D",
+                "text": "Artificial reefs are far superior to natural reefs"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "Ý chính đoạn cuối: giải pháp sinh học phải đi liền với cam kết giảm thải carbon toàn cầu.",
+            "categoryTag": "Multiple Choice",
+            "passageSectionRef": "Đoạn 4"
+          }
+        ]
+      },
+      {
+        "id": "list_sec1_homestay",
+        "skill": "listening",
+        "title": "Đăng Ký Lưu Trú Homestay Tại New Zealand",
+        "subtitle": "Cambridge IELTS 18 - Listening Section 1",
+        "difficulty": "Dễ",
+        "timeMinutes": 10,
+        "totalQuestions": 5,
+        "categoryTags": [
+          "Form Completion",
+          "Thông tin cá nhân",
+          "Section 1"
+        ],
+        "status": "chua_lam",
+        "audioTitle": "Section 1: International Student Homestay Application",
+        "audioDurationSeconds": 180,
+        "audioScript": "OFFICER: Good morning. Welcome to Auckland International Student Services. How can I help you today?\nSTUDENT: Hello. I am Keiko Tanaka. That is T-A-N-A-K-A. I study Environmental Science. I arrive on the 15th of February. Strictly no seafood, and I am allergic to cats.",
+        "questions": [
+          {
+            "id": 1,
+            "type": "fill_blank",
+            "questionText": "Student Full Name: Keiko ______",
+            "correctAnswer": "Tanaka",
+            "explanation": "Nghe đoạn đánh vần: T-A-N-A-K-A.",
+            "categoryTag": "Form Completion"
+          },
+          {
+            "id": 2,
+            "type": "fill_blank",
+            "questionText": "Academic Program: Environmental ______",
+            "correctAnswer": "Science",
+            "explanation": "Học sinh nói: \"I am enrolled in the Environmental Science undergraduate diploma.\"",
+            "categoryTag": "Form Completion"
+          },
+          {
+            "id": 3,
+            "type": "fill_blank",
+            "questionText": "Arrival date in Auckland: 15th of ______",
+            "correctAnswer": "February",
+            "explanation": "Học sinh nói: \"My flight arrives on the 15th of February.\"",
+            "categoryTag": "Form Completion"
+          },
+          {
+            "id": 4,
+            "type": "fill_blank",
+            "questionText": "Dietary restriction: Cannot consume ______",
+            "correctAnswer": "seafood",
+            "explanation": "Học sinh nói rõ: \"I do not eat seafood.\"",
+            "categoryTag": "Form Completion"
+          },
+          {
+            "id": 5,
+            "type": "multiple_choice",
+            "questionText": "What pet allergy does the student specify?",
+            "options": [
+              {
+                "id": "A",
+                "text": "Dogs"
+              },
+              {
+                "id": "B",
+                "text": "Birds"
+              },
+              {
+                "id": "C",
+                "text": "Cats"
+              },
+              {
+                "id": "D",
+                "text": "Rabbits"
+              }
+            ],
+            "correctAnswer": "C",
+            "explanation": "Học sinh nói: \"Also, I am allergic to cats.\"",
+            "categoryTag": "Multiple Choice"
+          }
+        ]
+      },
+      {
+        "id": "write_task2_ai",
+        "skill": "writing",
+        "title": "Trí Tuệ Nhân Tạo và Tương Lai Giáo Dục",
+        "subtitle": "IELTS Academic Writing Task 2 - Essay",
+        "difficulty": "Khó",
+        "timeMinutes": 40,
+        "totalQuestions": 1,
+        "categoryTags": [
+          "Task 2",
+          "Nghị luận xã hội",
+          "Agree or Disagree"
+        ],
+        "status": "da_xong",
+        "bestScore": {
+          "raw": 6,
+          "band": 6.5
+        },
+        "taskNumber": 2,
+        "minWords": 250,
+        "promptRequirements": "Some people believe that artificial intelligence and automated teaching applications will soon replace human teachers in classrooms. Others argue that human educators remain irreplaceable in developing emotional intelligence and critical thinking.\n\nDiscuss both views and give your own opinion. Write at least 250 words.",
+        "questions": [
+          {
+            "id": 1,
+            "type": "essay",
+            "questionText": "Viết bài luận nghị luận Task 2 bàn về 2 quan điểm và nêu lập trường cá nhân (tối thiểu 250 từ):",
+            "correctAnswer": "Tiêu chuẩn chấm điểm: Task Response, Coherence & Cohesion, Lexical Resource, Grammar Range.",
+            "explanation": "Bố cục bài luận 4 đoạn: 1. Mở bài; 2. Thân bài 1 (lợi thế của AI); 3. Thân bài 2 (vai trò giáo viên người thật); 4. Kết bài.",
+            "categoryTag": "IELTS Writing Task 2"
+          }
+        ]
+      },
+      {
+        "id": "speak_cue_travel",
+        "skill": "speaking",
+        "title": "Chuyến Đi Đáng Nhớ và Văn Hóa Bản Địa",
+        "subtitle": "IELTS Speaking Full 3 Parts",
+        "difficulty": "Trung bình",
+        "timeMinutes": 14,
+        "totalQuestions": 3,
+        "categoryTags": [
+          "Part 1, 2, 3",
+          "Cue Card",
+          "Du lịch & Văn hóa"
+        ],
+        "status": "chua_lam",
+        "partNumber": 2,
+        "prepTimeSeconds": 60,
+        "speakTimeSeconds": 120,
+        "prompts": [
+          "Part 1: Do you prefer travelling alone or with friends? What was the most interesting place you visited recently?",
+          "Part 2 (Cue Card): Describe a memorable journey you made by public transport. You should say: Where you went, What transport you used, Who was with you, and explain why this journey was so memorable to you.",
+          "Part 3: How has modern high-speed transportation changed tourism? Do you think remote natural attractions should limit visitor numbers to prevent pollution?"
+        ],
+        "questions": [
+          {
+            "id": 1,
+            "type": "speaking_prompt",
+            "questionText": "Part 1: Phỏng vấn ngắn về thói quen du lịch.",
+            "correctAnswer": "Fluency & Coherence, Lexical Resource, Pronunciation, Grammar.",
+            "explanation": "Trả lời tự nhiên từ 2-3 câu.",
+            "categoryTag": "Speaking Part 1"
+          },
+          {
+            "id": 2,
+            "type": "speaking_prompt",
+            "questionText": "Part 2: 1 phút chuẩn bị, 2 phút nói về chuyến đi đáng nhớ.",
+            "correctAnswer": "Nói đủ thời lượng từ 1:45 đến 2:00 phút.",
+            "explanation": "Cấu trúc bài nói 2 phút: thời gian, phương tiện, điều xảy ra, cảm xúc.",
+            "categoryTag": "Speaking Part 2"
+          },
+          {
+            "id": 3,
+            "type": "speaking_prompt",
+            "questionText": "Part 3: Thảo luận chuyên sâu về du lịch và bảo vệ môi trường.",
+            "correctAnswer": "Phản biện, câu phức, liên từ nguyên nhân - hệ quả.",
+            "explanation": "Nêu quan điểm khách quan hai chiều.",
+            "categoryTag": "Speaking Part 3"
+          }
+        ]
+      }
+    ]
+  }
+}
