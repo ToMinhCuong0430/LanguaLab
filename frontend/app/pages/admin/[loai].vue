@@ -23,6 +23,32 @@ definePageMeta({
 
 const route = useRoute()
 const client = useSupabaseClient<Database>()
+const authUser = useSupabaseUser()
+
+// Kiểm tra quyền Admin an toàn
+const isUserAdmin = ref(true)
+const isCheckingPermission = ref(true)
+
+const verifyAdminAccess = async () => {
+  isCheckingPermission.value = true
+  if (!authUser.value?.id) {
+    isUserAdmin.value = false
+    isCheckingPermission.value = false
+    return
+  }
+  try {
+    const { data, error } = await client.rpc('is_admin')
+    isUserAdmin.value = !error && !!data
+  } catch {
+    isUserAdmin.value = false
+  } finally {
+    isCheckingPermission.value = false
+  }
+}
+
+onMounted(() => {
+  verifyAdminAccess()
+})
 
 // Xác định loại nội dung từ URL param
 const loai = computed(() => route.params.loai as string)
@@ -344,7 +370,27 @@ const exportData = (format: 'csv' | 'json') => {
 </script>
 
 <template>
-  <div class="p-4 sm:p-6 lg:p-8 space-y-6">
+  <!-- MÀN HÌNH 403 TỪ CHỐI TRUY CẬP CHO USER THƯỜNG -->
+  <div v-if="!isUserAdmin && !isCheckingPermission" class="mx-auto max-w-xl py-16 px-4 text-center">
+    <BaseEmptyState
+      title="403 - Quyền truy cập bị từ chối"
+      description="Bạn không có quyền Quản trị viên (Admin) để xem hoặc sửa nội dung này. Vui lòng đăng nhập bằng tài khoản Quản trị viên được cấp phép."
+      tone="warning"
+    >
+      <template #action>
+        <NuxtLink
+          to="/"
+          class="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-brut border-[3px] border-line bg-warn text-on-tone font-black shadow-brut hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer"
+        >
+          <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
+          <span>Quay lại trang chủ</span>
+        </NuxtLink>
+      </template>
+    </BaseEmptyState>
+  </div>
+
+  <!-- NỘI DUNG DÀNH CHO ADMIN -->
+  <div v-else class="p-4 sm:p-6 lg:p-8 space-y-6">
     <!-- Header banner -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-[3px] border-line rounded-brut-lg bg-surface p-5 shadow-brut">
       <div>

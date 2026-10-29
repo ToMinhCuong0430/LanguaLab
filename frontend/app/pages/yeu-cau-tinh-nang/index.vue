@@ -343,9 +343,15 @@ const top3Voted = computed(() => {
     <div id="feature-cards-list" class="space-y-4">
       <BaseEmptyState
         v-if="filteredRequests.length === 0"
-        title="Không tìm thấy yêu cầu nào theo trạng thái này"
-        description="Hãy chọn bộ lọc 'Tất cả' hoặc gửi một đề xuất tính năng mới!"
-      />
+        title="Chưa có đề xuất nào"
+        description="Hãy là người đầu tiên đóng góp ý tưởng xây dựng và cải tiến nền tảng cùng cộng đồng!"
+      >
+        <template #action>
+          <BaseButton variant="primary" tone="accent" size="sm" @click="isFormOpen = true">
+            Gửi đề xuất đầu tiên
+          </BaseButton>
+        </template>
+      </BaseEmptyState>
 
       <div
         v-for="req in filteredRequests"

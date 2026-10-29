@@ -26,7 +26,7 @@ const route = useRoute()
 const testId = route.params.id as string
 const initialMode = (route.query.mode as TestMode) || 'practice'
 
-const { getTestById, saveAttempt, convertRawToBand } = useIelts()
+const { getTestById, saveAttempt, convertRawToBand, isLoading, errorMsg } = useIelts()
 const test = computed(() => getTestById(testId))
 
 // Chế độ: practice (Luyện tập) | exam (Thi thử)
@@ -631,5 +631,33 @@ const examRoomGuideSteps: GuideStep[] = [
       page-key="ielts-exam-room"
       :steps="examRoomGuideSteps"
     />
+  </div>
+
+  <!-- TRẠNG THÁI LOADING KHI TẢI ĐỀ THI TỪ DB -->
+  <div v-else-if="isLoading" class="mx-auto max-w-7xl px-4 py-12 sm:px-6 space-y-6 animate-pulse">
+    <div class="p-6 rounded-brut-lg border-[3px] border-line bg-surface shadow-brut space-y-4">
+      <BaseSkeleton height="44px" width="320px" rounded="md" />
+      <BaseSkeleton height="20px" width="60%" rounded="sm" />
+      <BaseSkeleton height="380px" rounded="lg" />
+    </div>
+  </div>
+
+  <!-- TRẠNG THÁI LỖI / KHÔNG TÌM THẤY ĐỀ THI KÈM NÚT QUAY LẠI -->
+  <div v-else class="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+    <BaseEmptyState
+      title="Không tìm thấy đề thi"
+      :description="errorMsg || 'Mã đề thi này không tồn tại trong hệ thống hoặc chưa được công khai. Vui lòng quay lại danh sách đề thi.'"
+      tone="warning"
+    >
+      <template #action>
+        <NuxtLink
+          to="/luyen-thi/ielts"
+          class="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-brut border-[3px] border-line bg-warn text-on-tone font-black shadow-brut hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer"
+        >
+          <ArrowLeft class="w-4 h-4 stroke-[2.5]" />
+          <span>Quay lại danh sách đề</span>
+        </NuxtLink>
+      </template>
+    </BaseEmptyState>
   </div>
 </template>

@@ -364,12 +364,17 @@ export const useIelts = () => {
     }
   }
 
+  const getTestById = (id: string): IeltsTestDetail | undefined => {
+    return allTests.value.find((t) => t.id === id)
+  }
+
   return {
     skillsOverview,
     recentAttempts,
     allTests,
     isLoading,
     errorMsg,
+    getTestById,
     fetchIeltsData,
     saveAttempt,
   }

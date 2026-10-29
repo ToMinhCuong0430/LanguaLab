@@ -125,7 +125,8 @@ const handleSaveVocab = () => {
     <BaseEmptyState
       v-if="!isLoading && !entry"
       :title="`Không tìm thấy từ '${wordParam}'`"
-      description="Từ điển đang chạy chế độ Mock nội bộ an toàn bản quyền. Thử tra các từ mẫu có sẵn: pragmatic, resilient, ubiquitous, mitigate, 融洽, 妥協."
+      description="Mục từ này hiện chưa có trong cơ sở dữ liệu từ điển. Bạn có thể tra cứu các từ có sẵn trong kho như: pragmatic, ubiquitous, resilient hoặc đóng góp từ mới."
+      tone="warning"
     >
       <template #action>
         <BaseButton to="/tu-dien" variant="primary" size="sm">
