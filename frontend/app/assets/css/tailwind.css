@@ -106,15 +106,18 @@
   --font-body: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Dark Mode Tokens */
+/* Dark Mode Tokens — "Brutalism dịu":
+ * vẫn viền dày + bóng cứng không blur, nhưng viền xám-xanh và bóng chàm trầm
+ * thay cho trắng chói; nền sâu hơn để các khối màu chức năng nổi bật. */
 .dark,
 [data-theme='dark'] {
-  --bg: #12131D;
-  --surface: #1E2132;
-  --surface-2: #282C43;
-  --ink: #F5F7FF;
-  --ink-soft: #A3A8BE;
-  --line: #F5F7FF;
+  --bg: #0F1119;
+  --surface: #181B28;
+  --surface-2: #232739;
+  --ink: #F2F4FC;
+  --ink-soft: #B3B9D1;
+  --line: #7C85AB;
+  --shadow-ink: #3D456B;
   --focus: #FFD23F;
 
   --accent: #547BFF;
@@ -153,9 +156,9 @@
   --mark: #FF85B8;
   --on-tone: #11141D;
 
-  --shadow: 4px 4px 0 var(--line);
-  --shadow-sm: 2px 2px 0 var(--line);
-  --shadow-lg: 6px 6px 0 var(--line);
+  --shadow: 4px 4px 0 var(--shadow-ink);
+  --shadow-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-lg: 6px 6px 0 var(--shadow-ink);
 
   /* Dark mode feature soft/ink */
   --c-green-soft:  #0A3D28;

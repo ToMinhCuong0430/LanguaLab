@@ -12,6 +12,7 @@ import {
   Moon,
   Sun,
   Laptop,
+  Clock,
   CheckCircle2,
   AlertTriangle,
   RotateCcw,
@@ -23,7 +24,13 @@ import { translateSupabaseError } from '~/utils/supabaseErrors'
 
 const route = useRoute()
 const router = useRouter()
-const colorMode = useColorMode()
+const { mode: themeMode, setMode: setThemeMode } = useTheme()
+const themeOptions = [
+  { value: 'light', label: 'Sáng', icon: Sun },
+  { value: 'dark', label: 'Tối', icon: Moon },
+  { value: 'system', label: 'Hệ thống', icon: Laptop },
+  { value: 'auto', label: 'Theo giờ', icon: Clock },
+] as const
 const client = useSupabaseClient<Database>()
 const { user, profile, fetchProfile, signOut } = useAuth()
 const { todayStats, user: homeUser } = useHomeData()
@@ -568,40 +575,26 @@ const handleDeleteAccount = async () => {
       <!-- Cài đặt giao diện & Hướng dẫn -->
       <BaseCard title="Tuỳ chọn ứng dụng">
         <div class="space-y-5">
-          <!-- Chế độ màu (Sáng / Tối / Hệ thống) -->
+          <!-- Chế độ màu (Sáng / Tối / Hệ thống / Theo giờ) -->
           <div>
             <label class="block text-xs font-black text-ink mb-2">Chế độ hiển thị (Theme):</label>
-            <div class="grid grid-cols-3 gap-3 max-w-md">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
               <button
+                v-for="opt in themeOptions"
+                :key="opt.value"
                 type="button"
                 class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
-                :class="colorMode.preference === 'light' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
-                @click="colorMode.preference = 'light'"
+                :class="themeMode === opt.value ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
+                :aria-pressed="themeMode === opt.value"
+                @click="setThemeMode(opt.value)"
               >
-                <Sun class="h-4 w-4" />
-                <span>Sáng</span>
-              </button>
-
-              <button
-                type="button"
-                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
-                :class="colorMode.preference === 'dark' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
-                @click="colorMode.preference = 'dark'"
-              >
-                <Moon class="h-4 w-4" />
-                <span>Tối</span>
-              </button>
-
-              <button
-                type="button"
-                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
-                :class="colorMode.preference === 'system' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
-                @click="colorMode.preference = 'system'"
-              >
-                <Laptop class="h-4 w-4" />
-                <span>Hệ thống</span>
+                <component :is="opt.icon" class="h-4 w-4" />
+                <span>{{ opt.label }}</span>
               </button>
             </div>
+            <p class="mt-2 text-xs text-ink-soft">
+              "Theo giờ" tự chuyển sang chế độ tối từ 18:00 đến 5:00 sáng theo giờ trên máy bạn.
+            </p>
           </div>
 
           <!-- Bật lại hướng dẫn lần đầu -->

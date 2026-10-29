@@ -243,6 +243,9 @@ const examButtonInfo = computed(() => {
   --ink: #11141D;
   --surface: #FFFBF0;
   --on-tone: #11141D;
+  --shadow: 4px 4px 0 #11141D;
+  --shadow-sm: 2px 2px 0 #11141D;
+  --shadow-lg: 6px 6px 0 #11141D;
 }
 
 /* Với buổi tối, màu nhãn thương hiệu trên banner là trắng */

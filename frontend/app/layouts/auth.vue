@@ -2,7 +2,7 @@
 import { Languages, Sun, Moon } from '@lucide/vue'
 import { BRAND_NAME } from '~/constants/brand'
 
-const { isDark, toggleTheme } = useTheme()
+const { toggleTheme } = useTheme()
 </script>
 
 <template>
@@ -22,12 +22,12 @@ const { isDark, toggleTheme } = useTheme()
         <button
           type="button"
           class="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm brut-press cursor-pointer"
-          :title="isDark ? 'Chế độ sáng' : 'Chế độ tối'"
-          :aria-label="isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'"
+          title="Đổi chế độ sáng / tối"
+          aria-label="Đổi chế độ sáng / tối"
           @click="toggleTheme"
         >
-          <Sun v-if="isDark" class="h-4 w-4 text-warn" :stroke-width="2.5" />
-          <Moon v-else class="h-4 w-4 text-ink" :stroke-width="2.5" />
+          <Sun class="hidden dark:block h-4 w-4 text-warn" :stroke-width="2.5" />
+          <Moon class="block dark:hidden h-4 w-4 text-ink" :stroke-width="2.5" />
         </button>
       </div>
     </header>
