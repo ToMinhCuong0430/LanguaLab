@@ -12,10 +12,13 @@ import {
   X,
   AlertTriangle,
   RefreshCw,
+  Send,
+  Undo2,
 } from '@lucide/vue'
 import { stringifyCsv } from '~/utils/csvParser'
 import ExamQuestionsEditor from '~/components/admin/ExamQuestionsEditor.vue'
 import type { Database } from '~/types/database.types'
+import { REVIEW_LABEL, formatDateTime, type ReviewResult, type ReviewStatus, type ReviewType } from '~/composables/useAdmin'
 
 definePageMeta({
   layout: 'admin',
@@ -129,7 +132,7 @@ useHead({
 // Bộ lọc & Phân trang Server-side
 const searchQuery = ref('')
 const selectedLang = ref<string>('all')
-const selectedStatus = ref<string>('all') // 'all' | 'published' | 'draft'
+const selectedStatus = ref<string>(['draft', 'pending', 'published'].includes(String(route.query.status)) ? String(route.query.status) : 'all') // 'all' | ReviewStatus
 const currentPage = ref(1)
 const pageSize = ref(20)
 const totalRecords = ref(0)
@@ -167,7 +170,7 @@ const loadItems = async () => {
 
     // Lọc theo trạng thái xuất bản
     if (cfg.hasPublish && selectedStatus.value !== 'all') {
-      query = query.eq('is_published', selectedStatus.value === 'published')
+      query = query.eq('review_status', selectedStatus.value)
     }
 
     // Tìm kiếm văn bản
@@ -209,58 +212,61 @@ onMounted(() => {
   loadItems()
 })
 
-// Bật/tắt xuất bản 1 dòng
-const togglePublish = async (item: any) => {
-  const cfg = currentConfig.value
-  if (!cfg.hasPublish) return
+// ---- Quy trình duyệt: draft -> pending -> published (RPC set_review_status ghi lịch sử & nhật ký) ----
+const { setReviewStatus, reviewHistory } = useAdmin()
+const reviewFlash = ref<{ kind: 'ok' | 'error'; text: string; skipped?: ReviewResult['skipped'] } | null>(null)
+const reviewingIds = ref<string[]>([])
 
-  const nextStatus = !item.is_published
+// Bộ từ cá nhân của học viên không qua duyệt
+const inWorkflow = (item: any) => currentConfig.value.hasPublish && (loai.value !== 'vocab' || item.is_system !== false)
 
-  // Kiểm tra điều kiện ràng buộc: Nếu là reading_items, license bắt buộc phải hợp lệ
-  if (nextStatus && cfg.hasLicense && (!item.license || !['public_domain', 'original', 'licensed'].includes(item.license))) {
-    alert('Không thể xuất bản: Bài đọc này chưa khai báo giấy phép bản quyền hợp lệ (public_domain, original, hoặc licensed).')
-    return
-  }
+const REVIEW_DONE: Record<ReviewStatus, string> = {
+  pending: 'Đã gửi duyệt',
+  published: 'Đã duyệt và xuất bản',
+  draft: 'Đã chuyển về nháp',
+}
 
+const runReview = async (ids: string[], status: ReviewStatus, note?: string) => {
+  if (!ids.length) return
+  reviewingIds.value = ids
+  reviewFlash.value = null
   try {
-    const { error } = await (client.from(cfg.tableName as any) as any)
-      .update({ is_published: nextStatus })
-      .eq(cfg.idField, item[cfg.idField])
-
-    if (error) {
-      alert(`Lỗi khi đổi trạng thái: ${error.message}`)
-    } else {
-      item.is_published = nextStatus
+    const res = await setReviewStatus(loai.value as ReviewType, ids, status, note)
+    reviewFlash.value = {
+      kind: res.updated > 0 ? 'ok' : 'error',
+      text: res.updated > 0 ? `${REVIEW_DONE[status]} ${res.updated} mục.` : 'Không mục nào được chuyển trạng thái.',
+      skipped: res.skipped,
     }
+    await loadItems()
   } catch (e: any) {
-    alert(`Lỗi hệ thống: ${e.message}`)
+    reviewFlash.value = { kind: 'error', text: e.message }
+  } finally {
+    reviewingIds.value = []
   }
 }
 
-// Xuất bản hàng loạt
-const batchPublish = async (publish: boolean) => {
-  if (selectedIds.value.length === 0) return
-  const cfg = currentConfig.value
-  if (!cfg.hasPublish) return
-
-  if (!confirm(`Bạn có chắc muốn ${publish ? 'XUẤT BẢN' : 'GỠ XUẤT BẢN'} ${selectedIds.value.length} bản ghi đã chọn?`)) {
+// Trả về nháp / gỡ xuất bản qua hộp thoại ghi chú (trả về nháp bắt buộc có lý do)
+const noteDialog = ref<{ ids: string[]; mode: 'reject' | 'unpublish' } | null>(null)
+const noteText = ref('')
+const noteError = ref('')
+const openNoteDialog = (ids: string[], mode: 'reject' | 'unpublish') => {
+  noteDialog.value = { ids, mode }
+  noteText.value = ''
+  noteError.value = ''
+}
+const confirmNote = async () => {
+  if (!noteDialog.value) return
+  if (noteDialog.value.mode === 'reject' && noteText.value.trim().length < 3) {
+    noteError.value = 'Ghi lý do trả về để người soạn biết cần sửa gì.'
     return
   }
-
-  try {
-    const { error } = await (client.from(cfg.tableName as any) as any)
-      .update({ is_published: publish })
-      .in(cfg.idField, selectedIds.value)
-
-    if (error) {
-      alert(`Lỗi xử lý hàng loạt: ${error.message}`)
-    } else {
-      await loadItems()
-    }
-  } catch (e: any) {
-    alert(`Lỗi hệ thống: ${e.message}`)
-  }
+  const { ids } = noteDialog.value
+  noteDialog.value = null
+  await runReview(ids, 'draft', noteText.value)
 }
+
+// Ghi chú duyệt gần nhất hiển thị trong ngăn sửa nhanh
+const lastReview = ref<Awaited<ReturnType<typeof reviewHistory>>[number] | null>(null)
 
 // Xoá hàng loạt
 const batchDelete = async () => {
@@ -291,6 +297,12 @@ const openEditSlideOver = (item: any) => {
   editingItem.value = JSON.parse(JSON.stringify(item))
   saveError.value = null
   isSlideOverOpen.value = true
+  lastReview.value = null
+  if (inWorkflow(item)) {
+    reviewHistory(loai.value as ReviewType, String(item[currentConfig.value.idField]))
+      .then((rows) => { lastReview.value = rows[0] ?? null })
+      .catch(() => { lastReview.value = null })
+  }
 }
 
 // Lưu chỉnh sửa từ Slide-over
@@ -301,8 +313,10 @@ const saveEdit = async () => {
   saveError.value = null
 
   try {
+    // Trạng thái duyệt chỉ đổi qua quy trình duyệt, không ghi từ form sửa
+    const { is_published: _p, review_status: _r, ...payload } = editingItem.value
     const { error } = await (client.from(cfg.tableName as any) as any)
-      .update(editingItem.value)
+      .update(payload)
       .eq(cfg.idField, editingItem.value[cfg.idField])
 
     if (error) {
@@ -423,8 +437,9 @@ const exportData = (format: 'csv' | 'json') => {
             class="w-full min-h-[44px] px-3 py-2 text-xs rounded-brut border-2 border-line bg-surface text-ink focus:outline-none cursor-pointer"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="published">Đã xuất bản (Published)</option>
-            <option value="draft">Bản nháp (Draft)</option>
+            <option value="draft">Bản nháp</option>
+            <option value="pending">Chờ duyệt</option>
+            <option value="published">Đã xuất bản</option>
           </select>
         </div>
       </div>
@@ -438,22 +453,32 @@ const exportData = (format: 'csv' | 'json') => {
           Đang chọn {{ selectedIds.length }} dòng:
         </span>
         <div class="flex items-center gap-2">
-          <button
-            v-if="currentConfig.hasPublish"
-            type="button"
-            class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-ok/20 text-ok font-bold text-xs hover:bg-ok/30 cursor-pointer"
-            @click="batchPublish(true)"
-          >
-            Xuất bản hàng loạt
-          </button>
-          <button
-            v-if="currentConfig.hasPublish"
-            type="button"
-            class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-surface text-ink-soft font-bold text-xs hover:bg-surface-2 cursor-pointer"
-            @click="batchPublish(false)"
-          >
-            Gỡ xuất bản
-          </button>
+          <template v-if="currentConfig.hasPublish">
+            <button
+              type="button"
+              class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-surface text-ink font-bold text-xs hover:bg-surface-2 cursor-pointer disabled:opacity-50"
+              :disabled="reviewingIds.length > 0"
+              @click="runReview([...selectedIds], 'pending')"
+            >
+              Gửi duyệt
+            </button>
+            <button
+              type="button"
+              class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-ok/20 text-ink font-bold text-xs hover:bg-ok/30 cursor-pointer disabled:opacity-50"
+              :disabled="reviewingIds.length > 0"
+              @click="runReview([...selectedIds], 'published')"
+            >
+              Duyệt &amp; xuất bản
+            </button>
+            <button
+              type="button"
+              class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-surface text-ink-soft font-bold text-xs hover:bg-surface-2 cursor-pointer disabled:opacity-50"
+              :disabled="reviewingIds.length > 0"
+              @click="openNoteDialog([...selectedIds], 'unpublish')"
+            >
+              Chuyển về nháp
+            </button>
+          </template>
           <button
             type="button"
             class="min-h-[44px] px-3 py-1.5 rounded-brut border border-line bg-bad/20 text-bad font-bold text-xs hover:bg-bad/30 cursor-pointer"
@@ -462,6 +487,22 @@ const exportData = (format: 'csv' | 'json') => {
             Xoá hàng loạt
           </button>
         </div>
+      </div>
+      <div
+        v-if="reviewFlash"
+        class="mt-4 rounded-brut border-2 p-3 text-xs"
+        :class="reviewFlash.kind === 'ok' ? 'border-line bg-ok/15 text-ink' : 'border-bad bg-bad/10 text-ink'"
+        :role="reviewFlash.kind === 'ok' ? 'status' : 'alert'"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <p class="font-bold">{{ reviewFlash.text }}</p>
+          <button type="button" class="min-h-[32px] min-w-[32px] inline-flex items-center justify-center cursor-pointer" aria-label="Đóng thông báo" @click="reviewFlash = null">
+            <X class="h-4 w-4" />
+          </button>
+        </div>
+        <ul v-if="reviewFlash.skipped?.length" class="mt-1 space-y-0.5 text-ink-soft">
+          <li v-for="sk in reviewFlash.skipped" :key="sk.id">Bỏ qua "{{ sk.title }}": {{ sk.reason }}</li>
+        </ul>
       </div>
     </BaseCard>
 
@@ -483,7 +524,7 @@ const exportData = (format: 'csv' | 'json') => {
               <th v-if="currentConfig.hasLanguage" class="p-3 border-r border-line w-20 text-center">Ngôn ngữ</th>
               <th v-if="currentConfig.hasLevel" class="p-3 border-r border-line w-20 text-center">Cấp độ</th>
               <th v-if="currentConfig.hasLicense" class="p-3 border-r border-line w-28">Bản quyền</th>
-              <th v-if="currentConfig.hasPublish" class="p-3 border-r border-line w-28 text-center">Xuất bản</th>
+              <th v-if="currentConfig.hasPublish" class="p-3 border-r border-line w-44">Trạng thái duyệt</th>
               <th class="p-3 text-center w-24">Thao tác</th>
             </tr>
           </thead>
@@ -546,19 +587,52 @@ const exportData = (format: 'csv' | 'json') => {
                 </span>
               </td>
 
-              <td v-if="currentConfig.hasPublish" class="p-3 border-r border-line text-center">
-                <button
-                  type="button"
-                  class="min-h-[44px] px-3 py-1.5 rounded-brut border text-[11px] font-black cursor-pointer transition-all inline-flex items-center justify-center"
-                  :class="[
-                    item.is_published
-                      ? 'border-ok bg-ok/20 text-ok hover:bg-ok/30'
-                      : 'border-line bg-surface-2 text-ink-soft hover:bg-surface'
-                  ]"
-                  @click="togglePublish(item)"
-                >
-                  {{ item.is_published ? '✓ ĐÃ ĐĂNG' : '○ BẢN NHÁP' }}
-                </button>
+              <td v-if="currentConfig.hasPublish" class="p-3 border-r border-line">
+                <span v-if="!inWorkflow(item)" class="text-[11px] font-bold text-ink-soft">Bộ cá nhân</span>
+                <div v-else class="flex flex-col items-start gap-1.5">
+                  <BaseBadge
+                    size="sm"
+                    :tone="item.review_status === 'published' ? 'green' : item.review_status === 'pending' ? 'yellow' : 'neutral'"
+                  >
+                    {{ REVIEW_LABEL[item.review_status as ReviewStatus] ?? item.review_status }}
+                  </BaseBadge>
+                  <div class="flex flex-wrap gap-1">
+                    <button
+                      v-if="item.review_status === 'draft'"
+                      type="button"
+                      class="min-h-[36px] inline-flex items-center gap-1 px-2 rounded-brut border border-line bg-surface text-[11px] font-bold text-ink hover:bg-surface-2 cursor-pointer disabled:opacity-50"
+                      :disabled="reviewingIds.includes(item[currentConfig.idField])"
+                      @click="runReview([item[currentConfig.idField]], 'pending')"
+                    >
+                      <Send class="h-3 w-3" aria-hidden="true" /> Gửi duyệt
+                    </button>
+                    <template v-else-if="item.review_status === 'pending'">
+                      <button
+                        type="button"
+                        class="min-h-[36px] inline-flex items-center gap-1 px-2 rounded-brut border border-line bg-ok/20 text-[11px] font-bold text-ink hover:bg-ok/30 cursor-pointer disabled:opacity-50"
+                        :disabled="reviewingIds.includes(item[currentConfig.idField])"
+                        @click="runReview([item[currentConfig.idField]], 'published')"
+                      >
+                        <CheckCircle2 class="h-3 w-3" aria-hidden="true" /> Duyệt
+                      </button>
+                      <button
+                        type="button"
+                        class="min-h-[36px] inline-flex items-center gap-1 px-2 rounded-brut border border-line bg-surface text-[11px] font-bold text-ink hover:bg-surface-2 cursor-pointer"
+                        @click="openNoteDialog([item[currentConfig.idField]], 'reject')"
+                      >
+                        <Undo2 class="h-3 w-3" aria-hidden="true" /> Trả về
+                      </button>
+                    </template>
+                    <button
+                      v-else
+                      type="button"
+                      class="min-h-[36px] inline-flex items-center gap-1 px-2 rounded-brut border border-line bg-surface text-[11px] font-bold text-ink-soft hover:bg-surface-2 cursor-pointer"
+                      @click="openNoteDialog([item[currentConfig.idField]], 'unpublish')"
+                    >
+                      <XCircle class="h-3 w-3" aria-hidden="true" /> Gỡ xuất bản
+                    </button>
+                  </div>
+                </div>
               </td>
 
               <td class="p-3 text-center">
@@ -648,15 +722,20 @@ const exportData = (format: 'csv' | 'json') => {
           </select>
         </div>
 
-        <div v-if="editingItem && currentConfig.hasPublish" class="pt-2">
-          <label class="flex items-center gap-2 cursor-pointer min-h-[44px]">
-            <input
-              v-model="editingItem.is_published"
-              type="checkbox"
-              class="h-4 w-4 rounded border-2 border-line accent-ok"
-            />
-            <span class="text-xs font-bold text-ink">Xuất bản công khai cho mọi người học</span>
-          </label>
+        <div v-if="editingItem && inWorkflow(editingItem)" class="pt-2 space-y-2">
+          <p class="text-xs font-black text-ink">Trạng thái duyệt</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <BaseBadge
+              size="sm"
+              :tone="editingItem.review_status === 'published' ? 'green' : editingItem.review_status === 'pending' ? 'yellow' : 'neutral'"
+            >
+              {{ REVIEW_LABEL[editingItem.review_status as ReviewStatus] ?? editingItem.review_status }}
+            </BaseBadge>
+            <span class="text-[11px] text-ink-soft">Đổi trạng thái bằng các nút ở cột Trạng thái duyệt.</span>
+          </div>
+          <p v-if="lastReview?.note" class="rounded-brut border-2 border-line bg-warn/15 p-2 text-xs text-ink">
+            <span class="font-bold">Ghi chú duyệt ({{ formatDateTime(lastReview.created_at) }}):</span> {{ lastReview.note }}
+          </p>
         </div>
 
         <!-- Đề IELTS: tạo / sửa câu hỏi kèm giải thích và dẫn chứng (lưu riêng từng câu) -->
@@ -681,6 +760,44 @@ const exportData = (format: 'csv' | 'json') => {
           </BaseButton>
         </div>
       </template>
+    </BaseModal>
+
+    <!-- Ghi chú khi trả về nháp / gỡ xuất bản -->
+    <BaseModal
+      :model-value="!!noteDialog"
+      :title="noteDialog?.mode === 'reject' ? 'Trả về bản nháp' : 'Chuyển về bản nháp'"
+      max-width="md"
+      @update:model-value="noteDialog = null"
+    >
+      <form v-if="noteDialog" class="space-y-3 text-sm text-ink" @submit.prevent="confirmNote">
+        <p>
+          {{ noteDialog.ids.length }} mục sẽ về trạng thái Bản nháp
+          <template v-if="noteDialog.mode === 'unpublish'"> và không còn hiển thị với người học</template>.
+          <template v-if="noteDialog.mode === 'unpublish' && noteDialog.ids.length > 1"> Mục đang chờ duyệt cần có ghi chú lý do.</template>
+        </p>
+        <label class="block">
+          <span class="mb-1 block text-xs font-black">
+            {{ noteDialog.mode === 'reject' ? 'Lý do trả về' : 'Ghi chú (không bắt buộc)' }}
+            <span v-if="noteDialog.mode === 'reject'" class="text-bad" aria-hidden="true">*</span>
+          </span>
+          <textarea
+            v-model="noteText"
+            rows="3"
+            maxlength="1000"
+            :required="noteDialog.mode === 'reject'"
+            placeholder="Ví dụ: Thiếu câu ví dụ cho mục 3, đáp án câu 5 chưa đúng"
+            class="w-full rounded-brut border-2 border-line bg-surface p-3 text-sm"
+          />
+        </label>
+        <p v-if="noteError" class="rounded-brut border-2 border-bad bg-bad/10 p-2 text-xs font-bold text-bad" role="alert">{{ noteError }}</p>
+        <div class="flex justify-end gap-2">
+          <BaseButton type="button" variant="secondary" size="md" @click="noteDialog = null">Huỷ</BaseButton>
+          <BaseButton type="submit" variant="primary" size="md">
+            <Undo2 class="h-4 w-4" :stroke-width="2.5" />
+            <span>Chuyển về nháp</span>
+          </BaseButton>
+        </div>
+      </form>
     </BaseModal>
   </div>
 </template>

@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   History,
 } from '@lucide/vue'
+import PageBanner from '~/components/common/PageBanner.vue'
 import type { Database } from '~/types/database.types'
 import AdminRolesPanel from '~/components/admin/AdminRolesPanel.vue'
 
@@ -27,61 +28,28 @@ useHead({
 
 const client = useSupabaseClient<Database>()
 
-// State thống kê số lượng bản ghi
-const stats = ref({
-  vocab: { total: 0, drafts: 0 },
-  typing: { total: 0, drafts: 0 },
-  grammar: { total: 0, drafts: 0 },
-  reading: { total: 0, drafts: 0 },
-  media: { total: 0, drafts: 0 },
-  dictionary: { total: 0, drafts: 0 },
-  ielts: { total: 0, drafts: 0 },
-})
+// Số bản ghi theo trạng thái duyệt (draft / pending / published) cho từng loại nội dung
+type Counts = { total: number; draft: number; pending: number; published: number }
+const stats = ref<Record<string, Counts>>({})
 const isLoadingStats = ref(true)
+const { reviewCounts } = useAdmin()
 
 // Lịch sử 10 lần import gần nhất
 const importLogs = ref<any[]>([])
 const isLoadingLogs = ref(true)
+
+const pendingTotal = computed(() => Object.values(stats.value).reduce((sum, c) => sum + (c.pending || 0), 0))
 
 const loadDashboardData = async () => {
   isLoadingStats.value = true
   isLoadingLogs.value = true
 
   try {
-    // 1. Đếm song song các bảng
-    const [
-      vocabTotal, vocabDrafts,
-      typingTotal, typingDrafts,
-      grammarTotal, grammarDrafts,
-      readingTotal, readingDrafts,
-      mediaTotal, mediaDrafts,
-      dictTotal,
-      ieltsTotal, ieltsDrafts,
-    ] = await Promise.all([
-      client.from('vocab_sets').select('*', { count: 'exact', head: true }),
-      client.from('vocab_sets').select('*', { count: 'exact', head: true }).eq('is_published', false),
-      client.from('typing_topics').select('*', { count: 'exact', head: true }),
-      client.from('typing_topics').select('*', { count: 'exact', head: true }).eq('is_published', false),
-      client.from('grammar_points').select('*', { count: 'exact', head: true }),
-      client.from('grammar_points').select('*', { count: 'exact', head: true }).eq('is_published', false),
-      client.from('reading_items').select('*', { count: 'exact', head: true }),
-      client.from('reading_items').select('*', { count: 'exact', head: true }).eq('is_published', false),
-      client.from('media_items').select('*', { count: 'exact', head: true }),
-      client.from('media_items').select('*', { count: 'exact', head: true }).eq('is_published', false),
+    const [counts, dict] = await Promise.all([
+      reviewCounts(),
       client.from('dictionary_entries').select('*', { count: 'exact', head: true }),
-      client.from('exam_tests').select('*', { count: 'exact', head: true }),
-      client.from('exam_tests').select('*', { count: 'exact', head: true }).eq('is_published', false),
     ])
-
-    stats.value = {
-      vocab: { total: vocabTotal.count || 0, drafts: vocabDrafts.count || 0 },
-      typing: { total: typingTotal.count || 0, drafts: typingDrafts.count || 0 },
-      grammar: { total: grammarTotal.count || 0, drafts: grammarDrafts.count || 0 },
-      reading: { total: readingTotal.count || 0, drafts: readingDrafts.count || 0 },
-      media: { total: mediaTotal.count || 0, drafts: mediaDrafts.count || 0 },
-      dictionary: { total: dictTotal.count || 0, drafts: 0 },
-      ielts: { total: ieltsTotal.count || 0, drafts: ieltsDrafts.count || 0 },
-    }
+    stats.value = { ...counts, dictionary: { total: dict.count || 0, draft: 0, pending: 0, published: 0 } }
   } catch (e) {
     console.warn('Lỗi tải thống kê dashboard:', e)
   } finally {
@@ -139,6 +107,27 @@ const featureCards = [
       </template>
     </PageBanner>
 
+    <div
+      v-if="!isLoadingStats && pendingTotal > 0"
+      class="flex flex-col gap-2 rounded-brut border-2 border-line bg-warn/20 p-4 sm:flex-row sm:items-center sm:justify-between"
+      role="status"
+    >
+      <p class="flex items-center gap-2 text-sm font-bold text-ink">
+        <Clock class="h-4 w-4 shrink-0" :stroke-width="2.5" aria-hidden="true" />
+        Có {{ pendingTotal }} mục đang chờ duyệt.
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <NuxtLink
+          v-for="item in featureCards.filter((c) => stats[c.key]?.pending)"
+          :key="item.key"
+          :to="`${item.path}?status=pending`"
+          class="min-h-[44px] inline-flex items-center gap-1 rounded-brut border-2 border-line bg-surface px-3 text-xs font-black text-ink shadow-brut-sm brut-press"
+        >
+          {{ item.title }}: {{ stats[item.key]?.pending }}
+        </NuxtLink>
+      </div>
+    </div>
+
     <!-- Lưới thống kê các loại nội dung -->
     <div>
       <div class="flex items-center justify-between mb-3">
@@ -150,26 +139,35 @@ const featureCards = [
         <BaseCard
           v-for="item in featureCards"
           :key="item.key"
-          :title="item.title"
           accent="left"
           :accent-color="item.tone"
           class="h-full flex flex-col justify-between"
         >
+          <template #header>
+            <h4 class="flex items-center gap-2 font-display text-sm font-black text-ink">
+              <component :is="item.icon" class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" /> {{ item.title }}
+            </h4>
+          </template>
           <div class="space-y-2 mt-1">
             <div class="flex items-baseline justify-between">
-              <span class="text-xs text-ink-soft font-bold">Tổng số bản ghi:</span>
-              <span class="font-display font-black text-xl text-ink">
-                {{ isLoadingStats ? '...' : (stats as any)[item.key]?.total || 0 }}
+              <span class="text-xs text-ink-soft font-bold">{{ item.key === 'vocab' ? 'Bộ hệ thống:' : 'Tổng số bản ghi:' }}</span>
+              <span class="font-display font-black text-xl text-ink tabular-nums">
+                {{ isLoadingStats ? '...' : stats[item.key]?.total || 0 }}
               </span>
             </div>
 
-            <div v-if="item.key !== 'dictionary'" class="flex items-baseline justify-between">
-              <span class="text-xs text-ink-soft font-bold">Bản nháp chờ duyệt:</span>
-              <span
-                class="font-display font-black text-xs px-2 py-0.5 rounded-brut border"
-                :class="(stats as any)[item.key]?.drafts > 0 ? 'bg-warn/20 border-line text-ink' : 'bg-surface-2 border-line/40 text-ink-soft'"
-              >
-                {{ isLoadingStats ? '...' : (stats as any)[item.key]?.drafts || 0 }} bản nháp
+            <div v-if="item.key !== 'dictionary'" class="flex flex-wrap items-center justify-between gap-1">
+              <span class="text-xs text-ink-soft font-bold">Duyệt:</span>
+              <span class="flex flex-wrap gap-1 text-[11px] font-black">
+                <span
+                  class="px-2 py-0.5 rounded-brut border tabular-nums"
+                  :class="stats[item.key]?.pending ? 'bg-warn/30 border-line text-ink' : 'bg-surface-2 border-line/40 text-ink-soft'"
+                >
+                  {{ isLoadingStats ? '...' : stats[item.key]?.pending || 0 }} chờ duyệt
+                </span>
+                <span class="px-2 py-0.5 rounded-brut border border-line/40 bg-surface-2 text-ink-soft tabular-nums">
+                  {{ isLoadingStats ? '...' : stats[item.key]?.draft || 0 }} nháp
+                </span>
               </span>
             </div>
           </div>
@@ -197,7 +195,18 @@ const featureCards = [
     </div>
 
     <!-- 10 lần import gần nhất từ content_import_logs -->
-    <BaseCard title="10 lần nạp nội dung gần nhất (Audit Log)">
+    <BaseCard>
+      <template #header>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="flex items-center gap-2 font-display text-base font-black text-ink">
+            <History class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" /> 10 lần nạp nội dung gần nhất
+          </h3>
+          <NuxtLink to="/admin/nhat-ky?action=import" class="min-h-[44px] inline-flex items-center gap-1 text-xs font-bold text-ink hover:underline">
+            <span>Toàn bộ nhật ký</span>
+            <ArrowRight class="h-3 w-3" />
+          </NuxtLink>
+        </div>
+      </template>
       <div v-if="isLoadingLogs" class="py-6 text-center text-xs text-ink-soft">
         Đang tải lịch sử import...
       </div>
