@@ -180,6 +180,17 @@
   --c-cyan-ink:   #7AECF7;
 }
 
+/* Phòng thi IELTS ở dark mode: neo-brutalism mềm hơn để đọc lâu đỡ mỏi mắt
+   (bóng cứng ngắn hơn, bo góc lớn hơn). Light mode giữ nguyên. */
+.dark .exam-room,
+[data-theme='dark'] .exam-room {
+  --shadow: 3px 3px 0 var(--shadow-ink);
+  --shadow-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-lg: 4px 4px 0 var(--shadow-ink);
+  --radius: 8px;
+  --radius-lg: 14px;
+}
+
 /* ── Feature color overrides per page ── */
 [data-feature='home'], [data-feature='video-podcast'] {
   --feature: var(--c-blue);
