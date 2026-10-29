@@ -67,7 +67,7 @@ const attrs = computed(() =>
   >
     <Loader2 v-if="loading" class="w-4 h-4 animate-spin shrink-0 stroke-[2.5]" />
     <slot v-else name="left" />
-    <span :class="{ 'opacity-90': loading }"><slot /></span>
+    <span class="inline-flex items-center gap-[inherit]" :class="{ 'opacity-90': loading }"><slot /></span>
     <slot v-if="!loading" name="right" />
   </component>
 </template>

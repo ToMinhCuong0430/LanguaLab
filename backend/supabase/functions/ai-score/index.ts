@@ -97,8 +97,16 @@ async function runScoring(admin: SupabaseClient, row: FeedbackRow) {
       .single()
     if (error) throw error
 
-    // Ghi band thật vào lượt làm bài để lịch sử / thống kê dùng chung một nguồn
-    if (row.attempt_id) {
+    // Ghi band thật vào lượt làm bài để lịch sử / thống kê dùng chung một nguồn,
+    // trừ khi giáo viên đã chỉnh band (điểm giáo viên được ưu tiên hơn điểm AI)
+    const { count: overrides } = row.attempt_id
+      ? await admin
+        .from('teacher_feedback')
+        .select('id', { count: 'exact', head: true })
+        .eq('attempt_id', row.attempt_id)
+        .not('override_band', 'is', null)
+      : { count: 0 }
+    if (row.attempt_id && !overrides) {
       const { error: attemptErr } = await admin
         .from('exam_attempts')
         .update({ band_score: result.overallBand })

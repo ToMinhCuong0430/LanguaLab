@@ -11,6 +11,9 @@ import {
   FileSpreadsheet,
   LogOut,
   ShieldAlert,
+  Users,
+  BarChart3,
+  ScrollText,
 } from '@lucide/vue'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -25,6 +28,9 @@ const route = useRoute()
 
 const navItems = [
   { title: 'Tổng quan & Lịch sử', path: '/admin', icon: LayoutDashboard },
+  { title: 'Thống kê nền tảng', path: '/admin/thong-ke', icon: BarChart3 },
+  { title: 'Người dùng', path: '/admin/nguoi-dung', icon: Users },
+  { title: 'Nhật ký hoạt động', path: '/admin/nhat-ky', icon: ScrollText },
   { title: 'Nhập dữ liệu (Import)', path: '/admin/import', icon: FileSpreadsheet },
   { title: 'Từ vựng (Vocab)', path: '/admin/vocab', icon: BookOpen },
   { title: 'Gõ câu (Typing)', path: '/admin/typing', icon: Keyboard },
