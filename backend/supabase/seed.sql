@@ -486,3 +486,29 @@ INSERT INTO public.feature_request_comments (id, request_id, user_id, content) V
   ('77777777-7777-7777-7777-777777777701', '66666666-6666-6666-6666-666666666601', '00000000-0000-0000-0000-000000000002', 'Rất cần tính năng này ạ! Em hay đi tàu điện ngầm không có mạng 4G, xuất ra Anki ôn thì tiện tuyệt vời.'),
   ('77777777-7777-7777-7777-777777777702', '66666666-6666-6666-6666-666666666601', '00000000-0000-0000-0000-000000000001', 'Chào bạn, đội ngũ đang tích hợp thư viện tạo file .apkg trực tiếp trên trình duyệt, dự kiến sẽ ra mắt trong tuần tới!')
 ON CONFLICT (id) DO NOTHING;
+
+-- ====================================================================
+-- GIÁO VIÊN & LỚP HỌC MẪU (migration 14)
+-- Trần Bảo Anh (baoanh@langua.local) là giáo viên; Đăng Khoa và Thảo My trong lớp,
+-- Đức Huy có lời mời đang chờ.
+-- ====================================================================
+INSERT INTO public.user_roles (user_id, role) VALUES
+  ('00000000-0000-0000-0000-000000000002', 'teacher')
+ON CONFLICT (user_id) DO UPDATE SET role = EXCLUDED.role;
+
+INSERT INTO public.classes (id, teacher_id, name, description, join_code) VALUES
+  ('88888888-8888-8888-8888-888888888801', '00000000-0000-0000-0000-000000000002',
+   'IELTS 6.5 tối thứ 3 - 5', 'Lớp luyện đề Reading & Writing hướng tới band 6.5.', 'LAB65T')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.class_members (class_id, student_id, joined_via) VALUES
+  ('88888888-8888-8888-8888-888888888801', '00000000-0000-0000-0000-000000000003', 'code'),
+  ('88888888-8888-8888-8888-888888888801', '00000000-0000-0000-0000-000000000004', 'invite')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.class_invites (class_id, email, invited_by)
+SELECT '88888888-8888-8888-8888-888888888801', 'duchuy@langua.local', '00000000-0000-0000-0000-000000000002'
+WHERE NOT EXISTS (
+  SELECT 1 FROM public.class_invites
+  WHERE class_id = '88888888-8888-8888-8888-888888888801' AND email = 'duchuy@langua.local' AND status = 'pending'
+);
