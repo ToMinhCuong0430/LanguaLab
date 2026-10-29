@@ -71,12 +71,13 @@ INSERT INTO public.vocab_levels (level_number, code, title, cefr_equivalent, tar
   (2, 'A2', 'Sơ cấp & Giao tiếp nền tảng', 'A2 Waystage', 1000, 'primary', 'Từ vựng diễn đạt nhu cầu thiết yếu, mua sắm, hỏi đường và thói quen.'),
   (3, 'B1', 'Trung cấp cơ sở (Ngưỡng tự chủ)', 'B1 Threshold', 2000, 'cyan', 'Tự tin trao đổi về công việc, sở thích, trường học và các trải nghiệm.'),
   (4, 'B2', 'Trung cấp độc lập & Học thuật', 'B2 Vantage', 4000, 'yellow', 'Hiểu văn bản chuyên môn, giao tiếp trôi chảy tự nhiên với người bản xứ.'),
-  (5, 'C1', 'Cao cấp & Chuyên môn sâu', 'C1 Effective Operational', 8000, 'coral', 'Làm chủ các chủ đề học thuật trừu tượng, đàm phán hợp đồng phức tạp.'),
+  (5, 'C1', 'Cao cấp & Chuyên môn sâu', 'C1 Operational', 8000, 'coral', 'Làm chủ các chủ đề học thuật trừu tượng, đàm phán hợp đồng phức tạp.'),
   (6, 'C2', 'Tinh thông & Gần như bản ngữ', 'C2 Mastery', 16000, 'violet', 'Thông hiểu và sử dụng sắc thái ngôn ngữ tinh tế không giới hạn.'),
-  (7, 'HSK_JLPT', 'Bộ từ định hướng kỳ thi HSK & JLPT', 'East Asian Framework', 2500, 'pink', 'Bộ từ chuyên biệt cho người học tiếng Trung và tiếng Nhật mục tiêu thi chứng chỉ.')
+  (7, 'HSK_JLPT', 'Bộ từ định hướng kỳ thi HSK & JLPT', 'HSK / JLPT', 2500, 'pink', 'Bộ từ chuyên biệt cho người học tiếng Trung và tiếng Nhật mục tiêu thi chứng chỉ.')
 ON CONFLICT (level_number) DO UPDATE SET 
   code = EXCLUDED.code, 
   title = EXCLUDED.title, 
+  cefr_equivalent = EXCLUDED.cefr_equivalent,
   description = EXCLUDED.description;
 `);
 
