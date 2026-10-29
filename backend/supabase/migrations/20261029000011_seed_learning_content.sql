@@ -44,7 +44,7 @@ ON CONFLICT (exam_id, skill_code) DO UPDATE SET name = EXCLUDED.name, english_na
 
 -- 4. BẢN ĐỒ LỘ TRÌNH HỌC TẬP CÁ NHÂN (LEARNING STAGES) (Kỳ vọng: 25 bản ghi)
 INSERT INTO public.learning_stages (id, stage_type, language, level, title, description, sort_order, xp_required) VALUES
-  -- Tiếng Anh Typing (10 chặng)
+
   ('stage-en-type-1', 'typing', 'en', 'A1', 'Chào hỏi & Làm quen', 'Luyện gõ các mẫu câu chào hỏi và giới thiệu căn bản nhất.', 1, 0),
   ('stage-en-type-2', 'typing', 'en', 'A1', 'Mua sắm & Giá cả', 'Thực hành các câu mua sắm, trả giá và thanh toán tiện lợi.', 2, 80),
   ('stage-en-type-3', 'typing', 'en', 'A2', 'Ẩm thực & Nhà hàng', 'Gọi món, hỏi thành phần thức ăn và cảm ơn đầu bếp.', 3, 180),
@@ -55,22 +55,16 @@ INSERT INTO public.learning_stages (id, stage_type, language, level, title, desc
   ('stage-en-type-8', 'typing', 'en', 'B2', 'Đàm phán & Thuyết trình', 'Thương lượng điều khoản hợp đồng và thuyết phục đối tác.', 8, 1050),
   ('stage-en-type-9', 'typing', 'en', 'C1', 'Học thuật & Tranh biện', 'Trình bày quan điểm phản biện các vấn đề xã hội sâu sắc.', 9, 1350),
   ('stage-en-type-10', 'typing', 'en', 'C2', 'Văn chương & Báo chí', 'Gõ các đoạn văn báo chí, tiểu luận triết học cao cấp.', 10, 1700),
-
-  -- Tiếng Trung Typing (5 chặng)
   ('stage-zh-type-1', 'typing', 'zh', 'HSK 1', 'Nhập môn Pinyin & Chào hỏi', 'Luyện gõ các câu giao tiếp cơ bản với Pinyin chuẩn.', 1, 0),
   ('stage-zh-type-2', 'typing', 'zh', 'HSK 2', 'Đi chợ & Trả giá', 'Mẫu câu mua sắm hàng ngày và đếm số lượng.', 2, 100),
   ('stage-zh-type-3', 'typing', 'zh', 'HSK 3', 'Gặp gỡ bạn bè & Ăn uống', 'Giao lưu cuối tuần, gọi các món ăn Trung Hoa phổ biến.', 3, 250),
   ('stage-zh-type-4', 'typing', 'zh', 'HSK 4', 'Làm việc & Công sở', 'Mẫu câu trao đổi nội bộ nơi làm việc bằng tiếng Hán.', 4, 450),
   ('stage-zh-type-5', 'typing', 'zh', 'HSK 5', 'Thương mại & Hợp đồng', 'Gõ nhanh các thuật ngữ xuất nhập khẩu và ký kết.', 5, 700),
-
-  -- Tiếng Nhật Typing (5 chặng)
   ('stage-ja-type-1', 'typing', 'ja', 'N5', 'Chào hỏi Kana & Câu đơn', 'Gõ Romaji chuyển đổi Hiragana và Katakana chuẩn xác.', 1, 0),
   ('stage-ja-type-2', 'typing', 'ja', 'N5', 'Mua sắm Konbini & Nhà ga', 'Mẫu câu đi lại hàng ngày và mua hàng ở cửa hàng tiện lợi.', 2, 100),
   ('stage-ja-type-3', 'typing', 'ja', 'N4', 'Quán ăn Izakaya & Cuộc sống', 'Gọi món, nhờ giúp đỡ và nói về kế hoạch tương lai.', 3, 250),
   ('stage-ja-type-4', 'typing', 'ja', 'N3', 'Công ty & Kính ngữ cơ bản', 'Trao đổi qua email nội bộ và chào hỏi đồng nghiệp.', 4, 450),
   ('stage-ja-type-5', 'typing', 'ja', 'N2', 'Thương mại Nhật Bản', 'Đàm phán Keigo chuẩn mực cao trong các buổi họp đối tác.', 5, 700),
-
-  -- Chặng tra từ điển & học thuật (5 chặng)
   ('stage-dict-en-1', 'dictionary', 'en', 'A1', 'Khám phá Từ vựng Oxford 3000', 'Tích luỹ 50 từ đầu tiên qua thẻ ghi nhớ thông minh.', 1, 0),
   ('stage-dict-en-2', 'dictionary', 'en', 'B1', 'Làm chủ Cụm động từ (Phrasal Verbs)', 'Tra cứu và ghi nhớ 40 cụm động từ thường gặp nhất.', 2, 150),
   ('stage-dict-en-3', 'dictionary', 'en', 'B2', 'Từ vựng Học thuật IELTS 7.0+', 'Bộ từ vựng ăn điểm cho Writing Task 2 & Speaking.', 3, 400),
@@ -336,14 +330,14 @@ ON CONFLICT (id) DO UPDATE SET question = EXCLUDED.question, options = EXCLUDED.
 -- 10. BÀI ĐỌC SONG NGỮ & VĂN BẢN HỌC THUẬT (Kỳ vọng: 7 bài đọc, 12 đoạn văn)
 INSERT INTO public.reading_items (id, content_type, language, level, title, vietnamese_title, author, source_note, word_count, reading_time_minutes, license, is_published) VALUES
 
-  ('read-en-tortoise-hare', 'short_story', 'en', 'A2 - B1', 'The Tortoise and the Hare', 'Rùa và Thỏ - Truyện ngụ ngôn Aesop', 'Aesop (Phạm vi công cộng)', 'Nguồn: Truyện ngụ ngôn cổ đại Hy Lạp (Public Domain)', 210, 2, 'Public Domain / Open Educational Resource', true),
-  ('read-en-alice-rabbit-hole', 'novel', 'en', 'B1 - B2', 'Down the Rabbit Hole', 'Xuống hang thỏ - Trích Alice ở xứ sở diệu kỳ', 'Lewis Carroll (1865, Public Domain)', 'Nguồn: Văn học thiếu nhi kinh điển thế giới (Public Domain)', 260, 3, 'Public Domain / Open Educational Resource', true),
-  ('read-en-shakespeare-stage', 'play', 'en', 'C1', 'All the World is a Stage', 'Cả thế gian này là một sân khấu kịch', 'William Shakespeare (Public Domain)', 'Nguồn: Kịch kinh điển William Shakespeare (Public Domain)', 220, 3, 'Public Domain / Open Educational Resource', true),
-  ('read-en-science-habits', 'news', 'en', 'B2', 'The Architecture of Human Habit Loops', 'Cấu trúc của vòng lặp thói quen ở con người', 'Ban biên tập LanguaLab (Tự biên soạn, Giấy phép mở)', 'Nguồn: Bài viết giáo dục phi thương mại do LanguaLab biên soạn', 230, 3, 'Public Domain / Open Educational Resource', true),
-  ('read-en-walden-woods', 'book', 'en', 'C1', 'Where I Lived, and What I Lived For', 'Tôi đã sống ở đâu và sống vì điều gì - Trích Walden', 'Henry David Thoreau (1854, Public Domain)', 'Nguồn: Văn học tư tưởng triết học cổ điển (Public Domain)', 240, 3, 'Public Domain / Open Educational Resource', true),
-  ('read-zh-saiweng', 'short_story', 'zh', 'HSK 4', '塞翁失马，焉知非福', 'Tái ông thất mã, an tri hoạ phúc', 'Hoài Nam Tử (Văn ngôn cổ điển, Public Domain)', 'Nguồn: Điển tích cổ đại Trung Hoa (Public Domain)', 180, 2, 'Public Domain / Open Educational Resource', true),
-  ('read-ja-momotaro', 'short_story', 'ja', 'JLPT N4', '桃太郎（ももたろう）', 'Cậu bé quả đào Momotaro - Truyện cổ tích Nhật Bản', 'Truyền thuyết dân gian Nhật Bản (Public Domain)', 'Nguồn: Truyện cổ tích dân gian Nhật Bản (Public Domain)', 200, 2, 'Public Domain / Open Educational Resource', true)
-ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, vietnamese_title = EXCLUDED.vietnamese_title, author = EXCLUDED.author, source_note = EXCLUDED.source_note;
+  ('read-en-tortoise-hare', 'short_story', 'en', 'A2 - B1', 'The Tortoise and the Hare', 'Rùa và Thỏ - Truyện ngụ ngôn Aesop', 'Aesop (Phạm vi công cộng)', 'Nguồn: Truyện ngụ ngôn cổ đại Hy Lạp (Public Domain)', 210, 2, 'public_domain', true),
+  ('read-en-alice-rabbit-hole', 'novel', 'en', 'B1 - B2', 'Down the Rabbit Hole', 'Xuống hang thỏ - Trích Alice ở xứ sở diệu kỳ', 'Lewis Carroll (1865, Public Domain)', 'Nguồn: Văn học thiếu nhi kinh điển thế giới (Public Domain)', 260, 3, 'public_domain', true),
+  ('read-en-shakespeare-stage', 'play', 'en', 'C1', 'All the World is a Stage', 'Cả thế gian này là một sân khấu kịch', 'William Shakespeare (Public Domain)', 'Nguồn: Kịch kinh điển William Shakespeare (Public Domain)', 220, 3, 'public_domain', true),
+  ('read-en-science-habits', 'news', 'en', 'B2', 'The Architecture of Human Habit Loops', 'Cấu trúc của vòng lặp thói quen ở con người', 'Ban biên tập LanguaLab (Tự biên soạn, Giấy phép mở)', 'Nguồn: Bài viết giáo dục phi thương mại do LanguaLab biên soạn', 230, 3, 'original', true),
+  ('read-en-walden-woods', 'book', 'en', 'C1', 'Where I Lived, and What I Lived For', 'Tôi đã sống ở đâu và sống vì điều gì - Trích Walden', 'Henry David Thoreau (1854, Public Domain)', 'Nguồn: Văn học tư tưởng triết học cổ điển (Public Domain)', 240, 3, 'public_domain', true),
+  ('read-zh-saiweng', 'short_story', 'zh', 'HSK 4', '塞翁失马，焉知非福', 'Tái ông thất mã, an tri hoạ phúc', 'Hoài Nam Tử (Văn ngôn cổ điển, Public Domain)', 'Nguồn: Điển tích cổ đại Trung Hoa (Public Domain)', 180, 2, 'public_domain', true),
+  ('read-ja-momotaro', 'short_story', 'ja', 'JLPT N4', '桃太郎（ももたろう）', 'Cậu bé quả đào Momotaro - Truyện cổ tích Nhật Bản', 'Truyền thuyết dân gian Nhật Bản (Public Domain)', 'Nguồn: Truyện cổ tích dân gian Nhật Bản (Public Domain)', 200, 2, 'public_domain', true)
+ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, vietnamese_title = EXCLUDED.vietnamese_title, author = EXCLUDED.author, source_note = EXCLUDED.source_note, license = EXCLUDED.license, content_type = EXCLUDED.content_type;
 
 INSERT INTO public.reading_sections (id, reading_id, sort_order, original_text, translated_text, vocab_notes) VALUES
 

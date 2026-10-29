@@ -1,6 +1,9 @@
 // ====================================================================
 // backend/supabase/scripts/gen-seed/generate.mjs
 // Đọc source.json và sinh ra migration 20261029000011_seed_learning_content.sql
+// Có tích hợp:
+//   1. Ánh xạ license an toàn cho reading_items ('public_domain', 'original', 'licensed')
+//   2. Khối WHITELIST tự động trích xuất từ migrations 1-10 để kiểm tra toàn bộ CHECK/enum
 // ====================================================================
 
 import fs from 'node:fs';
@@ -12,13 +15,183 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../../../../');
 
-// Đọc source.json
+// 1. Đọc source.json
 const sourcePath = path.join(__dirname, 'source.json');
 if (!fs.existsSync(sourcePath)) {
   console.error('❌ Không tìm thấy source.json! Vui lòng chạy node extract.mjs trước.');
   process.exit(1);
 }
 const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+
+// ====================================================================
+// 2. TRÍCH XUẤT TỰ ĐỘNG DANH SÁCH WHITELIST TỪ MIGRATIONS 1 ĐẾN 10
+// (Tuyệt đối KHÔNG gõ tay, đọc trực tiếp từ schema định nghĩa trên DB)
+// ====================================================================
+function extractSchemaWhitelist() {
+  const migrationsDir = path.join(rootDir, 'backend/supabase/migrations');
+  const files = fs.readdirSync(migrationsDir)
+    .filter(f => f <= '20261025000010_ielts_rpc_and_strict_rls.sql' && f.endsWith('.sql'))
+    .sort();
+
+  const allSql = files.map(f => fs.readFileSync(path.join(migrationsDir, f), 'utf8')).join('\n');
+
+  // Parse ENUMs: CREATE TYPE type_name AS ENUM (...)
+  const enumRegex = /CREATE\s+TYPE\s+(\w+)\s+AS\s+ENUM\s*\(([^)]+)\)/gi;
+  const enums = {};
+  let match;
+  while ((match = enumRegex.exec(allSql)) !== null) {
+    const typeName = match[1];
+    enums[typeName] = match[2].split(',').map(s => s.trim().replace(/^'|'$/g, ''));
+  }
+
+  // Parse table-scoped CHECK IN constraints
+  const tableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?(\w+)\s*\(([\s\S]*?)\n\);/gi;
+  const tableChecks = {};
+  while ((match = tableRegex.exec(allSql)) !== null) {
+    const tableName = match[1];
+    const body = match[2];
+    tableChecks[tableName] = tableChecks[tableName] || {};
+    
+    const checkInRegex = /(\w+)\s+[^,\n]*?CHECK\s*\(\s*\1\s+IN\s*\(([^)]+)\)\s*\)/gi;
+    let cm;
+    while ((cm = checkInRegex.exec(body)) !== null) {
+      const colName = cm[1];
+      tableChecks[tableName][colName] = cm[2].split(',').map(s => s.trim().replace(/^'|'$/g, ''));
+    }
+  }
+
+  // Parse BETWEEN constraints (vd: level_number BETWEEN 1 AND 7)
+  const betweenRegex = /(\w+)\s+[^,\n]*?CHECK\s*\(\s*\1\s+BETWEEN\s+(\d+)\s+AND\s+(\d+)\s*\)/gi;
+  while ((match = betweenRegex.exec(allSql)) !== null) {
+    const colName = match[1];
+    const start = parseInt(match[2], 10);
+    const end = parseInt(match[3], 10);
+    const range = [];
+    for (let i = start; i <= end; i++) range.push(i);
+    tableChecks['vocab_levels'] = tableChecks['vocab_levels'] || {};
+    tableChecks['vocab_levels'][colName] = range;
+  }
+
+  return {
+    enums,
+    tableChecks,
+    reading_items: {
+      content_type: tableChecks.reading_items?.content_type || [],
+      license: tableChecks.reading_items?.license || [],
+      language: enums.learning_language || [],
+    },
+    media_items: {
+      media_type: tableChecks.media_items?.media_type || [],
+      provider: tableChecks.media_items?.provider || [],
+      language: enums.learning_language || [],
+    },
+    typing_topics: {
+      group_type: tableChecks.typing_topics?.group_type || [],
+      language: enums.learning_language || [],
+    },
+    vocab_sets: {
+      language: enums.learning_language || [],
+    },
+    vocab_levels: {
+      level_number: tableChecks.vocab_levels?.level_number || [1, 2, 3, 4, 5, 6, 7],
+    },
+    learning_stages: {
+      stage_type: tableChecks.learning_stages?.stage_type || [],
+      language: enums.learning_language || [],
+    },
+    grammar_points: {
+      language: enums.learning_language || [],
+    },
+    grammar_exercises: {
+      question_type: tableChecks.grammar_exercises?.question_type || [],
+    },
+    exam_tests: {
+      difficulty: enums.difficulty_level || [],
+      skill: enums.ielts_skill || [],
+      task_number: [1, 2],
+    },
+    exam_questions: {
+      type: enums.question_type || [],
+    },
+  };
+}
+
+const whitelist = extractSchemaWhitelist();
+console.log('✅ Đã nạp thành công bộ WHITELIST từ migrations 1-10:');
+console.log('   - reading_items.license:', whitelist.reading_items.license);
+console.log('   - reading_items.content_type:', whitelist.reading_items.content_type);
+console.log('   - media_items.media_type:', whitelist.media_items.media_type);
+console.log('   - typing_topics.group_type:', whitelist.typing_topics.group_type);
+console.log('   - learning_language:', whitelist.vocab_sets.language);
+console.log('   - exam_questions.type:', whitelist.exam_questions.type);
+
+// Hàm kiểm tra whitelist nghiêm ngặt
+function assertWhitelist(table, column, value, allowedValues, context) {
+  if (value === null || value === undefined) return;
+  const isAllowed = allowedValues.some(v => String(v) === String(value));
+  if (!isAllowed) {
+    console.error(`\n❌ [LỖI VI PHẠM WHITELIST SCHEMA DATABASE]`);
+    console.error(`   - Bảng: public.${table}`);
+    console.error(`   - Cột: ${column}`);
+    console.error(`   - Giá trị nguồn không hợp lệ: "${value}"`);
+    console.error(`   - Danh sách giá trị hợp lệ (CHECK/ENUM từ DB): [${allowedValues.join(', ')}]`);
+    console.error(`   - Ngữ cảnh bản ghi: ${JSON.stringify(context, null, 2)}`);
+    process.exit(1);
+  }
+}
+
+// Hàm kiểm tra media cues timestamps
+function assertCueTimestamps(mediaId, cueIdx, start_ms, end_ms) {
+  if (start_ms < 0 || end_ms < start_ms) {
+    console.error(`\n❌ [LỖI TIMESTAMP MEDIA CUE]`);
+    console.error(`   - Media: ${mediaId}, Cue #${cueIdx}`);
+    console.error(`   - start_ms: ${start_ms}, end_ms: ${end_ms}`);
+    console.error(`   - Vi phạm ràng buộc DB: end_ms >= start_ms >= 0`);
+    process.exit(1);
+  }
+}
+
+// ====================================================================
+// 3. HÀM ÁNH XẠ LICENSE CHO READING_ITEMS
+// ====================================================================
+const licenseMappingAudit = [];
+
+function mapReadingLicense(r) {
+  const checkStr = [r.license, r.author, r.sourceNote].filter(Boolean).join(' ').toLowerCase();
+
+  let mapped = null;
+  let rule = null;
+
+  if (checkStr.includes('public domain') || checkStr.includes('phạm vi công cộng')) {
+    mapped = 'public_domain';
+    rule = 'Chứa "public domain" hoặc "phạm vi công cộng"';
+  } else if (
+    checkStr.includes('tự biên soạn') || 
+    checkStr.includes('original') || 
+    checkStr.includes('langualab')
+  ) {
+    mapped = 'original';
+    rule = 'Chứa "tự biên soạn", "original" hoặc tác giả "LanguaLab"';
+  } else {
+    console.error(`\n❌ [LỖI ÁNH XẠ LICENSE] Không thể xác định license cho bài đọc: ${r.id}`);
+    console.error(`   - Tiêu đề: ${r.title}`);
+    console.error(`   - Tác giả: ${r.author}`);
+    console.error(`   - Nguồn gốc: ${r.sourceNote}`);
+    console.error(`   - Quy tắc yêu cầu: phải rõ ràng là public domain hoặc tự biên soạn/original, không được đoán.`);
+    process.exit(1);
+  }
+
+  licenseMappingAudit.push({
+    id: r.id,
+    title: r.title,
+    author: r.author,
+    originalLicense: r.license || 'N/A',
+    mappedLicense: mapped,
+    ruleMatched: rule,
+  });
+
+  return mapped;
+}
 
 // Helper: UUID v5 xác định từ chuỗi
 const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
@@ -47,7 +220,6 @@ function sqlStr(str) {
 function sqlJson(obj) {
   if (obj === null || obj === undefined) return "'[]'::jsonb";
   const jsonStr = JSON.stringify(obj);
-  // Xác thực parse
   JSON.parse(jsonStr);
   return `'${jsonStr.replace(/'/g, "''")}'::jsonb`;
 }
@@ -81,6 +253,10 @@ ON CONFLICT (level_number) DO UPDATE SET
   description = EXCLUDED.description;
 `);
 
+for (let lvl = 1; lvl <= 7; lvl++) {
+  assertWhitelist('vocab_levels', 'level_number', lvl, whitelist.vocab_levels.level_number, { level_number: lvl });
+}
+
 // -----------------------------------------------------------------------------
 // 2. EXAMS (5 bản ghi)
 // -----------------------------------------------------------------------------
@@ -106,6 +282,7 @@ INSERT INTO public.exam_skills (exam_id, skill_code, name, english_name, descrip
 `);
 
 const skillRows = (source.ielts.skills || []).map((sk) => {
+  assertWhitelist('exam_skills', 'skill_code', sk.skill, whitelist.exam_tests.skill, sk);
   return `  ('ielts', ${sqlStr(sk.skill)}, ${sqlStr(sk.name)}, ${sqlStr(sk.englishName)}, ${sqlStr(sk.description)}, ${sqlStr(sk.tone)})`;
 });
 out.push(skillRows.join(',\n') + '\nON CONFLICT (exam_id, skill_code) DO UPDATE SET name = EXCLUDED.name, english_name = EXCLUDED.english_name, description = EXCLUDED.description;\n');
@@ -113,45 +290,55 @@ out.push(skillRows.join(',\n') + '\nON CONFLICT (exam_id, skill_code) DO UPDATE 
 // -----------------------------------------------------------------------------
 // 4. LEARNING STAGES (25 bản ghi)
 // -----------------------------------------------------------------------------
+const learningStagesData = [
+  // Tiếng Anh Typing (10 chặng)
+  ['stage-en-type-1', 'typing', 'en', 'A1', 'Chào hỏi & Làm quen', 'Luyện gõ các mẫu câu chào hỏi và giới thiệu căn bản nhất.', 1, 0],
+  ['stage-en-type-2', 'typing', 'en', 'A1', 'Mua sắm & Giá cả', 'Thực hành các câu mua sắm, trả giá và thanh toán tiện lợi.', 2, 80],
+  ['stage-en-type-3', 'typing', 'en', 'A2', 'Ẩm thực & Nhà hàng', 'Gọi món, hỏi thành phần thức ăn và cảm ơn đầu bếp.', 3, 180],
+  ['stage-en-type-4', 'typing', 'en', 'A2', 'Hỏi đường & Di chuyển', 'Hỏi vị trí nhà ga, bắt taxi và xe buýt thuận tiện.', 4, 300],
+  ['stage-en-type-5', 'typing', 'en', 'B1', 'Du lịch & Khách sạn', 'Check-in phòng nghỉ, yêu cầu dịch vụ buồng và hủy đặt phòng.', 5, 450],
+  ['stage-en-type-6', 'typing', 'en', 'B1', 'Phỏng vấn & Xin việc', 'Trả lời tự tin về kinh nghiệm làm việc và điểm mạnh bản thân.', 6, 620],
+  ['stage-en-type-7', 'typing', 'en', 'B2', 'Giao tiếp công sở', 'Viết email trao đổi công việc, báo cáo tiến độ dự án.', 7, 820],
+  ['stage-en-type-8', 'typing', 'en', 'B2', 'Đàm phán & Thuyết trình', 'Thương lượng điều khoản hợp đồng và thuyết phục đối tác.', 8, 1050],
+  ['stage-en-type-9', 'typing', 'en', 'C1', 'Học thuật & Tranh biện', 'Trình bày quan điểm phản biện các vấn đề xã hội sâu sắc.', 9, 1350],
+  ['stage-en-type-10', 'typing', 'en', 'C2', 'Văn chương & Báo chí', 'Gõ các đoạn văn báo chí, tiểu luận triết học cao cấp.', 10, 1700],
+
+  // Tiếng Trung Typing (5 chặng)
+  ['stage-zh-type-1', 'typing', 'zh', 'HSK 1', 'Nhập môn Pinyin & Chào hỏi', 'Luyện gõ các câu giao tiếp cơ bản với Pinyin chuẩn.', 1, 0],
+  ['stage-zh-type-2', 'typing', 'zh', 'HSK 2', 'Đi chợ & Trả giá', 'Mẫu câu mua sắm hàng ngày và đếm số lượng.', 2, 100],
+  ['stage-zh-type-3', 'typing', 'zh', 'HSK 3', 'Gặp gỡ bạn bè & Ăn uống', 'Giao lưu cuối tuần, gọi các món ăn Trung Hoa phổ biến.', 3, 250],
+  ['stage-zh-type-4', 'typing', 'zh', 'HSK 4', 'Làm việc & Công sở', 'Mẫu câu trao đổi nội bộ nơi làm việc bằng tiếng Hán.', 4, 450],
+  ['stage-zh-type-5', 'typing', 'zh', 'HSK 5', 'Thương mại & Hợp đồng', 'Gõ nhanh các thuật ngữ xuất nhập khẩu và ký kết.', 5, 700],
+
+  // Tiếng Nhật Typing (5 chặng)
+  ['stage-ja-type-1', 'typing', 'ja', 'N5', 'Chào hỏi Kana & Câu đơn', 'Gõ Romaji chuyển đổi Hiragana và Katakana chuẩn xác.', 1, 0],
+  ['stage-ja-type-2', 'typing', 'ja', 'N5', 'Mua sắm Konbini & Nhà ga', 'Mẫu câu đi lại hàng ngày và mua hàng ở cửa hàng tiện lợi.', 2, 100],
+  ['stage-ja-type-3', 'typing', 'ja', 'N4', 'Quán ăn Izakaya & Cuộc sống', 'Gọi món, nhờ giúp đỡ và nói về kế hoạch tương lai.', 3, 250],
+  ['stage-ja-type-4', 'typing', 'ja', 'N3', 'Công ty & Kính ngữ cơ bản', 'Trao đổi qua email nội bộ và chào hỏi đồng nghiệp.', 4, 450],
+  ['stage-ja-type-5', 'typing', 'ja', 'N2', 'Thương mại Nhật Bản', 'Đàm phán Keigo chuẩn mực cao trong các buổi họp đối tác.', 5, 700],
+
+  // Chặng tra từ điển & học thuật (5 chặng)
+  ['stage-dict-en-1', 'dictionary', 'en', 'A1', 'Khám phá Từ vựng Oxford 3000', 'Tích luỹ 50 từ đầu tiên qua thẻ ghi nhớ thông minh.', 1, 0],
+  ['stage-dict-en-2', 'dictionary', 'en', 'B1', 'Làm chủ Cụm động từ (Phrasal Verbs)', 'Tra cứu và ghi nhớ 40 cụm động từ thường gặp nhất.', 2, 150],
+  ['stage-dict-en-3', 'dictionary', 'en', 'B2', 'Từ vựng Học thuật IELTS 7.0+', 'Bộ từ vựng ăn điểm cho Writing Task 2 & Speaking.', 3, 400],
+  ['stage-dict-zh-1', 'dictionary', 'zh', 'HSK 3', '50 Từ vựng Vàng HSK 3 - 4', 'Nắm vững ý nghĩa và ví dụ thực tế qua từ điển mẫu.', 1, 0],
+  ['stage-dict-ja-1', 'dictionary', 'ja', 'N4', '50 Từ vựng Thiết yếu N4 - N3', 'Nắm vững Kanji và cách chuyển âm On/Kun chuẩn xác.', 1, 0]
+];
+
 out.push(`-- 4. BẢN ĐỒ LỘ TRÌNH HỌC TẬP CÁ NHÂN (LEARNING STAGES) (Kỳ vọng: 25 bản ghi)
 INSERT INTO public.learning_stages (id, stage_type, language, level, title, description, sort_order, xp_required) VALUES
-  -- Tiếng Anh Typing (10 chặng)
-  ('stage-en-type-1', 'typing', 'en', 'A1', 'Chào hỏi & Làm quen', 'Luyện gõ các mẫu câu chào hỏi và giới thiệu căn bản nhất.', 1, 0),
-  ('stage-en-type-2', 'typing', 'en', 'A1', 'Mua sắm & Giá cả', 'Thực hành các câu mua sắm, trả giá và thanh toán tiện lợi.', 2, 80),
-  ('stage-en-type-3', 'typing', 'en', 'A2', 'Ẩm thực & Nhà hàng', 'Gọi món, hỏi thành phần thức ăn và cảm ơn đầu bếp.', 3, 180),
-  ('stage-en-type-4', 'typing', 'en', 'A2', 'Hỏi đường & Di chuyển', 'Hỏi vị trí nhà ga, bắt taxi và xe buýt thuận tiện.', 4, 300),
-  ('stage-en-type-5', 'typing', 'en', 'B1', 'Du lịch & Khách sạn', 'Check-in phòng nghỉ, yêu cầu dịch vụ buồng và hủy đặt phòng.', 5, 450),
-  ('stage-en-type-6', 'typing', 'en', 'B1', 'Phỏng vấn & Xin việc', 'Trả lời tự tin về kinh nghiệm làm việc và điểm mạnh bản thân.', 6, 620),
-  ('stage-en-type-7', 'typing', 'en', 'B2', 'Giao tiếp công sở', 'Viết email trao đổi công việc, báo cáo tiến độ dự án.', 7, 820),
-  ('stage-en-type-8', 'typing', 'en', 'B2', 'Đàm phán & Thuyết trình', 'Thương lượng điều khoản hợp đồng và thuyết phục đối tác.', 8, 1050),
-  ('stage-en-type-9', 'typing', 'en', 'C1', 'Học thuật & Tranh biện', 'Trình bày quan điểm phản biện các vấn đề xã hội sâu sắc.', 9, 1350),
-  ('stage-en-type-10', 'typing', 'en', 'C2', 'Văn chương & Báo chí', 'Gõ các đoạn văn báo chí, tiểu luận triết học cao cấp.', 10, 1700),
+`);
 
-  -- Tiếng Trung Typing (5 chặng)
-  ('stage-zh-type-1', 'typing', 'zh', 'HSK 1', 'Nhập môn Pinyin & Chào hỏi', 'Luyện gõ các câu giao tiếp cơ bản với Pinyin chuẩn.', 1, 0),
-  ('stage-zh-type-2', 'typing', 'zh', 'HSK 2', 'Đi chợ & Trả giá', 'Mẫu câu mua sắm hàng ngày và đếm số lượng.', 2, 100),
-  ('stage-zh-type-3', 'typing', 'zh', 'HSK 3', 'Gặp gỡ bạn bè & Ăn uống', 'Giao lưu cuối tuần, gọi các món ăn Trung Hoa phổ biến.', 3, 250),
-  ('stage-zh-type-4', 'typing', 'zh', 'HSK 4', 'Làm việc & Công sở', 'Mẫu câu trao đổi nội bộ nơi làm việc bằng tiếng Hán.', 4, 450),
-  ('stage-zh-type-5', 'typing', 'zh', 'HSK 5', 'Thương mại & Hợp đồng', 'Gõ nhanh các thuật ngữ xuất nhập khẩu và ký kết.', 5, 700),
+const stageRows = learningStagesData.map(([id, stage_type, lang, level, title, desc, sort_order, xp_required]) => {
+  assertWhitelist('learning_stages', 'stage_type', stage_type, whitelist.learning_stages.stage_type, { id, stage_type });
+  assertWhitelist('learning_stages', 'language', lang, whitelist.learning_stages.language, { id, lang });
+  return `  (${sqlStr(id)}, ${sqlStr(stage_type)}, ${sqlStr(lang)}, ${sqlStr(level)}, ${sqlStr(title)}, ${sqlStr(desc)}, ${sort_order}, ${xp_required})`;
+});
 
-  -- Tiếng Nhật Typing (5 chặng)
-  ('stage-ja-type-1', 'typing', 'ja', 'N5', 'Chào hỏi Kana & Câu đơn', 'Gõ Romaji chuyển đổi Hiragana và Katakana chuẩn xác.', 1, 0),
-  ('stage-ja-type-2', 'typing', 'ja', 'N5', 'Mua sắm Konbini & Nhà ga', 'Mẫu câu đi lại hàng ngày và mua hàng ở cửa hàng tiện lợi.', 2, 100),
-  ('stage-ja-type-3', 'typing', 'ja', 'N4', 'Quán ăn Izakaya & Cuộc sống', 'Gọi món, nhờ giúp đỡ và nói về kế hoạch tương lai.', 3, 250),
-  ('stage-ja-type-4', 'typing', 'ja', 'N3', 'Công ty & Kính ngữ cơ bản', 'Trao đổi qua email nội bộ và chào hỏi đồng nghiệp.', 4, 450),
-  ('stage-ja-type-5', 'typing', 'ja', 'N2', 'Thương mại Nhật Bản', 'Đàm phán Keigo chuẩn mực cao trong các buổi họp đối tác.', 5, 700),
-
-  -- Chặng tra từ điển & học thuật (5 chặng)
-  ('stage-dict-en-1', 'dictionary', 'en', 'A1', 'Khám phá Từ vựng Oxford 3000', 'Tích luỹ 50 từ đầu tiên qua thẻ ghi nhớ thông minh.', 1, 0),
-  ('stage-dict-en-2', 'dictionary', 'en', 'B1', 'Làm chủ Cụm động từ (Phrasal Verbs)', 'Tra cứu và ghi nhớ 40 cụm động từ thường gặp nhất.', 2, 150),
-  ('stage-dict-en-3', 'dictionary', 'en', 'B2', 'Từ vựng Học thuật IELTS 7.0+', 'Bộ từ vựng ăn điểm cho Writing Task 2 & Speaking.', 3, 400),
-  ('stage-dict-zh-1', 'dictionary', 'zh', 'HSK 3', '50 Từ vựng Vàng HSK 3 - 4', 'Nắm vững ý nghĩa và ví dụ thực tế qua từ điển mẫu.', 1, 0),
-  ('stage-dict-ja-1', 'dictionary', 'ja', 'N4', '50 Từ vựng Thiết yếu N4 - N3', 'Nắm vững Kanji và cách chuyển âm On/Kun chuẩn xác.', 1, 0)
-ON CONFLICT (id) DO UPDATE SET 
+out.push(stageRows.join(',\n') + `\nON CONFLICT (id) DO UPDATE SET 
   title = EXCLUDED.title, 
   description = EXCLUDED.description, 
-  xp_required = EXCLUDED.xp_required;
-`);
+  xp_required = EXCLUDED.xp_required;\n`);
 
 // -----------------------------------------------------------------------------
 // 5. TYPING TOPICS & SENTENCES (8 chủ đề, 48 câu)
@@ -161,6 +348,8 @@ INSERT INTO public.typing_topics (id, language, level, group_type, title, descri
 `);
 
 const topicRows = source.typingTopics.map((t, idx) => {
+  assertWhitelist('typing_topics', 'group_type', t.group, whitelist.typing_topics.group_type, t);
+  assertWhitelist('typing_topics', 'language', t.lang, whitelist.typing_topics.language, t);
   return `  (${sqlStr(t.id)}, ${sqlStr(t.lang)}, ${sqlStr(t.level)}, ${sqlStr(t.group)}, ${sqlStr(t.title)}, ${sqlStr(t.description)}, ${sqlStr(t.icon)}, ${idx + 1})`;
 });
 out.push(topicRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description;\n');
@@ -196,6 +385,7 @@ const vocabSetUuids = [
 ];
 
 const setRows = source.curatedVocabSets.map((s, idx) => {
+  assertWhitelist('vocab_sets', 'language', s.lang, whitelist.vocab_sets.language, s);
   const setId = vocabSetUuids[idx];
   const levelNum = s.lang === 'en' ? (idx === 0 ? 3 : idx === 1 ? 5 : 4) : 4;
   return `  ('${setId}', NULL, ${levelNum}, ${sqlStr(s.title)}, ${sqlStr(s.description)}, true, ${sqlStr(s.lang)}, true)`;
@@ -223,11 +413,10 @@ INSERT INTO public.grammar_levels (language, code, name, description, sort_order
 `);
 
 const grammarLevelRows = [];
-let gLvlOrder = 0;
 for (const lang of ['en', 'zh', 'ja']) {
+  assertWhitelist('grammar_levels', 'language', lang, whitelist.grammar_points.language, { lang });
   const sections = source.grammarLevels[lang] || [];
   sections.forEach((sec, idx) => {
-    gLvlOrder++;
     grammarLevelRows.push(
       `  (${sqlStr(lang)}, ${sqlStr(sec.levelCode)}, ${sqlStr(sec.levelName)}, ${sqlStr(sec.description)}, ${idx + 1})`
     );
@@ -249,6 +438,7 @@ for (const lang of ['en', 'zh', 'ja']) {
   const sections = source.grammarLevels[lang] || [];
   sections.forEach((sec) => {
     (sec.points || []).forEach((p, pIdx) => {
+      assertWhitelist('grammar_points', 'language', lang, whitelist.grammar_points.language, p);
       const explanationText = (p.explanationNotes || []).join('\n');
       pointRows.push(
         `  (${sqlStr(p.id)}, ${sqlStr(lang)}, ${sqlStr(p.level)}, ${sqlStr(p.title)}, ${sqlStr(p.vietnameseTitle)}, ${sqlStr(p.summary)}, ${sqlJson(p.formula)}, ${sqlStr(explanationText)}, ${sqlJson(p.explanationNotes || [])}, ${sqlJson(p.examples || [])}, ${sqlJson(p.pitfalls || [])}, ${p.xpReward || 30}, ${pIdx + 1})`
@@ -256,12 +446,12 @@ for (const lang of ['en', 'zh', 'ja']) {
 
       // Exercises
       (p.exercises || []).forEach((ex, exIdx) => {
-        // Ánh xạ question_type sang CHECK constraint DB
         let dbType = 'multiple_choice';
         if (ex.type === 'fill_in_blank' || ex.type === 'fill_blank') dbType = 'fill_blank';
         else if (ex.type === 'word_reorder' || ex.type === 'word_order') dbType = 'word_order';
 
-        // Ánh xạ đáp án chuẩn
+        assertWhitelist('grammar_exercises', 'question_type', dbType, whitelist.grammar_exercises.question_type, ex);
+
         let correctIdx = ex.correctIndex !== undefined ? ex.correctIndex : null;
         let correctAns = null;
         let correctOrd = null;
@@ -298,6 +488,10 @@ INSERT INTO public.media_items (id, media_type, language, level, topic, title, v
 `);
 
 const mediaItemRows = source.curatedMediaList.map((m) => {
+  assertWhitelist('media_items', 'media_type', m.type, whitelist.media_items.media_type, m);
+  assertWhitelist('media_items', 'provider', 'youtube', whitelist.media_items.provider, m);
+  assertWhitelist('media_items', 'language', m.lang, whitelist.media_items.language, m);
+
   return `  (${sqlStr(m.id)}, ${sqlStr(m.type)}, ${sqlStr(m.lang)}, ${sqlStr(m.level)}, ${sqlStr(m.category)}, ${sqlStr(m.title)}, ${sqlStr(m.viTitle)}, ${sqlStr(m.speaker)}, 'youtube', 'https://www.youtube.com/watch?v=sample', ${m.durationSec || 120}, true)`;
 });
 out.push(mediaItemRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, vietnamese_title = EXCLUDED.vietnamese_title, speaker = EXCLUDED.speaker, duration_seconds = EXCLUDED.duration_seconds;\n');
@@ -308,9 +502,14 @@ const quizRows = [];
 
 source.curatedMediaList.forEach((m) => {
   (m.subtitles || []).forEach((c, cIdx) => {
+    const start_ms = c.start * 1000;
+    const end_ms = c.end * 1000;
+    assertCueTimestamps(m.id, cIdx + 1, start_ms, end_ms);
+    assertWhitelist('media_cues', 'subtitle_lang', m.lang, whitelist.media_items.language, { media_id: m.id, cue: c });
+
     const cueId = uuidv5(`media_cue:${m.id}:${c.start}:${cIdx + 1}`);
     cueRows.push(
-      `  ('${cueId}', ${sqlStr(m.id)}, ${sqlStr(m.lang)}, ${c.start * 1000}, ${c.end * 1000}, ${sqlStr(c.text)}, ${sqlStr(c.vi)}, ${sqlJson(c.vocabHints || [])}, ${cIdx + 1})`
+      `  ('${cueId}', ${sqlStr(m.id)}, ${sqlStr(m.lang)}, ${start_ms}, ${end_ms}, ${sqlStr(c.text)}, ${sqlStr(c.vi)}, ${sqlJson(c.vocabHints || [])}, ${cIdx + 1})`
     );
   });
 
@@ -335,9 +534,20 @@ INSERT INTO public.reading_items (id, content_type, language, level, title, viet
 `);
 
 const readingItemRows = source.readingList.map((r) => {
-  return `  (${sqlStr(r.id)}, ${sqlStr(r.type)}, ${sqlStr(r.lang)}, ${sqlStr(r.level)}, ${sqlStr(r.title)}, ${sqlStr(r.viTitle)}, ${sqlStr(r.author)}, ${sqlStr(r.sourceNote)}, ${r.wordCount || 100}, ${r.readingTimeMin || 3}, 'Public Domain / Open Educational Resource', true)`;
+  const mappedLicense = mapReadingLicense(r);
+
+  // Whitelist assertions
+  assertWhitelist('reading_items', 'content_type', r.type, whitelist.reading_items.content_type, r);
+  assertWhitelist('reading_items', 'license', mappedLicense, whitelist.reading_items.license, r);
+  assertWhitelist('reading_items', 'language', r.lang, whitelist.reading_items.language, r);
+
+  // Giữ nguyên mô tả giấy phép gốc vào source_note
+  const origLicenseDesc = r.license ? `Giấy phép gốc: ${r.license}` : '';
+  const finalSourceNote = [r.sourceNote, origLicenseDesc].filter(Boolean).join(' | ');
+
+  return `  (${sqlStr(r.id)}, ${sqlStr(r.type)}, ${sqlStr(r.lang)}, ${sqlStr(r.level)}, ${sqlStr(r.title)}, ${sqlStr(r.viTitle)}, ${sqlStr(r.author)}, ${sqlStr(finalSourceNote)}, ${r.wordCount || 100}, ${r.readingTimeMin || 3}, ${sqlStr(mappedLicense)}, true)`;
 });
-out.push(readingItemRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, vietnamese_title = EXCLUDED.vietnamese_title, author = EXCLUDED.author, source_note = EXCLUDED.source_note;\n');
+out.push(readingItemRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, vietnamese_title = EXCLUDED.vietnamese_title, author = EXCLUDED.author, source_note = EXCLUDED.source_note, license = EXCLUDED.license, content_type = EXCLUDED.content_type;\n');
 
 out.push(`INSERT INTO public.reading_sections (id, reading_id, sort_order, original_text, translated_text, vocab_notes) VALUES\n`);
 const sectionRows = [];
@@ -364,6 +574,12 @@ INSERT INTO public.exam_tests (
 `);
 
 const testRows = source.ielts.tests.map((t) => {
+  assertWhitelist('exam_tests', 'skill', t.skill, whitelist.exam_tests.skill, t);
+  assertWhitelist('exam_tests', 'difficulty', t.difficulty, whitelist.exam_tests.difficulty, t);
+  if (t.taskNumber !== undefined) {
+    assertWhitelist('exam_tests', 'task_number', t.taskNumber, whitelist.exam_tests.task_number, t);
+  }
+
   const passageTitle = t.passageTitle || t.audioTitle || null;
   let passageContent = t.passageContent || t.audioScript || t.promptRequirements || null;
   if (!passageContent && t.prompts) {
@@ -382,6 +598,8 @@ out.push(`INSERT INTO public.exam_questions (id, test_id, question_number, type,
 const examQuestionRows = [];
 source.ielts.tests.forEach((t) => {
   (t.questions || []).forEach((q, qIdx) => {
+    assertWhitelist('exam_questions', 'type', q.type, whitelist.exam_questions.type, { test_id: t.id, question: q });
+
     const qNum = q.id !== undefined ? q.id : qIdx + 1;
     const qUuid = uuidv5(`exam_question:${t.id}:${qNum}`);
     examQuestionRows.push(
@@ -475,3 +693,12 @@ console.log(`- reading_sections: ${sectionRows.length}`);
 console.log(`- exam_tests: ${source.ielts.tests.length}`);
 console.log(`- exam_questions: ${examQuestionRows.length}`);
 console.log(`- dictionary_entries: 2`);
+
+console.log('\n📋 BẢNG THỐNG KÊ ÁNH XẠ GIẤY PHÉP (reading_items.license):');
+console.table(licenseMappingAudit);
+
+const licenseCounts = licenseMappingAudit.reduce((acc, cur) => {
+  acc[cur.mappedLicense] = (acc[cur.mappedLicense] || 0) + 1;
+  return acc;
+}, {});
+console.log('📊 Số lượng reading_items theo license:', licenseCounts);
