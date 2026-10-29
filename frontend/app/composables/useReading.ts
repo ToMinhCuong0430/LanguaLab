@@ -293,7 +293,7 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải kho bài đọc công khai (chỉ lấy is_published = true)
       const { data: itemsData, error: itemsErr } = await client
@@ -416,7 +416,7 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
     lang: LearningLanguage
     level: string
   }) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (!isUseMock.value && uid) {
       try {
@@ -516,7 +516,7 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const deleteCustomText = async (id: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (!isUseMock.value && uid && !id.startsWith('custom-read-')) {
       try {
@@ -533,7 +533,7 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
 
   // Danh sách hiển thị theo bộ lọc
   const myCustomTexts = computed(() => {
-    if (!isUseMock.value && authUser.value?.id) {
+    if (!isUseMock.value && authUser.value?.sub) {
       return dbCustomTexts.value
     }
     return localCustomTexts.value
@@ -569,7 +569,7 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
     bookmarks: string[] = [],
     isCompleted: boolean = false
   ) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid || isUseMock.value) return
 
     clearTimeout(progressTimer)
@@ -604,7 +604,7 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
 
   // Lưu bản tự dịch của người học vào translation_attempts
   const saveTranslationAttempt = async (sectionId: string, userTranslation: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid || isUseMock.value || !userTranslation.trim()) return
 
     try {

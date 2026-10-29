@@ -12,14 +12,21 @@ import {
   Eye,
   X,
   BookOpen,
+  Maximize,
+  Minimize,
+  StickyNote,
 } from '@lucide/vue'
 import type { TestMode, IeltsTestDetail } from '~/composables/useIelts'
+import { EXAM_ANNOTATIONS_KEY } from '~/composables/useExamAnnotations'
 import ReadingPane from '~/components/ielts/ReadingPane.vue'
 import AudioPlayer from '~/components/ielts/AudioPlayer.vue'
 import WritingEditor from '~/components/ielts/WritingEditor.vue'
 import SpeakingRecorder from '~/components/ielts/SpeakingRecorder.vue'
-import QuestionNav from '~/components/ielts/QuestionNav.vue'
 import ResultSummary from '~/components/ielts/ResultSummary.vue'
+import AnnotatedText from '~/components/ielts/AnnotatedText.vue'
+import ExamBottomBar from '~/components/ielts/ExamBottomBar.vue'
+import SelectionToolbar from '~/components/ielts/SelectionToolbar.vue'
+import NotesPanel from '~/components/ielts/NotesPanel.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 
 const route = useRoute()
@@ -29,6 +36,35 @@ const initialMode = (route.query.mode as TestMode) || 'practice'
 const { getTestById, saveAttempt, convertRawToBand } = useIelts()
 const test = computed(() => getTestById(testId))
 
+// Chấm Writing / Speaking bằng AI theo 4 tiêu chí IELTS
+const aiScoring = useAiScoring()
+const isProductive = computed(() => test.value?.skill === 'writing' || test.value?.skill === 'speaking')
+// Reading / Listening: có tô sáng, ghi chú và thanh điều hướng câu hỏi ở đáy
+const isObjective = computed(() => test.value?.skill === 'reading' || test.value?.skill === 'listening')
+
+// Tô sáng & ghi chú, lưu tạm theo lượt làm bài
+const annotations = useExamAnnotations(testId)
+provide(EXAM_ANNOTATIONS_KEY, annotations)
+const examRoomRef = ref<HTMLElement | null>(null)
+const isNotesOpen = ref(false)
+const focusNoteId = ref<string | null>(null)
+const openNote = (id: string | null = null) => {
+  focusNoteId.value = id
+  isNotesOpen.value = true
+}
+
+// Toàn màn hình
+const isFullscreen = ref(false)
+const syncFullscreen = () => { isFullscreen.value = Boolean(document.fullscreenElement) }
+const toggleFullscreen = async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen()
+    else await document.documentElement.requestFullscreen()
+  } catch {
+    // Trình duyệt chặn (vd. trong iframe): bỏ qua
+  }
+}
+
 // Chế độ: practice (Luyện tập) | exam (Thi thử)
 const mode = ref<TestMode>(initialMode)
 
@@ -37,7 +73,25 @@ const currentQuestionIndex = ref(0)
 const userAnswers = ref<Record<number, string>>({})
 const flaggedQuestions = ref<Record<number, boolean>>({})
 const essayContent = ref('') // Dành cho Writing
+const speakingTranscripts = ref<string[]>([]) // Dành cho Speaking, mỗi phần tử là một Part
 const isSubmitted = ref(false)
+
+// Bài làm gửi đi chấm: essay (Writing) hoặc transcript ghép các Part (Speaking)
+const productiveSubmission = computed(() => {
+  if (test.value?.skill === 'writing') return essayContent.value.trim()
+  if (test.value?.skill === 'speaking') {
+    return speakingTranscripts.value
+      .map((t, i) => (t?.trim() ? `Part ${i + 1}:\n${t.trim()}` : ''))
+      .filter(Boolean)
+      .join('\n\n')
+  }
+  return ''
+})
+const productiveWordCount = computed(() => {
+  const text = test.value?.skill === 'speaking' ? speakingTranscripts.value.join(' ') : essayContent.value
+  return (text.trim().match(/\S+/g) || []).length
+})
+const minWordsForAi = computed(() => (test.value?.skill === 'speaking' ? 20 : 50))
 const showConfirmModal = ref(false)
 
 // Tab trên mobile cho Reading: 'passage' | 'questions'
@@ -77,6 +131,19 @@ const formattedTime = computed(() => {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
 })
 
+// Mức cảnh báo thời gian (chỉ khi thi thử đếm ngược): < 10 phút và < 5 phút
+const timerLevel = computed<'normal' | 'warning' | 'critical'>(() => {
+  if (mode.value !== 'exam') return 'normal'
+  if (timeRemainingSeconds.value <= 300) return 'critical'
+  if (timeRemainingSeconds.value <= 600) return 'warning'
+  return 'normal'
+})
+const timerLabel = computed(() => {
+  if (timerLevel.value === 'critical') return 'Còn dưới 5 phút'
+  if (timerLevel.value === 'warning') return 'Còn dưới 10 phút'
+  return mode.value === 'exam' ? 'Thời gian còn lại' : 'Thời gian đã làm'
+})
+
 // Chuyển câu hỏi
 const currentQuestion = computed(() => {
   if (!test.value || !test.value.questions.length) return null
@@ -91,6 +158,14 @@ const selectQuestion = (idx: number) => {
   if (mobileActiveTab.value === 'passage') {
     mobileActiveTab.value = 'questions'
   }
+  // Listening hiển thị tất cả câu: cuộn tới câu được chọn
+  if (test.value?.skill === 'listening' && import.meta.client) {
+    nextTick(() => {
+      const card = document.getElementById(`q-card-${idx + 1}`)
+      card?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      card?.querySelector<HTMLElement>('input')?.focus({ preventScroll: true })
+    })
+  }
 }
 
 const toggleFlag = (qNum: number) => {
@@ -99,13 +174,13 @@ const toggleFlag = (qNum: number) => {
 
 const nextQuestion = () => {
   if (currentQuestionIndex.value < totalQuestions.value - 1) {
-    currentQuestionIndex.value += 1
+    selectQuestion(currentQuestionIndex.value + 1)
   }
 }
 
 const prevQuestion = () => {
   if (currentQuestionIndex.value > 0) {
-    currentQuestionIndex.value -= 1
+    selectQuestion(currentQuestionIndex.value - 1)
   }
 }
 
@@ -137,6 +212,9 @@ const submitTest = async () => {
   stopTimer()
   showConfirmModal.value = false
   isSubmitted.value = true
+  // Tô sáng & ghi chú chỉ lưu tạm trong lượt làm bài
+  isNotesOpen.value = false
+  annotations.clear()
 
   // Tính điểm thô
   let correctCount = 0
@@ -147,12 +225,13 @@ const submitTest = async () => {
     }
   })
 
-  const band = test.value?.skill === 'writing' || test.value?.skill === 'speaking'
-    ? 6.5
+  // Writing / Speaking: band do AI chấm sau khi lưu lượt làm bài
+  const band = isProductive.value
+    ? undefined
     : convertRawToBand(correctCount, totalQuestions.value, test.value?.skill || 'reading')
 
   // Ghi nhận vào Supabase
-  await saveAttempt({
+  const saved = await saveAttempt({
     testId,
     mode: mode.value,
     rawScore: correctCount,
@@ -166,12 +245,23 @@ const submitTest = async () => {
   if (import.meta.client) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  if (isProductive.value && test.value) {
+    await aiScoring.score({
+      attemptId: saved.attemptId,
+      testId,
+      skill: test.value.skill as 'writing' | 'speaking',
+      submission: productiveSubmission.value,
+    })
+  }
 }
 
 const retryTest = () => {
   userAnswers.value = {}
   flaggedQuestions.value = {}
   essayContent.value = ''
+  speakingTranscripts.value = []
+  annotations.clear()
   currentQuestionIndex.value = 0
   isSubmitted.value = false
   timeSpentSeconds.value = 0
@@ -193,6 +283,7 @@ onMounted(() => {
   startTimer()
   if (import.meta.client) {
     window.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('fullscreenchange', syncFullscreen)
   }
 })
 
@@ -200,6 +291,8 @@ onUnmounted(() => {
   stopTimer()
   if (import.meta.client) {
     window.removeEventListener('keydown', handleKeyDown)
+    document.removeEventListener('fullscreenchange', syncFullscreen)
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
   }
 })
 
@@ -224,13 +317,18 @@ const examRoomGuideSteps: GuideStep[] = [
     targetId: 'exam-question-nav',
     badge: 'BƯỚC 3',
     title: 'Điều hướng & Cắm cờ xem lại',
-    description: 'Nhảy nhanh đến bất kỳ câu hỏi nào và đánh dấu cờ để rà soát trước khi nộp bài.',
+    description: 'Thanh dưới cùng hiện mọi câu hỏi: xanh là đã làm, vàng có cờ là cần xem lại, viền nét đứt là chưa làm. Bôi đen văn bản để tô sáng hoặc ghi chú.',
   },
 ]
 </script>
 
 <template>
-  <div v-if="test" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-6">
+  <div
+    v-if="test"
+    ref="examRoomRef"
+    class="exam-room mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-6"
+    :class="{ 'pb-32': isObjective && !isSubmitted }"
+  >
     <!-- MÀN HÌNH KẾT QUẢ KHI ĐÃ NỘP BÀI -->
     <ResultSummary
       v-if="isSubmitted"
@@ -238,7 +336,13 @@ const examRoomGuideSteps: GuideStep[] = [
       :user-answers="userAnswers"
       :time-spent-seconds="timeSpentSeconds"
       :mode="mode"
+      :submission="productiveSubmission"
+      :ai-state="aiScoring.state.value"
+      :ai-feedback="aiScoring.feedback.value"
+      :ai-error="aiScoring.error.value"
+      :ai-can-retry="aiScoring.canRetry.value"
       @retry="retryTest"
+      @retry-ai="aiScoring.retry"
     />
 
     <!-- MÀN HÌNH LÀM BÀI CHÍNH -->
@@ -275,7 +379,7 @@ const examRoomGuideSteps: GuideStep[] = [
         </div>
 
         <!-- Cột phải: Đồng hồ + Chuyển Mode + Nút Nộp bài -->
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
           <!-- Toggle Chế độ Luyện tập / Thi thử -->
           <div class="hidden sm:flex items-center gap-1 rounded-brut border-2 border-line bg-surface-2 p-1 text-xs font-bold">
             <button
@@ -296,18 +400,51 @@ const examRoomGuideSteps: GuideStep[] = [
             </button>
           </div>
 
-          <!-- Đồng hồ thời gian -->
+          <!-- Đồng hồ: vàng khi còn < 10 phút, đỏ khi còn < 5 phút (kèm chữ, không chỉ dựa vào màu) -->
           <div
             class="flex items-center gap-1.5 rounded-brut border-2 border-line px-3 py-1.5 font-display text-sm font-black shadow-brut-sm"
-            :class="[
-              mode === 'exam' && timeRemainingSeconds <= 300
-                ? 'bg-bad text-on-tone animate-pulse'
-                : 'bg-surface-2 text-ink',
-            ]"
+            :class="{
+              'bg-surface-2 text-ink': timerLevel === 'normal',
+              'bg-warn text-on-tone': timerLevel === 'warning',
+              'bg-bad text-on-tone animate-pulse': timerLevel === 'critical',
+            }"
+            role="timer"
+            :aria-label="`${timerLabel}: ${formattedTime}`"
           >
-            <Clock class="h-4 w-4" :stroke-width="2.5" />
-            <span>{{ formattedTime }}</span>
+            <Clock class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
+            <span class="tabular-nums">{{ formattedTime }}</span>
+            <span v-if="timerLevel !== 'normal'" class="hidden md:inline text-[11px] font-bold">
+              {{ timerLevel === 'critical' ? '< 5 phút' : '< 10 phút' }}
+            </span>
           </div>
+          <span class="sr-only" aria-live="assertive">{{ timerLevel !== 'normal' ? timerLabel : '' }}</span>
+
+          <!-- Ghi chú (Reading / Listening) -->
+          <button
+            v-if="isObjective"
+            type="button"
+            class="flex h-11 min-w-[44px] items-center justify-center gap-1.5 rounded-brut border-2 border-line px-2.5 font-display text-xs font-black shadow-brut-sm cursor-pointer"
+            :class="isNotesOpen ? 'bg-c-violet text-on-tone' : 'bg-surface-2 text-ink'"
+            :aria-pressed="isNotesOpen"
+            :aria-label="`Ghi chú (${annotations.notes.value.length})`"
+            @click="isNotesOpen ? (isNotesOpen = false) : openNote()"
+          >
+            <StickyNote class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
+            <span class="hidden sm:inline">Ghi chú</span>
+            <span class="tabular-nums">{{ annotations.notes.value.length }}</span>
+          </button>
+
+          <!-- Toàn màn hình -->
+          <button
+            type="button"
+            class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
+            :aria-label="isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'"
+            :title="isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'"
+            @click="toggleFullscreen"
+          >
+            <Minimize v-if="isFullscreen" class="h-4 w-4" :stroke-width="2.5" />
+            <Maximize v-else class="h-4 w-4" :stroke-width="2.5" />
+          </button>
 
           <!-- Nút Nộp bài -->
           <button
@@ -360,24 +497,11 @@ const examRoomGuideSteps: GuideStep[] = [
               />
             </div>
 
-            <!-- Cột phải: Câu hỏi & QuestionNav cuộn riêng -->
+            <!-- Cột phải: Câu hỏi đang chọn (điều hướng ở thanh dưới cùng) -->
             <div
               class="lg:col-span-5 flex flex-col h-full space-y-4"
               :class="{ 'hidden lg:flex': mobileActiveTab === 'passage' }"
             >
-              <!-- Bảng điều hướng câu hỏi -->
-              <div id="exam-question-nav">
-                <QuestionNav
-                  :total-questions="totalQuestions"
-                  :current-index="currentQuestionIndex"
-                  :answers="userAnswers"
-                  :flagged="flaggedQuestions"
-                  :skill="test.skill"
-                  @select-question="selectQuestion"
-                  @toggle-flag="toggleFlag"
-                />
-              </div>
-
               <!-- Chi tiết câu hỏi đang chọn -->
               <div
                 v-if="currentQuestion"
@@ -393,9 +517,13 @@ const examRoomGuideSteps: GuideStep[] = [
                     </span>
                   </div>
 
-                  <p class="font-display text-base font-bold text-ink leading-relaxed">
-                    {{ currentQuestion.questionText }}
-                  </p>
+                  <AnnotatedText
+                    :key="currentQuestion.id"
+                    tag="p"
+                    :block-id="`q-${currentQuestionIndex + 1}`"
+                    :text="currentQuestion.questionText"
+                    class="block font-display text-base font-bold text-ink leading-relaxed"
+                  />
 
                   <!-- Dạng True/False/Not Given hoặc Multiple Choice -->
                   <div
@@ -478,17 +606,21 @@ const examRoomGuideSteps: GuideStep[] = [
           <!-- Trình phát audio chuyên sâu -->
           <AudioPlayer
             :audio-title="test.audioTitle || test.title"
+            :audio-url="test.audioUrl"
             :duration-seconds="test.audioDurationSeconds || 180"
             :mode="mode"
           />
 
-          <!-- Lưới câu hỏi Listening -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-8 space-y-5">
+          <!-- Danh sách câu hỏi Listening (điều hướng ở thanh dưới cùng) -->
+          <div class="mx-auto max-w-3xl">
+            <div class="space-y-5">
               <div
                 v-for="(q, qIdx) in test.questions"
+                :id="`q-card-${qIdx + 1}`"
                 :key="q.id"
-                class="rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut space-y-3"
+                class="scroll-mt-40 rounded-brut-lg border-[3px] bg-surface p-5 shadow-brut space-y-3 transition-colors"
+                :class="currentQuestionIndex === qIdx ? 'border-line ring-2 ring-line ring-offset-2 ring-offset-bg' : 'border-line'"
+                @focusin="currentQuestionIndex = qIdx"
               >
                 <div class="flex items-center justify-between border-b-2 border-line pb-2.5">
                   <span class="rounded border-2 border-line bg-accent px-2 py-0.5 font-display text-xs font-black text-accent-ink">
@@ -499,9 +631,12 @@ const examRoomGuideSteps: GuideStep[] = [
                   </span>
                 </div>
 
-                <p class="font-display text-base font-bold text-ink">
-                  {{ q.questionText }}
-                </p>
+                <AnnotatedText
+                  tag="p"
+                  :block-id="`q-${qIdx + 1}`"
+                  :text="q.questionText"
+                  class="block font-display text-base font-bold text-ink"
+                />
 
                 <!-- Trắc nghiệm -->
                 <div v-if="q.options && q.options.length" class="space-y-2">
@@ -540,20 +675,6 @@ const examRoomGuideSteps: GuideStep[] = [
               </div>
             </div>
 
-            <!-- Cột điều hướng số câu -->
-            <div class="lg:col-span-4">
-              <div class="sticky top-40">
-                <QuestionNav
-                  :total-questions="totalQuestions"
-                  :current-index="currentQuestionIndex"
-                  :answers="userAnswers"
-                  :flagged="flaggedQuestions"
-                  :skill="test.skill"
-                  @select-question="selectQuestion"
-                  @toggle-flag="toggleFlag"
-                />
-              </div>
-            </div>
           </div>
         </div>
 
@@ -570,12 +691,30 @@ const examRoomGuideSteps: GuideStep[] = [
         <!-- 4. GIAO DIỆN SPEAKING (Hỏi đáp từng Part + Ghi âm MediaRecorder + Đếm giờ) -->
         <div v-else-if="test.skill === 'speaking'">
           <SpeakingRecorder
+            v-model:transcripts="speakingTranscripts"
             :prompts="test.prompts || ['Part 1...', 'Part 2...', 'Part 3...']"
             :prep-time-seconds="test.prepTimeSeconds || 60"
             :speak-time-seconds="test.speakTimeSeconds || 120"
           />
         </div>
       </main>
+
+      <!-- Reading / Listening: điều hướng câu hỏi, tô sáng và ghi chú -->
+      <template v-if="isObjective">
+        <ExamBottomBar
+          id="exam-question-nav"
+          :total-questions="totalQuestions"
+          :current-index="currentQuestionIndex"
+          :answers="userAnswers"
+          :flagged="flaggedQuestions"
+          @select="selectQuestion"
+          @toggle-flag="toggleFlag"
+          @prev="prevQuestion"
+          @next="nextQuestion"
+        />
+        <SelectionToolbar :container="examRoomRef" @open-note="openNote" />
+        <NotesPanel v-model:open="isNotesOpen" :focus-note-id="focusNoteId" />
+      </template>
     </div>
 
     <!-- MODAL XÁC NHẬN NỘP BÀI THI -->
@@ -607,7 +746,22 @@ const examRoomGuideSteps: GuideStep[] = [
           </span>
         </div>
 
-        <p class="text-xs text-ink-soft">
+        <!-- Writing / Speaking: cảnh báo bài quá ngắn để AI chấm -->
+        <div
+          v-if="isProductive && productiveWordCount < minWordsForAi"
+          class="flex items-start gap-2.5 rounded-brut border-2 border-bad bg-bad/10 p-3 text-xs font-bold text-bad"
+        >
+          <AlertCircle class="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>
+            {{ test.skill === 'writing' ? 'Bài viết' : 'Transcript' }} mới có <strong>{{ productiveWordCount }} từ</strong>.
+            Cần ít nhất {{ minWordsForAi }} từ để AI chấm được.
+          </span>
+        </div>
+
+        <p v-if="isProductive" class="text-xs text-ink-soft">
+          Sau khi nộp, bài làm được chấm theo 4 tiêu chí IELTS kèm nhận xét và cách sửa lỗi. Quá trình chấm thường mất 20 đến 60 giây.
+        </p>
+        <p v-else class="text-xs text-ink-soft">
           Sau khi nộp, hệ thống sẽ tính điểm thô, quy đổi thang Band chuẩn và hiển thị bảng phân tích giải thích cặn kẽ từng câu.
         </p>
       </div>

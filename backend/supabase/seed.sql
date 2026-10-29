@@ -25,6 +25,18 @@ INSERT INTO auth.users (
   ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'thuylinh@langua.local', crypt('Password123!', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Vũ Thuỳ Linh"}', NOW(), NOW(), 'authenticated', 'authenticated')
 ON CONFLICT (id) DO NOTHING;
 
+-- GoTrue không đọc được NULL ở các cột token (lỗi "Database error querying schema" khi đăng nhập)
+UPDATE auth.users SET
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change = COALESCE(email_change, ''),
+  email_change_token_current = COALESCE(email_change_token_current, ''),
+  phone_change = COALESCE(phone_change, ''),
+  phone_change_token = COALESCE(phone_change_token, ''),
+  reauthentication_token = COALESCE(reauthentication_token, '')
+WHERE email LIKE '%@langua.local';
+
 -- Cập nhật/chèn Profile chi tiết cho Minh Hoàng
 INSERT INTO public.profiles (
   id,
@@ -174,6 +186,18 @@ INSERT INTO public.exam_questions (test_id, question_number, type, question_text
   ('read_cam18_p1', 6, 'fill_blank', 'Historical experts compare the cultural and commercial importance of the Tea Horse Road to the famous ______ Road.', NULL, 'Silk', 'Đoạn 4 ghi: cultural conduit comparable in significance to the Silk Road.', 'Điền từ', 'Đoạn 4')
 ON CONFLICT (test_id, question_number) DO NOTHING;
 
+-- Dẫn chứng nguyên văn trong bài đọc cho phần giải thích đáp án (migration 12)
+UPDATE public.exam_questions AS q SET evidence_quote = v.quote
+FROM (VALUES
+  (1, 'wild tea plants (Camellia sinensis) were first harvested not as a leisurely brew, but as a bitter medicinal herb'),
+  (2, 'leaves fell into a cauldron of boiling water, unleashing a refreshing fragrance that marked the serendipitous birth of tea consumption'),
+  (3, 'In exchange, the Chinese imperial military urgently needed hardy Tibetan mountain horses to defend their northern frontiers against nomadic incursions.'),
+  (4, 'Tibetans required tremendous amounts of brick tea to balance their high-meat, high-fat diet in sub-zero altitudes.'),
+  (5, 'one prime Tibetan warhorse could command up to sixty kilograms of compressed brick tea'),
+  (6, 'Modern preservationists consider this ancient network a cultural conduit comparable in significance to the Silk Road')
+) AS v(num, quote)
+WHERE q.test_id = 'read_cam18_p1' AND q.question_number = v.num;
+
 -- Listening Test 1: Homestay Section 1
 INSERT INTO public.exam_tests (
   id, exam_id, skill, title, subtitle, difficulty, time_minutes, total_questions, category_tags,
@@ -193,6 +217,15 @@ INSERT INTO public.exam_tests (
   'OFFICER: Good morning. Welcome to Auckland International Student Services.
 STUDENT: Hello. I am Keiko Tanaka. That is T-A-N-A-K-A. I study Environmental Science. I arrive on the 15th of February. Strictly no seafood, and I am allergic to cats.'
 ) ON CONFLICT (id) DO NOTHING;
+
+-- Câu hỏi cho Đề Listening Section 1, kèm câu dẫn chứng trong transcript và đoạn audio (giây)
+INSERT INTO public.exam_questions (test_id, question_number, type, question_text, options, correct_answer, explanation, category_tag, evidence_quote, audio_start_seconds, audio_end_seconds) VALUES
+  ('list_sec1_homestay', 1, 'fill_blank', 'Student Full Name: Keiko ______', NULL, 'Tanaka', 'Học sinh đánh vần họ của mình: T-A-N-A-K-A.', 'Form Completion', 'I am Keiko Tanaka. That is T-A-N-A-K-A.', 9, 16),
+  ('list_sec1_homestay', 2, 'fill_blank', 'Academic Program: Environmental ______', NULL, 'Science', 'Học sinh nói ngành học là Environmental Science.', 'Form Completion', 'I study Environmental Science.', 16, 20),
+  ('list_sec1_homestay', 3, 'fill_blank', 'Arrival date in Auckland: 15th of ______', NULL, 'February', 'Học sinh nói ngày đến là 15 tháng Hai.', 'Form Completion', 'I arrive on the 15th of February.', 20, 24),
+  ('list_sec1_homestay', 4, 'fill_blank', 'Dietary restriction: Cannot consume ______', NULL, 'seafood', 'Học sinh nói rõ không ăn hải sản ("Strictly no seafood").', 'Form Completion', 'Strictly no seafood', 24, 27),
+  ('list_sec1_homestay', 5, 'multiple_choice', 'What pet allergy does the student specify?', '[{"id":"A","text":"Dogs"},{"id":"B","text":"Birds"},{"id":"C","text":"Cats"},{"id":"D","text":"Rabbits"}]'::jsonb, 'C', 'Học sinh nói bị dị ứng với mèo.', 'Multiple Choice', 'I am allergic to cats.', 27, 31)
+ON CONFLICT (test_id, question_number) DO NOTHING;
 
 -- Writing Test 2: AI in Education
 INSERT INTO public.exam_tests (

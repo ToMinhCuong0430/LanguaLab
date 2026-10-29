@@ -10,17 +10,35 @@ import {
   ShieldCheck,
   User,
   Settings,
+  Laptop,
+  Clock,
+  Check,
+  TrendingUp,
 } from '@lucide/vue'
 import OnboardingModal from '~/components/auth/OnboardingModal.vue'
 import { BRAND_NAME } from '~/constants/brand'
 
 const { items, isActive } = useNavigation()
-const { isDark, toggleTheme } = useTheme()
+const { mode: themeMode, setMode: setThemeMode } = useTheme()
 const { user, profile, isAdmin, signOut } = useAuth()
 
 const isMobileMenuOpen = ref(false)
 const isUserMenuOpen = ref(false)
 const userMenuRef = ref<HTMLElement | null>(null)
+const isThemeMenuOpen = ref(false)
+const themeMenuRef = ref<HTMLElement | null>(null)
+
+const themeOptions = [
+  { value: 'light', label: 'Sáng', icon: Sun },
+  { value: 'dark', label: 'Tối', icon: Moon },
+  { value: 'system', label: 'Theo hệ thống', icon: Laptop },
+  { value: 'auto', label: 'Theo giờ (18h–5h tối)', icon: Clock },
+] as const
+
+const chooseTheme = (value: (typeof themeOptions)[number]['value']) => {
+  setThemeMode(value)
+  isThemeMenuOpen.value = false
+}
 
 // Feature color map for inline styles
 const featureColorMap: Record<string, string> = {
@@ -47,7 +65,14 @@ function getFeatureInk(feature: string) {
 }
 
 const closeMobileMenu = () => { isMobileMenuOpen.value = false }
-const toggleUserMenu = () => { isUserMenuOpen.value = !isUserMenuOpen.value }
+const toggleUserMenu = () => {
+  isUserMenuOpen.value = !isUserMenuOpen.value
+  isThemeMenuOpen.value = false
+}
+const toggleThemeMenu = () => {
+  isThemeMenuOpen.value = !isThemeMenuOpen.value
+  isUserMenuOpen.value = false
+}
 const closeUserMenu = () => { isUserMenuOpen.value = false }
 
 /** Falls back to email prefix when full_name is empty */
@@ -61,12 +86,16 @@ const handleClickOutside = (event: MouseEvent) => {
   if (userMenuRef.value && !userMenuRef.value.contains(event.target as Node)) {
     closeUserMenu()
   }
+  if (themeMenuRef.value && !themeMenuRef.value.contains(event.target as Node)) {
+    isThemeMenuOpen.value = false
+  }
 }
 
 const route = useRoute()
 watch(() => route.path, () => {
   closeMobileMenu()
   closeUserMenu()
+  isThemeMenuOpen.value = false
 })
 
 onMounted(() => {
@@ -158,6 +187,15 @@ onUnmounted(() => {
               </NuxtLink>
 
               <NuxtLink
+                to="/tien-do"
+                class="flex w-full items-center gap-2 rounded-brut border border-transparent p-2 text-xs font-bold text-ink hover:border-line hover:bg-surface-2 cursor-pointer transition-all"
+                @click="closeUserMenu"
+              >
+                <TrendingUp class="h-4 w-4" :stroke-width="2.5" />
+                <span>Tiến độ & Lộ trình học</span>
+              </NuxtLink>
+
+              <NuxtLink
                 to="/cai-dat?tab=settings"
                 class="flex w-full items-center gap-2 rounded-brut border border-transparent p-2 text-xs font-bold text-ink hover:border-line hover:bg-surface-2 cursor-pointer transition-all"
                 @click="closeUserMenu"
@@ -203,16 +241,45 @@ onUnmounted(() => {
           </NuxtLink>
         </div>
 
-        <!-- Theme toggle -->
-        <button
-          type="button"
-          class="theme-toggle-btn"
-          :aria-label="isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'"
-          @click="toggleTheme"
-        >
-          <Sun v-if="isDark" class="h-5 w-5 text-warn" :stroke-width="2.5" />
-          <Moon v-else class="h-5 w-5 text-ink" :stroke-width="2.5" />
-        </button>
+        <!-- Theme menu (Sáng / Tối / Hệ thống / Theo giờ) -->
+        <div ref="themeMenuRef" class="relative">
+          <button
+            type="button"
+            class="theme-toggle-btn"
+            aria-label="Chọn chế độ hiển thị"
+            aria-haspopup="menu"
+            :aria-expanded="isThemeMenuOpen"
+            @click.stop="toggleThemeMenu"
+            @keydown.esc="isThemeMenuOpen = false"
+          >
+            <!-- Ẩn/hiện bằng class .dark để HTML từ server khớp với client (server không biết theme) -->
+            <Sun class="hidden dark:block h-5 w-5 text-warn" :stroke-width="2.5" />
+            <Moon class="block dark:hidden h-5 w-5 text-ink" :stroke-width="2.5" />
+          </button>
+
+          <div
+            v-if="isThemeMenuOpen"
+            class="absolute right-0 top-12 z-50 w-60 rounded-brut-lg border-[3px] border-line bg-surface p-2 shadow-brut-lg text-ink"
+            role="menu"
+            aria-label="Chế độ hiển thị"
+            @keydown.esc="isThemeMenuOpen = false"
+          >
+            <button
+              v-for="opt in themeOptions"
+              :key="opt.value"
+              type="button"
+              role="menuitemradio"
+              :aria-checked="themeMode === opt.value"
+              class="flex w-full items-center gap-2 rounded-brut border-2 p-2 min-h-[44px] text-xs font-bold text-ink cursor-pointer transition-all"
+              :class="themeMode === opt.value ? 'border-line bg-surface-2' : 'border-transparent hover:border-line hover:bg-surface-2'"
+              @click="chooseTheme(opt.value)"
+            >
+              <component :is="opt.icon" class="h-4 w-4" :stroke-width="2.5" />
+              <span class="flex-1 text-left">{{ opt.label }}</span>
+              <Check v-if="themeMode === opt.value" class="h-4 w-4" :stroke-width="2.5" />
+            </button>
+          </div>
+        </div>
 
         <!-- Mobile menu toggle -->
         <button

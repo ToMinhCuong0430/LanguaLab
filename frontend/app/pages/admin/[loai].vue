@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from '@lucide/vue'
 import { stringifyCsv } from '~/utils/csvParser'
+import ExamQuestionsEditor from '~/components/admin/ExamQuestionsEditor.vue'
 import type { Database } from '~/types/database.types'
 
 definePageMeta({
@@ -657,6 +658,15 @@ const exportData = (format: 'csv' | 'json') => {
             <span class="text-xs font-bold text-ink">Xuất bản công khai cho mọi người học</span>
           </label>
         </div>
+
+        <!-- Đề IELTS: tạo / sửa câu hỏi kèm giải thích và dẫn chứng (lưu riêng từng câu) -->
+        <ExamQuestionsEditor
+          v-if="editingItem && loai === 'ielts'"
+          :test-id="editingItem.id"
+          :skill="editingItem.skill"
+          :passage-content="editingItem.passage_content"
+          :audio-script="editingItem.audio_script"
+        />
       </div>
 
       <template #footer>

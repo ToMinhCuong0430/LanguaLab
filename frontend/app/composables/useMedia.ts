@@ -342,7 +342,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải kho nội dung chung (chỉ lấy is_published = true)
       const { data: mediaRows, error: mediaErr } = await client
@@ -499,7 +499,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
       })
     }
 
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     // 4. Lưu vào Supabase nếu đã đăng nhập và không dùng mock
     if (!isUseMock.value && uid) {
@@ -580,7 +580,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const deleteCustomVideo = async (id: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (!isUseMock.value && uid && !id.startsWith('custom-video-')) {
       try {
@@ -597,7 +597,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
 
   // Danh sách video của tôi
   const myCustomVideos = computed(() => {
-    if (!isUseMock.value && authUser.value?.id) {
+    if (!isUseMock.value && authUser.value?.sub) {
       return dbCustomVideos.value
     }
     return localCustomVideos.value
@@ -637,7 +637,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
     shadowingScore?: number,
     quizScore?: number
   ) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid || isUseMock.value) return
 
     clearTimeout(saveTimer)
@@ -675,7 +675,7 @@ export const useMedia = (targetLang?: Ref<LearningLanguage>) => {
 
   // Lưu từ vựng nhanh vào user_saved_words và localStorage
   const saveVocabToMySet = async (word: string, meaning: string, mediaId?: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (!isUseMock.value && uid) {
       try {

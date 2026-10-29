@@ -155,7 +155,7 @@ export const useFeatureRequests = () => {
 
   // Kiểm tra quyền Admin
   const checkAdminRole = async () => {
-    if (!authUser.value?.id || isUseMock.value) {
+    if (!authUser.value?.sub || isUseMock.value) {
       isAdmin.value = false
       return
     }
@@ -178,7 +178,7 @@ export const useFeatureRequests = () => {
 
     try {
       await checkAdminRole()
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải danh sách từ view bảo mật feature_requests_public
       const { data: publicRows, error: reqErr } = await client
@@ -272,7 +272,7 @@ export const useFeatureRequests = () => {
     item.hasVoted = !prevVoted
     item.upvotes += item.hasVoted ? 1 : -1
 
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     // 2. Gọi RPC toggle_feature_vote lên Supabase nếu có đăng nhập
     if (!isUseMock.value && uid && !id.startsWith('feat-mock')) {
@@ -306,7 +306,7 @@ export const useFeatureRequests = () => {
 
   // Gửi đề xuất mới
   const addRequest = async (data: { title: string; description: string; category: FeatureCategory }) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (!isUseMock.value && uid) {
       try {
@@ -374,7 +374,7 @@ export const useFeatureRequests = () => {
     const item = requests.value.find(r => r.id === requestId)
     if (!item || !content.trim()) return
 
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (!isUseMock.value && uid && !requestId.startsWith('feat-mock')) {
       try {

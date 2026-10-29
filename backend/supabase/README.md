@@ -232,3 +232,28 @@ npx supabase functions deploy delete-account --workdir backend --no-verify-jwt
 # npx supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your_key --workdir backend
 ```
 
+### Edge Function `ai-score`: Chấm Writing & Speaking bằng AI
+
+Chấm bài theo 4 tiêu chí IELTS bằng AI, lưu kết quả vào bảng `public.ai_feedback` (migration 11). Chọn nhà cung cấp bằng `AI_PROVIDER`: `gemini` (Google Gemini, mặc định model `gemini-3.5-flash`), `anthropic` (Claude `claude-opus-5-5`) hoặc `mock`.
+
+- **Writing**: Task Response / Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy.
+- **Speaking**: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation. Pronunciation chỉ là ước lượng vì AI chỉ nhận transcript, không nghe được audio.
+- Band tổng do server tự tính: trung bình 4 tiêu chí, làm tròn theo quy tắc IELTS (.25 làm tròn lên .5, .75 làm tròn lên số nguyên kế tiếp).
+
+```bash
+# Chạy local (cần supabase start trước)
+cp backend/supabase/functions/.env.example backend/supabase/functions/.env   # rồi điền GEMINI_API_KEY (hoặc ANTHROPIC_API_KEY)
+npx supabase functions serve --workdir backend --env-file backend/supabase/functions/.env
+
+# Deploy lên Supabase Cloud
+npx supabase secrets set AI_PROVIDER=gemini GEMINI_API_KEY=... --workdir backend
+npx supabase functions deploy ai-score --workdir backend --no-verify-jwt
+```
+
+Chưa có khóa API thì đặt `AI_PROVIDER=mock` để chạy thử giao diện. Kết quả mock được gắn nhãn "điểm giả lập" và **không phải điểm thật**.
+
+Request (POST, kèm JWT của người dùng):
+- Chấm mới: `{ "attempt_id": "<uuid|null>", "test_id": "write_task2_ai", "skill": "writing", "submission": "<essay hoặc transcript>" }`
+- Chấm lại bản bị lỗi: `{ "feedback_id": "<uuid>" }`
+
+Response thành công: `{ "feedback": { ...dòng ai_feedback } }`. Lỗi: `{ "error": { "code", "message", "retryable", "feedback_id?" } }`, với các mã `AUTH_REQUIRED`, `INVALID_INPUT`, `SUBMISSION_TOO_SHORT`, `SUBMISSION_TOO_LONG`, `NOT_FOUND`, `ALREADY_EXISTS`, `ALREADY_PROCESSING`, `NOT_RETRYABLE`, `DAILY_LIMIT_REACHED`, `AI_NOT_CONFIGURED`, `AI_RATE_LIMITED`, `AI_UNAVAILABLE`, `AI_REQUEST_INVALID`, `AI_REFUSED`, `AI_BAD_OUTPUT`, `INTERNAL`.

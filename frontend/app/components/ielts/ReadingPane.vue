@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Type, ZoomIn, ZoomOut } from '@lucide/vue'
+import AnnotatedText from '~/components/ielts/AnnotatedText.vue'
 
 const props = defineProps<{
   title: string
@@ -18,8 +18,9 @@ const fontSizeClass = computed(() => {
 
 // Tách các đoạn văn bản
 const paragraphs = computed(() => {
+  // Tách theo dòng trống, chấp nhận cả xuống dòng kiểu Windows (\r\n) từ dữ liệu nhập
   return props.content
-    .split('\n\n')
+    .split(/\r?\n\s*\r?\n/)
     .map(p => p.trim())
     .filter(p => p.length > 0)
 })
@@ -82,12 +83,11 @@ const getParagraphLetter = (index: number) => {
         class="relative pl-7"
       >
         <!-- Nhãn đoạn văn A, B, C... -->
-        <span class="absolute left-0 top-0.5 flex h-5 w-5 items-center justify-center rounded border border-line bg-surface-2 font-display text-xs font-black text-ink select-none">
+        <span :id="`passage-para-${idx}`" class="absolute left-0 top-0.5 flex h-5 w-5 items-center justify-center rounded border border-line bg-surface-2 font-display text-xs font-black text-ink select-none">
           {{ getParagraphLetter(idx) }}
         </span>
-        <p class="font-medium text-ink">
-          {{ para }}
-        </p>
+        <AnnotatedText tag="p" :block-id="`p-${idx}`" :text="para" class="font-medium text-ink" />
+
       </div>
     </div>
   </div>

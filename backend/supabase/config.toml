@@ -53,3 +53,10 @@ entrypoint = "./functions/delete-account/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/delete-account/*.html" ]
+
+[functions.ai-score]
+enabled = true
+# JWT được kiểm tra bên trong function (giống delete-account) để trả lỗi tiếng Việt rõ ràng
+verify_jwt = false
+import_map = "./functions/ai-score/deno.json"
+entrypoint = "./functions/ai-score/index.ts"

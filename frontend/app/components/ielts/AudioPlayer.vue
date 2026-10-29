@@ -14,6 +14,8 @@ import type { TestMode } from '~/composables/useIelts'
 const props = withDefaults(
   defineProps<{
     audioTitle: string
+    // Có URL thì phát file thật; chưa có thì giả lập tiến trình như trước
+    audioUrl?: string
     durationSeconds?: number
     mode?: TestMode
   }>(),
@@ -32,8 +34,40 @@ const enforceLimit = ref(props.mode === 'exam')
 
 let interval: ReturnType<typeof setInterval> | null = null
 
+// Phát audio thật qua thẻ <audio>
+const audioEl = ref<HTMLAudioElement | null>(null)
+const realDuration = ref<number | null>(null)
+const totalDuration = computed(() => realDuration.value ?? props.durationSeconds)
+
+// Âm lượng (nhớ giữa các lần làm bài)
+const VOLUME_KEY = 'langua-audio-volume'
+const volume = ref(80)
+const isMuted = ref(false)
+onMounted(() => {
+  try {
+    const saved = Number(localStorage.getItem(VOLUME_KEY))
+    if (Number.isFinite(saved) && saved >= 0 && saved <= 100 && localStorage.getItem(VOLUME_KEY) !== null) volume.value = saved
+  } catch { /* bỏ qua */ }
+})
+watch([volume, isMuted, audioEl], () => {
+  if (audioEl.value) {
+    audioEl.value.volume = volume.value / 100
+    audioEl.value.muted = isMuted.value
+  }
+}, { immediate: true })
+// Chỉ lưu khi người dùng đổi, để không ghi đè giá trị đã lưu trước khi kịp đọc
+watch(volume, (v) => {
+  try { localStorage.setItem(VOLUME_KEY, String(v)) } catch { /* bỏ qua */ }
+})
+watch(playbackRate, (r) => { if (audioEl.value) audioEl.value.playbackRate = r })
+
+const onVolumeInput = (e: Event) => {
+  volume.value = Number((e.target as HTMLInputElement).value)
+  if (volume.value > 0) isMuted.value = false
+}
+
 const formattedCurrentTime = computed(() => formatTime(currentTime.value))
-const formattedDuration = computed(() => formatTime(props.durationSeconds))
+const formattedDuration = computed(() => formatTime(totalDuration.value))
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -58,6 +92,11 @@ const playAudio = () => {
     playCount.value += 1
   }
 
+  if (audioEl.value) {
+    audioEl.value.play().catch(() => { isPlaying.value = false })
+    return
+  }
+
   stopTimer()
   interval = setInterval(() => {
     if (currentTime.value < props.durationSeconds) {
@@ -71,7 +110,13 @@ const playAudio = () => {
 
 const pauseAudio = () => {
   isPlaying.value = false
+  audioEl.value?.pause()
   stopTimer()
+}
+
+const seekTo = (seconds: number) => {
+  currentTime.value = Math.max(0, Math.min(totalDuration.value, seconds))
+  if (audioEl.value) audioEl.value.currentTime = currentTime.value
 }
 
 const stopTimer = () => {
@@ -83,13 +128,13 @@ const stopTimer = () => {
 
 const seekRelative = (offsetSeconds: number) => {
   if (enforceLimit.value && props.mode === 'exam') return
-  currentTime.value = Math.max(0, Math.min(props.durationSeconds, currentTime.value + offsetSeconds))
+  seekTo(currentTime.value + offsetSeconds)
 }
 
 const onSeek = (e: Event) => {
   if (enforceLimit.value && props.mode === 'exam') return
   const target = e.target as HTMLInputElement
-  currentTime.value = parseFloat(target.value)
+  seekTo(parseFloat(target.value))
 }
 
 const changeSpeed = () => {
@@ -100,6 +145,7 @@ const changeSpeed = () => {
 
 onUnmounted(() => {
   stopTimer()
+  audioEl.value?.pause()
 })
 </script>
 
@@ -153,8 +199,9 @@ onUnmounted(() => {
         <input
           type="range"
           min="0"
-          :max="durationSeconds"
+          :max="totalDuration"
           step="0.5"
+          aria-label="Vị trí phát"
           :value="currentTime"
           :disabled="mode === 'exam' && enforceLimit"
           class="w-full h-3 rounded border-2 border-line bg-surface-2 accent-accent cursor-pointer disabled:cursor-not-allowed"
@@ -203,16 +250,58 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <!-- Tốc độ phát -->
-      <button
-        type="button"
-        class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface px-3 py-1.5 font-display text-xs font-black text-ink shadow-brut-sm brut-press cursor-pointer"
-        title="Đổi tốc độ phát âm thanh"
-        @click="changeSpeed"
-      >
-        <Gauge class="h-3.5 w-3.5" :stroke-width="2.5" />
-        <span>Tốc độ: {{ playbackRate }}x</span>
-      </button>
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Âm lượng -->
+        <div class="flex items-center gap-2 rounded-brut border-2 border-line bg-surface-2 pl-1 pr-3 py-1">
+          <button
+            type="button"
+            class="flex h-9 w-9 items-center justify-center rounded text-ink cursor-pointer hover:bg-surface"
+            :aria-label="isMuted || volume === 0 ? 'Bật tiếng' : 'Tắt tiếng'"
+            :aria-pressed="isMuted"
+            @click="isMuted = !isMuted"
+          >
+            <VolumeX v-if="isMuted || volume === 0" class="h-4 w-4" :stroke-width="2.5" />
+            <Volume2 v-else class="h-4 w-4" :stroke-width="2.5" />
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            :value="isMuted ? 0 : volume"
+            class="w-24 sm:w-28 accent-accent cursor-pointer"
+            aria-label="Âm lượng"
+            :aria-valuetext="`${isMuted ? 0 : volume}%`"
+            @input="onVolumeInput"
+          >
+          <span class="w-9 text-right font-display text-xs font-black text-ink tabular-nums">{{ isMuted ? 0 : volume }}%</span>
+        </div>
+
+        <!-- Tốc độ phát -->
+        <button
+          type="button"
+          class="inline-flex min-h-[44px] items-center gap-1.5 rounded-brut border-2 border-line bg-surface px-3 py-1.5 font-display text-xs font-black text-ink shadow-brut-sm brut-press cursor-pointer"
+          title="Đổi tốc độ phát âm thanh"
+          @click="changeSpeed"
+        >
+          <Gauge class="h-3.5 w-3.5" :stroke-width="2.5" />
+          <span>Tốc độ: {{ playbackRate }}x</span>
+        </button>
+      </div>
     </div>
+
+    <audio
+      v-if="audioUrl"
+      ref="audioEl"
+      :src="audioUrl"
+      preload="metadata"
+      class="hidden"
+      @loadedmetadata="realDuration = Number.isFinite(audioEl?.duration) ? audioEl!.duration : null"
+      @timeupdate="currentTime = audioEl?.currentTime ?? currentTime"
+      @ended="pauseAudio(); currentTime = totalDuration"
+    />
+    <p v-else class="text-[11px] text-ink-soft">
+      Đề này chưa có file audio, trình phát đang chạy ở chế độ mô phỏng.
+    </p>
   </div>
 </template>

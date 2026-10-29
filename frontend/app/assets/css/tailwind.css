@@ -87,6 +87,14 @@
   --feature-soft: var(--c-blue-soft);
   --feature-ink:  var(--c-blue-ink);
 
+  /* Màu biểu đồ theo kỹ năng IELTS (đã kiểm tra bằng dataviz validate_palette.js trên nền sáng;
+     tương phản < 3:1 nên biểu đồ luôn có nhãn trực tiếp + bảng dữ liệu) */
+  --chart-listening: #2F5BFF;
+  --chart-reading: #00D084;
+  --chart-writing: #FF8A3D;
+  --chart-speaking: #FF70A6;
+  --chart-grid: #E3E5EE;
+
   /* Màu ngôn ngữ */
   --lang-en: #2F5BFF;
   --lang-zh: #D92B1F;
@@ -106,15 +114,18 @@
   --font-body: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Dark Mode Tokens */
+/* Dark Mode Tokens — "Brutalism dịu":
+ * vẫn viền dày + bóng cứng không blur, nhưng viền xám-xanh và bóng chàm trầm
+ * thay cho trắng chói; nền sâu hơn để các khối màu chức năng nổi bật. */
 .dark,
 [data-theme='dark'] {
-  --bg: #12131D;
-  --surface: #1E2132;
-  --surface-2: #282C43;
-  --ink: #F5F7FF;
-  --ink-soft: #A3A8BE;
-  --line: #F5F7FF;
+  --bg: #0F1119;
+  --surface: #181B28;
+  --surface-2: #232739;
+  --ink: #F2F4FC;
+  --ink-soft: #B3B9D1;
+  --line: #7C85AB;
+  --shadow-ink: #3D456B;
   --focus: #FFD23F;
 
   --accent: #547BFF;
@@ -153,9 +164,16 @@
   --mark: #FF85B8;
   --on-tone: #11141D;
 
-  --shadow: 4px 4px 0 var(--line);
-  --shadow-sm: 2px 2px 0 var(--line);
-  --shadow-lg: 6px 6px 0 var(--line);
+  --shadow: 4px 4px 0 var(--shadow-ink);
+  --shadow-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-lg: 6px 6px 0 var(--shadow-ink);
+
+  /* Màu biểu đồ trên nền tối: các bậc riêng (không đảo màu), đạt cả dải sáng 0.48–0.67 và CVD */
+  --chart-listening: #4D74FF;
+  --chart-reading: #00A469;
+  --chart-writing: #DD6A1F;
+  --chart-speaking: #D94E92;
+  --chart-grid: #2C3146;
 
   /* Dark mode feature soft/ink */
   --c-green-soft:  #0A3D28;
@@ -175,6 +193,17 @@
   --c-violet-ink: #C9AAFF;
   --c-coral-ink:  #FF9B97;
   --c-cyan-ink:   #7AECF7;
+}
+
+/* Phòng thi IELTS ở dark mode: neo-brutalism mềm hơn để đọc lâu đỡ mỏi mắt
+   (bóng cứng ngắn hơn, bo góc lớn hơn). Light mode giữ nguyên. */
+.dark .exam-room,
+[data-theme='dark'] .exam-room {
+  --shadow: 3px 3px 0 var(--shadow-ink);
+  --shadow-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-lg: 4px 4px 0 var(--shadow-ink);
+  --radius: 8px;
+  --radius-lg: 14px;
 }
 
 /* ── Feature color overrides per page ── */
