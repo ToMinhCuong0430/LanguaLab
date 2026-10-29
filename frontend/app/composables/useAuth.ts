@@ -57,7 +57,7 @@ export const useAuth = () => {
       const { data, error } = await client
         .from('profiles')
         .select('*')
-        .eq('id', user.value.id)
+        .eq('id', user.value.sub)
         .maybeSingle()
 
       if (error) {
@@ -83,7 +83,7 @@ export const useAuth = () => {
 
   // Lắng nghe khi user thay đổi để tự động fetch profile
   watch(
-    () => user.value?.id,
+    () => user.value?.sub,
     async (newId) => {
       if (newId) {
         await fetchProfile()
@@ -241,7 +241,7 @@ export const useAuth = () => {
           ...updates,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', user.value.id)
+        .eq('id', user.value.sub)
         .select()
         .single()
 

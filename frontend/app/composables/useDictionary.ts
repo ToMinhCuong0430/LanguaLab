@@ -324,7 +324,7 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
       }
 
       // Gọi RPC complete_stage trên server để nhận XP an toàn
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
       if (!isUseMock.value && uid) {
         try {
           await client.rpc('complete_stage', { p_stage_id: nodeId })

@@ -134,7 +134,7 @@ const saveProfile = async () => {
         target_exam_date: profileForm.target_exam_date || null,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', user.value.id)
+      .eq('id', user.value.sub)
 
     if (error) {
       profileMessage.value = { type: 'err', text: translateSupabaseError(error) }
@@ -184,7 +184,7 @@ const handleAvatarChange = async (e: Event) => {
 
   try {
     const ext = file.name.split('.').pop() || 'png'
-    const filePath = `${user.value.id}/avatar.${ext}`
+    const filePath = `${user.value.sub}/avatar.${ext}`
 
     const { error: uploadError } = await client.storage
       .from('avatars')
@@ -203,7 +203,7 @@ const handleAvatarChange = async (e: Event) => {
     await client
       .from('profiles')
       .update({ avatar_url: publicUrl })
-      .eq('id', user.value.id)
+      .eq('id', user.value.sub)
 
     profileForm.avatar_url = publicUrl
     await fetchProfile()
@@ -225,7 +225,7 @@ const removeAvatar = async () => {
     await client
       .from('profiles')
       .update({ avatar_url: null })
-      .eq('id', user.value.id)
+      .eq('id', user.value.sub)
 
     profileForm.avatar_url = ''
     await fetchProfile()

@@ -162,8 +162,8 @@ export const useHomeData = () => {
 
     try {
       // 1. Tải Profile & Điểm danh hôm nay
-      if (authUser.value?.id) {
-        const uid = authUser.value.id
+      if (authUser.value?.sub) {
+        const uid = authUser.value.sub
         const todayStr = new Date().toISOString().split('T')[0]
 
         // Profile & XP & Thống kê tổng hợp đa kỹ năng
@@ -310,7 +310,7 @@ export const useHomeData = () => {
           name: b.full_name,
           avatarChar: b.avatar_text || 'LA',
           xp: b.weekly_xp,
-          isCurrentUser: authUser.value?.id === b.user_id,
+          isCurrentUser: authUser.value?.sub === b.user_id,
         }))
       }
     } catch (err: any) {
@@ -362,7 +362,7 @@ export const useHomeData = () => {
     user.value.xp += 20
     todayStats.value.xpGainedToday += 20
 
-    if (!isUseMock.value && authUser.value?.id) {
+    if (!isUseMock.value && authUser.value?.sub) {
       try {
         // Gọi hàm RPC claim_daily_checkin an toàn (server tự cộng XP và tính streak)
         const { data, error } = await client.rpc('claim_daily_checkin')
@@ -386,9 +386,9 @@ export const useHomeData = () => {
       item.isRead = true
     }
 
-    if (!isUseMock.value && authUser.value?.id) {
+    if (!isUseMock.value && authUser.value?.sub) {
       try {
-        await client.from('notifications').update({ is_read: true }).eq('id', id).eq('user_id', authUser.value.id)
+        await client.from('notifications').update({ is_read: true }).eq('id', id).eq('user_id', authUser.value.sub)
       } catch (_) {}
     }
   }
@@ -398,9 +398,9 @@ export const useHomeData = () => {
       n.isRead = true
     })
 
-    if (!isUseMock.value && authUser.value?.id) {
+    if (!isUseMock.value && authUser.value?.sub) {
       try {
-        await client.from('notifications').update({ is_read: true }).eq('user_id', authUser.value.id)
+        await client.from('notifications').update({ is_read: true }).eq('user_id', authUser.value.sub)
       } catch (_) {}
     }
   }
