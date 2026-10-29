@@ -9,7 +9,10 @@ import {
   ArrowRight,
   Clock,
   PieChart,
+  Lightbulb,
+  ChevronDown,
 } from '@lucide/vue'
+import QuestionExplanation from '~/components/ielts/QuestionExplanation.vue'
 import type { IeltsTestDetail, TestMode } from '~/composables/useIelts'
 import { convertRawToBand } from '~/composables/useIelts'
 import type { AiFeedback, AiScoreError, AiScoreState } from '~/composables/useAiScoring'
@@ -34,6 +37,9 @@ const emit = defineEmits<{
 }>()
 
 const isProductive = computed(() => props.test.skill === 'writing' || props.test.skill === 'speaking')
+
+// Câu nào đang mở phần giải thích
+const openExplanations = ref<Record<number, boolean>>({})
 
 // Tính số câu đúng
 const checkIsCorrect = (qNum: number, userAns?: string, correctAns?: string) => {
@@ -287,10 +293,34 @@ function formatDuration(sec: number) {
             </div>
           </div>
 
-          <!-- Lời giải thích cặn kẽ -->
-          <div class="rounded-brut border-2 border-line bg-surface-2 p-3 text-xs font-medium text-ink leading-relaxed">
-            <span class="font-bold text-accent block mb-1">💡 Giải thích chi tiết:</span>
-            {{ q.explanation }}
+          <!-- Giải thích: mở khi cần, chỉ đúng đoạn văn / đoạn audio liên quan -->
+          <div>
+            <button
+              type="button"
+              class="inline-flex min-h-[44px] items-center gap-2 rounded-brut border-2 border-line px-3.5 font-display text-xs font-black cursor-pointer brut-press"
+              :class="checkIsCorrect(idx + 1, userAnswers[idx + 1], q.correctAnswer)
+                ? 'bg-surface-2 text-ink'
+                : 'bg-accent text-accent-ink shadow-brut-sm'"
+              :aria-expanded="Boolean(openExplanations[idx])"
+              :aria-controls="`explain-${idx}`"
+              @click="openExplanations[idx] = !openExplanations[idx]"
+            >
+              <Lightbulb class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
+              <span>{{ openExplanations[idx] ? 'Ẩn giải thích' : 'Xem giải thích' }}</span>
+              <ChevronDown
+                class="h-4 w-4 transition-transform"
+                :class="{ 'rotate-180': openExplanations[idx] }"
+                :stroke-width="2.5"
+                aria-hidden="true"
+              />
+            </button>
+            <div
+              v-if="openExplanations[idx]"
+              :id="`explain-${idx}`"
+              class="mt-3 rounded-brut border-2 border-line bg-surface-2 p-3.5"
+            >
+              <QuestionExplanation :question="q" :test="test" />
+            </div>
           </div>
         </div>
       </div>

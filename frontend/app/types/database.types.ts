@@ -417,9 +417,12 @@ export type Database = {
       }
       exam_questions: {
         Row: {
+          audio_end_seconds: number | null
+          audio_start_seconds: number | null
           category_tag: string | null
           correct_answer: string
           created_at: string
+          evidence_quote: string | null
           explanation: string
           id: string
           options: Json | null
@@ -430,9 +433,12 @@ export type Database = {
           type: Database["public"]["Enums"]["question_type"]
         }
         Insert: {
+          audio_end_seconds?: number | null
+          audio_start_seconds?: number | null
           category_tag?: string | null
           correct_answer: string
           created_at?: string
+          evidence_quote?: string | null
           explanation: string
           id?: string
           options?: Json | null
@@ -443,9 +449,12 @@ export type Database = {
           type: Database["public"]["Enums"]["question_type"]
         }
         Update: {
+          audio_end_seconds?: number | null
+          audio_start_seconds?: number | null
           category_tag?: string | null
           correct_answer?: string
           created_at?: string
+          evidence_quote?: string | null
           explanation?: string
           id?: string
           options?: Json | null

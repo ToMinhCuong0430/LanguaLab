@@ -21,6 +21,10 @@ export interface IeltsQuestion {
   explanation: string
   categoryTag: string
   passageSectionRef?: string
+  // Dẫn chứng cho phần giải thích: câu nguyên văn trong passage/transcript và đoạn audio (giây)
+  evidenceQuote?: string
+  audioStartSeconds?: number
+  audioEndSeconds?: number
 }
 
 export interface IeltsTestDetail {
@@ -40,6 +44,7 @@ export interface IeltsTestDetail {
   passageTitle?: string
   passageContent?: string
   audioTitle?: string
+  audioUrl?: string
   audioDurationSeconds?: number
   audioScript?: string
   taskNumber?: 1 | 2
@@ -163,6 +168,7 @@ export const useIelts = () => {
           passageTitle: t.passage_title || undefined,
           passageContent: t.passage_content || undefined,
           audioTitle: t.audio_title || undefined,
+          audioUrl: t.audio_url || undefined,
           audioDurationSeconds: t.audio_duration_seconds || undefined,
           audioScript: t.audio_script || undefined,
           taskNumber: t.task_number || undefined,
@@ -181,6 +187,9 @@ export const useIelts = () => {
             explanation: q.explanation,
             categoryTag: q.category_tag || '',
             passageSectionRef: q.passage_section_ref || undefined,
+            evidenceQuote: q.evidence_quote || undefined,
+            audioStartSeconds: q.audio_start_seconds ?? undefined,
+            audioEndSeconds: q.audio_end_seconds ?? undefined,
           })).sort((a: any, b: any) => a.id - b.id),
         }))
       }
