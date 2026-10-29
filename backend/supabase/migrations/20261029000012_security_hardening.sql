@@ -3,21 +3,18 @@
 -- Thắt chặt bảo mật RLS, hàm SECURITY DEFINER, chống gian lận XP & Storage
 -- ====================================================================
 
--- 1. TRIGGER BẢO VỆ CỘT NHẠY CẢM TRÊN PROFILES (total_xp, streak_days, level_id)
--- Chỉ RPC hệ thống / trigger nội bộ / Admin mới được thay đổi điểm và streak.
+-- 1. TRIGGER BẢO VỆ CÁC TRƯỜNG NHẠY CẢM TRÊN PROFILES (id, created_at)
+-- Chỉ Admin hoặc trigger nội bộ mới được phép sửa đổi thông tin nhận dạng gốc
 CREATE OR REPLACE FUNCTION public.protect_profile_sensitive_fields()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Nếu request đến từ client đã đăng nhập và không phải Admin
   IF (auth.role() = 'authenticated' AND NOT public.is_admin()) THEN
-    IF NEW.total_xp IS DISTINCT FROM OLD.total_xp THEN
-      RAISE EXCEPTION 'Không được phép cập nhật trực tiếp tổng XP (chỉ qua RPC thi/học thật)';
+    IF NEW.id IS DISTINCT FROM OLD.id THEN
+      RAISE EXCEPTION 'Không được phép thay đổi id tài khoản';
     END IF;
-    IF NEW.streak_days IS DISTINCT FROM OLD.streak_days THEN
-      RAISE EXCEPTION 'Không được phép cập nhật trực tiếp chuỗi streak (chỉ qua claim_daily_checkin)';
-    END IF;
-    IF NEW.level_id IS DISTINCT FROM OLD.level_id THEN
-      RAISE EXCEPTION 'Không được phép cập nhật trực tiếp level_id';
+    IF NEW.created_at IS DISTINCT FROM OLD.created_at THEN
+      RAISE EXCEPTION 'Không được phép cập nhật trực tiếp ngày tạo tài khoản';
     END IF;
   END IF;
 
@@ -33,6 +30,7 @@ CREATE TRIGGER tr_protect_profile_fields
 
 -- 2. THẮT CHẶT USER_ROLES (CHỈ ADMIN MỚI ĐƯỢC INSERT/UPDATE/DELETE)
 DROP POLICY IF EXISTS "Users can view own role" ON public.user_roles;
+DROP POLICY IF EXISTS "Users can view own role or admins can view all" ON public.user_roles;
 CREATE POLICY "Users can view own role or admins can view all"
   ON public.user_roles FOR SELECT
   TO authenticated
@@ -56,7 +54,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public;
 
--- 4. CỦNG CỐ HÀM award_xp CHỐNG GIẢ MẠO USER VÀ KHÓA SEARCH_PATH
+-- 4. CỦNG CỐ HÀM award_xp CHỐNG GIẢ MẠO USER, KHÓA SEARCH_PATH VÀ LẤY TỔNG XP TỪ VIEW
 CREATE OR REPLACE FUNCTION public.award_xp(
   p_source TEXT,
   p_ref_id TEXT DEFAULT NULL,
@@ -134,25 +132,23 @@ BEGIN
     END IF;
   END IF;
 
-  -- Ghi nhận sự kiện XP
+  -- Ghi nhận sự kiện XP vào bảng nguồn sự thật duy nhất (Single Source of Truth)
   INSERT INTO public.xp_events (user_id, xp_amount, source, reference_id)
   VALUES (v_target_user_id, v_base_xp, p_source, p_ref_id);
 
-  -- Cập nhật tổng điểm profiles
-  UPDATE public.profiles
-  SET total_xp = total_xp + v_base_xp,
-      updated_at = NOW()
-  WHERE id = v_target_user_id
-  RETURNING total_xp INTO v_new_total;
+  -- Tổng điểm XP được tính toán tập trung từ view public.user_xp_totals
+  SELECT total_xp INTO v_new_total
+  FROM public.user_xp_totals
+  WHERE user_id = v_target_user_id;
 
   RETURN jsonb_build_object(
     'success', true,
     'xp_gained', v_base_xp,
-    'total_xp', v_new_total,
+    'total_xp', COALESCE(v_new_total, 0),
     'daily_total', v_daily_total + v_base_xp
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+$$ LANGUAGE plpgsql SECURITY DEFINER VOLATILE SET search_path = public;
 
 -- 5. CỦNG CỐ claim_daily_checkin DÙNG CHUNG award_xp VÀ AN TOÀN TRẦN XP
 CREATE OR REPLACE FUNCTION public.claim_daily_checkin()
@@ -187,24 +183,19 @@ BEGIN
   -- 2. Thưởng XP qua hàm chuẩn award_xp
   v_xp_result := public.award_xp('daily_checkin', v_today::TEXT, v_user_id);
 
-  -- 3. Cập nhật chuỗi streak
+  -- 3. Tính toán chuỗi streak động từ hàm get_user_streak
   v_new_streak := public.get_user_streak(v_user_id);
-  UPDATE public.profiles
-  SET streak_days = v_new_streak,
-      last_active_at = NOW(),
-      updated_at = NOW()
-  WHERE id = v_user_id;
 
   RETURN jsonb_build_object(
     'success', true,
     'xp_gained', COALESCE((v_xp_result->>'xp_gained')::INTEGER, 20),
     'streak_days', v_new_streak,
-    'total_xp', (v_xp_result->>'total_xp')::INTEGER
+    'total_xp', COALESCE((v_xp_result->>'total_xp')::INTEGER, 0)
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+$$ LANGUAGE plpgsql SECURITY DEFINER VOLATILE SET search_path = public;
 
--- 6. CỦNG CỐ CÁC HÀM GET STATS VÀ STREAK VỚI SEARCH_PATH = public
+-- 6. CỦNG CỐ HÀM get_user_streak VỚI SEARCH_PATH = public
 CREATE OR REPLACE FUNCTION public.get_user_streak(p_user_id UUID)
 RETURNS INTEGER AS $$
 DECLARE
@@ -212,6 +203,10 @@ DECLARE
   v_check_date DATE := CURRENT_DATE;
   v_has_today BOOLEAN;
 BEGIN
+  IF p_user_id IS NULL THEN
+    RETURN 0;
+  END IF;
+
   -- Kiểm tra hôm nay có điểm danh không
   SELECT EXISTS(
     SELECT 1 FROM public.daily_checkins
@@ -236,6 +231,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public;
 
+-- 7. CỦNG CỐ get_my_today_stats (THÊM DROP TRƯỚC ĐÓ VÌ THAY ĐỔI KIỂU TRẢ VỀ TỪ TABLE SANG JSONB)
+DROP FUNCTION IF EXISTS public.get_my_today_stats();
+
 CREATE OR REPLACE FUNCTION public.get_my_today_stats()
 RETURNS JSONB AS $$
 DECLARE
@@ -254,29 +252,31 @@ BEGIN
     );
   END IF;
 
+  -- Đếm từ ôn luyện hôm nay
   SELECT COUNT(*) INTO v_words_learned
   FROM public.user_word_progress
   WHERE user_id = v_user_id AND last_reviewed_at >= CURRENT_DATE;
 
+  -- Tính thời gian luyện tập qua cột completed_at của các bảng attempts
   SELECT COALESCE(SUM(duration_seconds), 0) / 60 INTO v_practice_minutes
   FROM (
     SELECT duration_seconds FROM public.typing_attempts
-    WHERE user_id = v_user_id AND created_at >= CURRENT_DATE
+    WHERE user_id = v_user_id AND completed_at >= CURRENT_DATE
     UNION ALL
     SELECT duration_seconds FROM public.exam_attempts
-    WHERE user_id = v_user_id AND created_at >= CURRENT_DATE
+    WHERE user_id = v_user_id AND completed_at >= CURRENT_DATE
     UNION ALL
     SELECT duration_seconds FROM public.grammar_attempts
-    WHERE user_id = v_user_id AND created_at >= CURRENT_DATE
+    WHERE user_id = v_user_id AND completed_at >= CURRENT_DATE
   ) today_practices;
 
+  -- Tổng XP nhận được hôm nay
   SELECT COALESCE(SUM(xp_amount), 0) INTO v_today_xp
   FROM public.xp_events
   WHERE user_id = v_user_id AND created_at >= CURRENT_DATE;
 
-  SELECT streak_days INTO v_streak
-  FROM public.profiles
-  WHERE id = v_user_id;
+  -- Chuỗi ngày học liên tục qua hàm chuẩn get_user_streak
+  v_streak := public.get_user_streak(v_user_id);
 
   RETURN jsonb_build_object(
     'words_learned_today', v_words_learned,
@@ -287,7 +287,178 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public;
 
--- 7. THẮT CHẶT VIEW WEEKLY_LEADERBOARD (KHÔNG CHỨA THÔNG TIN NHẠY CẢM)
+-- 8. VÁ HÀM submit_exam_attempt (SỬA CỘT COMPLETED_AT VÀ XP_EVENTS TỪ MIGRATION 10)
+CREATE OR REPLACE FUNCTION public.submit_exam_attempt(
+  p_test_id TEXT,
+  p_mode exam_mode,
+  p_answers JSONB,
+  p_duration_seconds INTEGER,
+  p_essay TEXT DEFAULT NULL,
+  p_audio_path TEXT DEFAULT NULL
+)
+RETURNS JSONB AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_test RECORD;
+  v_total_questions INTEGER := 0;
+  v_raw_score INTEGER := 0;
+  v_band_score NUMERIC(3, 1) := NULL;
+  v_attempt_id UUID := gen_random_uuid();
+  v_results JSONB := '[]'::jsonb;
+  v_item RECORD;
+  v_user_answer TEXT;
+  v_is_correct BOOLEAN;
+  v_today_start TIMESTAMPTZ := date_trunc('day', NOW() AT TIME ZONE 'UTC');
+  v_daily_xp_count INTEGER := 0;
+  v_base_xp INTEGER := 0;
+  v_awarded_xp INTEGER := 0;
+BEGIN
+  -- 1. Kiểm tra xác thực người dùng
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Yêu cầu đăng nhập để nộp bài thi.';
+  END IF;
+
+  -- 2. Kiểm tra đề thi tồn tại và đã xuất bản
+  SELECT id, exam_id, skill, total_questions, is_published, difficulty
+  INTO v_test
+  FROM public.exam_tests
+  WHERE id = p_test_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Đề thi không tồn tại.';
+  END IF;
+
+  IF NOT v_test.is_published AND NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Đề thi này chưa được xuất bản.';
+  END IF;
+
+  -- 3. Xử lý chấm điểm trắc nghiệm (Listening / Reading)
+  IF v_test.skill IN ('listening', 'reading') THEN
+    FOR v_item IN
+      SELECT id, question_number, correct_answer, explanation
+      FROM public.exam_questions
+      WHERE test_id = p_test_id
+      ORDER BY question_number ASC
+    LOOP
+      v_total_questions := v_total_questions + 1;
+
+      -- Lấy câu trả lời của thí sinh từ JSONB mảng hoặc map
+      IF jsonb_typeof(p_answers) = 'array' THEN
+        SELECT elem->>'user_answer' INTO v_user_answer
+        FROM jsonb_array_elements(p_answers) AS elem
+        WHERE (elem->>'question_id')::TEXT = v_item.id::TEXT
+           OR (elem->>'question_number')::INTEGER = v_item.question_number;
+      ELSE
+        v_user_answer := p_answers->>v_item.id::TEXT;
+        IF v_user_answer IS NULL THEN
+          v_user_answer := p_answers->>(v_item.question_number::TEXT);
+        END IF;
+      END IF;
+
+      -- So khớp đáp án (chấp nhận chữ hoa thường và khoảng trắng thừa)
+      IF v_user_answer IS NOT NULL AND LOWER(TRIM(v_user_answer)) = LOWER(TRIM(v_item.correct_answer)) THEN
+        v_is_correct := TRUE;
+        v_raw_score := v_raw_score + 1;
+      ELSE
+        v_is_correct := FALSE;
+      END IF;
+
+      v_results := v_results || jsonb_build_object(
+        'question_id', v_item.id,
+        'question_number', v_item.question_number,
+        'user_answer', v_user_answer,
+        'correct_answer', v_item.correct_answer,
+        'is_correct', v_is_correct,
+        'explanation', v_item.explanation
+      );
+    END LOOP;
+
+    -- Quy đổi điểm Band Score IELTS chuẩn
+    IF v_total_questions > 0 THEN
+      v_band_score := public.calculate_ielts_band(v_raw_score, v_total_questions, v_test.skill);
+    ELSE
+      v_band_score := 0.0;
+    END IF;
+
+    v_base_xp := 10 + (v_raw_score * 3);
+  ELSE
+    -- Kỹ năng Tự luận (Writing / Speaking)
+    v_total_questions := COALESCE(v_test.total_questions, 1);
+    v_base_xp := 25;
+  END IF;
+
+  -- 4. Chèn bản ghi vào public.exam_attempts (dùng completed_at)
+  INSERT INTO public.exam_attempts (
+    id,
+    user_id,
+    test_id,
+    mode,
+    raw_score,
+    total_questions,
+    band_score,
+    duration_seconds,
+    submitted_essay,
+    speaking_audio_url,
+    completed_at
+  ) VALUES (
+    v_attempt_id,
+    v_user_id,
+    p_test_id,
+    p_mode,
+    v_raw_score,
+    v_total_questions,
+    v_band_score,
+    COALESCE(p_duration_seconds, 0),
+    p_essay,
+    p_audio_path,
+    NOW()
+  );
+
+  -- 5. Chèn chi tiết câu trả lời vào public.exam_answers (nếu có câu hỏi trắc nghiệm)
+  IF jsonb_array_length(v_results) > 0 THEN
+    INSERT INTO public.exam_answers (
+      attempt_id,
+      question_id,
+      user_answer,
+      is_correct
+    )
+    SELECT
+      v_attempt_id,
+      (elem->>'question_id')::UUID,
+      elem->>'user_answer',
+      (elem->>'is_correct')::BOOLEAN
+    FROM jsonb_array_elements(v_results) AS elem;
+  END IF;
+
+  -- 6. Cộng XP (Tuân thủ trần 500 XP/ngày và cấu trúc đúng cột của xp_events)
+  SELECT COALESCE(SUM(xp_amount), 0)
+  INTO v_daily_xp_count
+  FROM public.xp_events
+  WHERE user_id = v_user_id
+    AND created_at >= v_today_start;
+
+  IF v_daily_xp_count < 500 THEN
+    v_awarded_xp := LEAST(v_base_xp, 500 - v_daily_xp_count);
+    IF v_awarded_xp > 0 THEN
+      INSERT INTO public.xp_events (user_id, xp_amount, source, reference_id)
+      VALUES (v_user_id, v_awarded_xp, 'exam_attempt', v_attempt_id::TEXT);
+    END IF;
+  END IF;
+
+  -- 7. Trả về kết quả JSON cho frontend
+  RETURN jsonb_build_object(
+    'attempt_id', v_attempt_id,
+    'raw_score', v_raw_score,
+    'total_questions', v_total_questions,
+    'band_score', v_band_score,
+    'xp_earned', v_awarded_xp,
+    'skill', v_test.skill,
+    'questions_result', v_results
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER VOLATILE SET search_path = public;
+
+-- 9. THẮT CHẶT VIEW WEEKLY_LEADERBOARD (KHÔNG CHỨA THÔNG TIN NHẠY CẢM)
 CREATE OR REPLACE VIEW public.weekly_leaderboard AS
 WITH current_week_xp AS (
   SELECT
@@ -312,8 +483,8 @@ LIMIT 100;
 
 GRANT SELECT ON public.weekly_leaderboard TO anon, authenticated;
 
--- 8. THẮT CHẶT STORAGE POLICIES CHO 3 BUCKETS (UPDATE & DELETE THEO THƯ MỤC USER ID)
--- 8.1. avatars bucket
+-- 10. THẮT CHẶT STORAGE POLICIES CHO 3 BUCKETS (UPDATE & DELETE THEO THƯ MỤC USER ID)
+-- 10.1. avatars bucket
 DROP POLICY IF EXISTS "Users can update own avatar" ON storage.objects;
 CREATE POLICY "Users can update own avatar"
   ON storage.objects FOR UPDATE
@@ -336,7 +507,7 @@ CREATE POLICY "Users can delete own avatar"
     ((storage.foldername(name))[1] = auth.uid()::TEXT OR public.is_admin())
   );
 
--- 8.2. speaking-recordings bucket
+-- 10.2. speaking-recordings bucket
 DROP POLICY IF EXISTS "Users can update own speaking recordings" ON storage.objects;
 CREATE POLICY "Users can update own speaking recordings"
   ON storage.objects FOR UPDATE
@@ -359,7 +530,7 @@ CREATE POLICY "Users can delete own speaking recordings"
     ((storage.foldername(name))[1] = auth.uid()::TEXT OR public.is_admin())
   );
 
--- 8.3. pronunciation-recordings bucket
+-- 10.3. pronunciation-recordings bucket
 DROP POLICY IF EXISTS "Users can update own pronunciation recordings" ON storage.objects;
 CREATE POLICY "Users can update own pronunciation recordings"
   ON storage.objects FOR UPDATE
