@@ -1,9 +1,4 @@
 import type { Database } from '~/types/database.types'
-import {
-  mockSkillsOverview,
-  mockRecentAttempts,
-  mockAllTests,
-} from '~/mocks/ielts.mock'
 
 export type { IeltsSkill, QuestionType, ExamMode as TestMode } from '~/types/database.types'
 
@@ -115,30 +110,70 @@ export const convertRawToBand = (raw: number, total: number, skill: IeltsSkill):
   return RAW_TO_BAND_READING_ACADEMIC[scaledScore] || (scaledScore >= 39 ? 9.0 : scaledScore >= 6 ? 3.5 : 3.0)
 }
 
+const DEFAULT_SKILLS_OVERVIEW: SkillOverview[] = [
+  {
+    skill: 'listening',
+    name: 'Nghe hiểu',
+    englishName: 'Listening',
+    currentBand: 6.0,
+    targetBand: 7.0,
+    completedTests: 0,
+    totalTests: 0,
+    tone: 'accent',
+    iconName: 'Headphones',
+    description: '4 Section với đa dạng giọng đọc Anh, Úc, Mỹ và tốc độ tăng dần.',
+  },
+  {
+    skill: 'reading',
+    name: 'Đọc hiểu',
+    englishName: 'Reading',
+    currentBand: 6.5,
+    targetBand: 7.5,
+    completedTests: 0,
+    totalTests: 0,
+    tone: 'warn',
+    iconName: 'BookOpen',
+    description: '3 Passage học thuật với các dạng bài T/F/NG, Matching Headings.',
+  },
+  {
+    skill: 'writing',
+    name: 'Viết học thuật',
+    englishName: 'Writing',
+    currentBand: 5.5,
+    targetBand: 6.5,
+    completedTests: 0,
+    totalTests: 0,
+    tone: 'ok',
+    iconName: 'PenTool',
+    description: 'Task 1 phân tích biểu đồ và Task 2 bài luận nghị luận xã hội.',
+  },
+  {
+    skill: 'speaking',
+    name: 'Nói trực tiếp',
+    englishName: 'Speaking',
+    currentBand: 6.0,
+    targetBand: 7.0,
+    completedTests: 0,
+    totalTests: 0,
+    tone: 'mark',
+    iconName: 'Mic',
+    description: 'Part 1 phỏng vấn, Part 2 thuyết trình cá nhân và Part 3 thảo luận.',
+  },
+]
+
 export const useIelts = () => {
   const client = useSupabaseClient<Database>()
   const authUser = useSupabaseUser()
-  const config = useRuntimeConfig()
-
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
 
   const isLoading = ref(false)
   const errorMsg = ref<string | null>(null)
 
-  const skillsOverview = ref<SkillOverview[]>(mockSkillsOverview)
-  const recentAttempts = ref<RecentAttempt[]>(mockRecentAttempts)
-  const allTests = ref<IeltsTestDetail[]>(mockAllTests)
+  const skillsOverview = ref<SkillOverview[]>(DEFAULT_SKILLS_OVERVIEW)
+  const recentAttempts = ref<RecentAttempt[]>([])
+  const allTests = ref<IeltsTestDetail[]>([])
 
-  // Tải đề thi thật từ Supabase
+  // Tải đề thi thật 100% từ Supabase
   const fetchIeltsData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMsg.value = null
 
@@ -148,8 +183,11 @@ export const useIelts = () => {
         .from('exam_tests')
         .select('*, exam_questions(*)')
         .eq('exam_id', 'ielts')
+        .order('sort_order', { ascending: true })
 
-      if (testsData && testsData.length > 0) {
+      if (testsErr) {
+        console.warn('Lỗi tải exam_tests:', testsErr.message)
+      } else if (testsData && testsData.length > 0) {
         allTests.value = testsData.map((t: any) => ({
           id: t.id,
           skill: t.skill as IeltsSkill,
@@ -183,18 +221,27 @@ export const useIelts = () => {
             passageSectionRef: q.passage_section_ref || undefined,
           })).sort((a: any, b: any) => a.id - b.id),
         }))
+
+        // Cập nhật số đề thi theo kỹ năng
+        skillsOverview.value = DEFAULT_SKILLS_OVERVIEW.map((sk) => {
+          const count = allTests.value.filter((t) => t.skill === sk.skill).length
+          return {
+            ...sk,
+            totalTests: count,
+          }
+        })
       }
 
-      // 2. Tải lịch sử làm bài gần đây của người dùng
+      // 2. Tải lịch sử làm bài gần đây của người dùng nếu đã đăng nhập
       if (authUser.value?.id) {
-        const { data: attemptsData } = await client
+        const { data: attemptsData, error: attemptsErr } = await client
           .from('exam_attempts')
           .select('*, exam_tests(title, skill)')
           .eq('user_id', authUser.value.id)
           .order('completed_at', { ascending: false })
           .limit(10)
 
-        if (attemptsData && attemptsData.length > 0) {
+        if (!attemptsErr && attemptsData && attemptsData.length > 0) {
           recentAttempts.value = attemptsData.map((a: any) => ({
             id: a.id,
             testId: a.test_id,
@@ -207,11 +254,20 @@ export const useIelts = () => {
             bandScore: Number(a.band_score) || 6.0,
             durationMinutes: Math.round(a.duration_seconds / 60),
           }))
+
+          // Cập nhật số bài đã hoàn thành
+          skillsOverview.value = skillsOverview.value.map((sk) => {
+            const completedCount = recentAttempts.value.filter((a) => a.skill === sk.skill).length
+            return {
+              ...sk,
+              completedTests: completedCount,
+            }
+          })
         }
       }
     } catch (err: any) {
-      console.warn('Lỗi khi tải dữ liệu IELTS từ Supabase, dùng mock fallback:', err.message)
-      errorMsg.value = err.message
+      console.error('Lỗi khi tải dữ liệu IELTS từ Supabase:', err.message)
+      errorMsg.value = 'Không thể kết nối đến cơ sở dữ liệu đề thi. Vui lòng kiểm tra lại kết nối mạng.'
     } finally {
       isLoading.value = false
     }
@@ -221,7 +277,7 @@ export const useIelts = () => {
     fetchIeltsData()
   })
 
-  // Lưu kết quả làm bài thi vào Supabase
+  // Lưu kết quả làm bài thi vào Supabase qua RPC an toàn
   const saveAttempt = async (payload: {
     testId: string
     mode: TestMode
@@ -241,11 +297,10 @@ export const useIelts = () => {
     xpEarned?: number
     questionsResult?: any[]
   }> => {
-    if (isUseMock.value || !authUser.value?.id) {
+    if (!authUser.value?.id) {
       return {
-        success: true,
-        rawScore: payload.rawScore,
-        bandScore: payload.bandScore,
+        success: false,
+        error: 'Vui lòng đăng nhập để lưu kết quả bài thi',
       }
     }
 
@@ -267,44 +322,30 @@ export const useIelts = () => {
         }
       }
 
-      // Chuẩn bị payload câu trả lời cho RPC submit_exam_attempt
-      const currentTest = getTestById(payload.testId)
-      const formattedAnswers: { question_id: string; user_answer: string }[] = []
-      if (currentTest?.questions && payload.answers) {
-        for (const q of currentTest.questions) {
-          const ans = payload.answers[q.id]
-          if (ans !== undefined) {
-            formattedAnswers.push({
-              question_id: String(q.id),
-              user_answer: ans,
-            })
-          }
-        }
-      }
+      // Format mảng câu trả lời
+      const answersArray = Object.entries(payload.answers).map(([qNum, ans]) => ({
+        question_number: Number(qNum),
+        user_answer: ans,
+      }))
 
-      // 1. Gọi RPC submit_exam_attempt (Server tự chấm trắc nghiệm, tính band, ghi exam_attempts & exam_answers, cộng XP an toàn)
-      const { data: rpcResult, error: rpcErr } = await (client as any).rpc('submit_exam_attempt', {
+      // Gọi RPC submit_exam_attempt bảo mật tại Server
+      const { data: rpcResult, error: rpcErr } = await client.rpc('submit_exam_attempt', {
         p_test_id: payload.testId,
         p_mode: payload.mode,
-        p_answers: formattedAnswers,
+        p_answers: answersArray as any,
         p_duration_seconds: payload.durationSeconds,
         p_essay: payload.submittedEssay || null,
         p_audio_path: speakingStoragePath,
       })
 
       if (rpcErr) {
-        console.error('Lỗi khi gọi RPC submit_exam_attempt:', rpcErr)
-        return { success: false, error: rpcErr.message }
+        throw new Error(rpcErr.message)
       }
 
-      const res = rpcResult as {
-        attempt_id: string
-        raw_score: number | null
-        total_questions: number
-        band_score: number | null
-        xp_earned: number
-        questions_result: any[]
-      }
+      const res = rpcResult as Record<string, any>
+
+      // Làm mới lại lịch sử bài thi
+      await fetchIeltsData()
 
       return {
         success: true,
@@ -312,24 +353,15 @@ export const useIelts = () => {
         rawScore: res.raw_score,
         bandScore: res.band_score,
         xpEarned: res.xp_earned,
-        questionsResult: res.questions_result,
+        questionsResult: res.results || [],
       }
-    } catch (e: any) {
-      console.error('Lỗi ngoại lệ khi lưu bài thi:', e)
-      return { success: false, error: e.message }
+    } catch (err: any) {
+      console.error('Lỗi khi nộp bài thi IELTS:', err.message)
+      return {
+        success: false,
+        error: err.message || 'Lỗi khi lưu bài thi',
+      }
     }
-  }
-
-  const getTestById = (id: string): IeltsTestDetail | undefined => {
-    return allTests.value.find((t) => t.id === id)
-  }
-
-  const getTestsBySkill = (skill: IeltsSkill): IeltsTestDetail[] => {
-    return allTests.value.filter((t) => t.skill === skill)
-  }
-
-  const getSkillOverview = (skill: IeltsSkill): SkillOverview | undefined => {
-    return skillsOverview.value.find((s) => s.skill === skill)
   }
 
   return {
@@ -338,11 +370,7 @@ export const useIelts = () => {
     allTests,
     isLoading,
     errorMsg,
-    getTestById,
-    getTestsBySkill,
-    getSkillOverview,
-    convertRawToBand,
-    saveAttempt,
     fetchIeltsData,
+    saveAttempt,
   }
 }

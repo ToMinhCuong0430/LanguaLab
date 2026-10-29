@@ -1,16 +1,4 @@
 import type { Database } from '~/types/database.types'
-import {
-  mockUserSummary,
-  mockNotifications,
-  mockTodayTasks,
-  mockExamOptions,
-  mockTargetBandRoadmap,
-  mockVocabLevels,
-  mockReviewData,
-  mockTodayStats,
-  mockWeeklyStories,
-  mockLeaderboardUsers,
-} from '~/mocks/home.mock'
 
 export interface UserSummary {
   id: string
@@ -98,8 +86,9 @@ export interface WeeklyStoryGroup {
   id: string
   title: string
   shortLabel: string
-  tone: 'accent' | 'warn' | 'ok' | 'mark'
-  isViewed: boolean
+  badgeTone?: 'accent' | 'warn' | 'ok' | 'mark'
+  tone?: 'accent' | 'warn' | 'ok' | 'mark'
+  isViewed?: boolean
   slides: StorySlide[]
 }
 
@@ -112,35 +101,86 @@ export interface LeaderboardUserItem {
   isCurrentUser: boolean
 }
 
+// Nhiệm vụ gợi ý mặc định theo lộ trình hệ thống khi user mới tham gia
+const DEFAULT_TASKS: DailyTask[] = [
+  {
+    id: 'task-typing-intro',
+    title: 'Khởi động 5 phút gõ câu chủ đề Chào hỏi',
+    category: 'Gõ câu',
+    estMinutes: 5,
+    xpReward: 30,
+    tone: 'accent',
+    path: '/go-cau',
+  },
+  {
+    id: 'task-vocab-core',
+    title: 'Học 10 từ vựng Cốt lõi A1',
+    category: 'Từ vựng',
+    estMinutes: 8,
+    xpReward: 25,
+    tone: 'ok',
+    path: '/tu-vung',
+  },
+  {
+    id: 'task-grammar-tenses',
+    title: 'Ôn tập ngữ pháp thì Hiện tại đơn',
+    category: 'Ngữ pháp',
+    estMinutes: 7,
+    xpReward: 40,
+    tone: 'warn',
+    path: '/ngu-phap',
+  },
+]
+
 export const useHomeData = () => {
   const client = useSupabaseClient<Database>()
   const authUser = useSupabaseUser()
-  const config = useRuntimeConfig()
-
-  // Kiểm tra cờ dùng mock fallback
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
 
   // Trạng thái Loading và Error
   const isLoading = ref(false)
   const loadError = ref<string | null>(null)
 
-  // Reactive state
-  const user = ref<UserSummary>(mockUserSummary)
-  const notifications = ref<NotificationItem[]>(mockNotifications)
-  const todayTasks = ref<DailyTask[]>(mockTodayTasks)
-  const examOptions = ref<ExamOption[]>(mockExamOptions)
-  const targetBandRoadmap = ref<TargetBandRoadmap>(mockTargetBandRoadmap)
-  const vocabLevels = ref<VocabLevelItem[]>(mockVocabLevels)
-  const reviewData = ref<ReviewVocabData>(mockReviewData)
-  const todayStats = ref<DailyStatsData>(mockTodayStats)
-  const weeklyStories = ref<WeeklyStoryGroup[]>(mockWeeklyStories)
-  const leaderboardUsers = ref<LeaderboardUserItem[]>(mockLeaderboardUsers)
+  // Reactive state với giá trị mặc định chuẩn xác (không dùng user ảo)
+  const user = ref<UserSummary>({
+    id: '',
+    name: 'Bạn',
+    avatarText: 'LL',
+    xp: 0,
+    streakDays: 0,
+    checkedInToday: false,
+  })
+
+  const notifications = ref<NotificationItem[]>([])
+  const todayTasks = ref<DailyTask[]>(DEFAULT_TASKS)
+  const examOptions = ref<ExamOption[]>([])
+  const targetBandRoadmap = ref<TargetBandRoadmap>({
+    examName: 'IELTS Academic',
+    currentBand: 5.0,
+    targetBand: 6.5,
+    progressPct: 0,
+    milestones: [
+      { band: 5.0, label: 'Khởi điểm', isPassed: true, isCurrent: true },
+      { band: 5.5, label: 'Sơ trung', isPassed: false, isCurrent: false },
+      { band: 6.0, label: 'Trung cấp', isPassed: false, isCurrent: false },
+      { band: 6.5, label: 'Mục tiêu', isPassed: false, isCurrent: false },
+      { band: 7.0, label: 'Nâng cao', isPassed: false, isCurrent: false },
+    ],
+  })
+  const vocabLevels = ref<VocabLevelItem[]>([])
+  const reviewData = ref<ReviewVocabData>({
+    dueTodayCount: 0,
+    criticalCount: 0,
+    streakReviewsDays: 0,
+    message: 'Không có từ vựng nào cần ôn tập hôm nay.',
+  })
+  const todayStats = ref<DailyStatsData>({
+    learningTimeMinutes: 0,
+    newWordsLearned: 0,
+    completedLessons: 0,
+    xpGainedToday: 0,
+  })
+  const weeklyStories = ref<WeeklyStoryGroup[]>([])
+  const leaderboardUsers = ref<LeaderboardUserItem[]>([])
 
   // Hàm chuyển đổi timestamp thành timeAgo tiếng Việt
   const formatTimeAgo = (dateStr: string): string => {
@@ -153,20 +193,75 @@ export const useHomeData = () => {
     return `${days} ngày trước`
   }
 
-  // Tải dữ liệu thật từ Supabase
+  // Tải dữ liệu thật 100% từ Supabase
   const fetchHomeData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     loadError.value = null
 
     try {
-      // 1. Tải Profile & Điểm danh hôm nay
+      // 1. Tải Kỳ thi từ bảng exams (Public data)
+      const { data: examsData, error: examsErr } = await client
+        .from('exams')
+        .select('*')
+        .order('sort_order', { ascending: true })
+
+      if (examsErr) {
+        console.warn('Lỗi tải exams:', examsErr.message)
+      } else if (examsData && examsData.length > 0) {
+        examOptions.value = examsData.map((e) => ({
+          id: e.id,
+          name: e.name,
+          fullName: e.full_name,
+          isActive: e.is_active,
+          statusBadge: e.status_badge,
+          targetFormat: e.target_format || '',
+          path: e.id === 'ielts' ? '/luyen-thi/ielts' : '#',
+        }))
+      }
+
+      // 2. Tải 7 cấp độ từ vựng từ vocab_levels (Public data)
+      const { data: levelsData, error: levelsErr } = await client
+        .from('vocab_levels')
+        .select('*')
+        .order('level_number', { ascending: true })
+
+      if (levelsErr) {
+        console.warn('Lỗi tải vocab_levels:', levelsErr.message)
+      } else if (levelsData && levelsData.length > 0) {
+        vocabLevels.value = levelsData.map((l) => ({
+          level: l.level_number,
+          code: l.code,
+          title: l.title,
+          learned: 0,
+          total: l.target_word_count,
+          colorTone: (l.color_tone as any) || 'ok',
+        }))
+      }
+
+      // 3. Tải Bảng xếp hạng tuần từ view weekly_leaderboard (Public data)
+      const { data: boardData, error: boardErr } = await client
+        .from('weekly_leaderboard')
+        .select('*')
+        .limit(10)
+
+      if (boardErr) {
+        console.warn('Lỗi tải weekly_leaderboard:', boardErr.message)
+      } else if (boardData && boardData.length > 0) {
+        leaderboardUsers.value = boardData.map((b) => ({
+          rank: b.rank,
+          id: b.user_id,
+          name: b.full_name || 'Học viên',
+          avatarChar: b.avatar_text || 'LL',
+          xp: b.weekly_xp || 0,
+          isCurrentUser: authUser.value?.id === b.user_id,
+        }))
+      }
+
+      // 4. Nếu người dùng đã đăng nhập: Tải Profile, điểm danh, tiến độ cá nhân
       if (authUser.value?.id) {
         const uid = authUser.value.id
         const todayStr = new Date().toISOString().split('T')[0]
 
-        // Profile & XP & Thống kê tổng hợp đa kỹ năng
         const [profileRes, checkinRes, xpRes, notifRes, statsRes, dueRes, weeklyRes] = await Promise.all([
           client.from('profiles').select('*').eq('id', uid).maybeSingle(),
           client.from('daily_checkins').select('id').eq('user_id', uid).eq('checkin_date', todayStr).maybeSingle(),
@@ -182,15 +277,18 @@ export const useHomeData = () => {
           user.value = {
             id: p.id,
             name: p.full_name || 'Học viên',
-            avatarText: p.avatar_text || 'LA',
-            xp: xpRes.data?.total_xp || 0,
-            streakDays: 1, // Sẽ tính hoặc lấy từ checkins
+            avatarText: p.avatar_text || 'LL',
+            xp: xpRes.data?.total_xp || p.total_xp || 0,
+            streakDays: p.streak_days || 0,
             checkedInToday: !!checkinRes.data,
           }
 
           if (p.target_band) {
-            targetBandRoadmap.value.currentBand = Number(p.current_band) || 5.5
-            targetBandRoadmap.value.targetBand = Number(p.target_band) || 7.0
+            targetBandRoadmap.value.currentBand = Number(p.current_band) || 5.0
+            targetBandRoadmap.value.targetBand = Number(p.target_band) || 6.5
+            const curr = targetBandRoadmap.value.currentBand
+            const tgt = targetBandRoadmap.value.targetBand
+            targetBandRoadmap.value.progressPct = Math.min(100, Math.max(0, Math.round((curr / tgt) * 100)))
           }
         }
 
@@ -224,7 +322,21 @@ export const useHomeData = () => {
           }
         }
 
-        // Tổng kết tuần tổng hợp đa kỹ năng thật
+        // Từ cần ôn hôm nay
+        if (dueRes.data) {
+          const dueCount = dueRes.data.length
+          const critCount = dueRes.data.filter((d: any) => d.is_critical).length
+          reviewData.value = {
+            dueTodayCount: dueCount,
+            criticalCount: critCount,
+            streakReviewsDays: user.value.streakDays,
+            message: dueCount > 0
+              ? `Bạn có ${dueCount} từ cần củng cố hôm nay.`
+              : 'Tuyệt vời! Bạn đã hoàn thành toàn bộ từ ôn tập hôm nay.',
+          }
+        }
+
+        // Tổng kết tuần thật
         if (weeklyRes.data) {
           const w = weeklyRes.data
           weeklyStories.value = [
@@ -273,49 +385,9 @@ export const useHomeData = () => {
           ]
         }
       }
-
-      // 2. Tải Kỳ thi từ bảng exams
-      const { data: examsData } = await client.from('exams').select('*').order('sort_order', { ascending: true })
-      if (examsData && examsData.length > 0) {
-        examOptions.value = examsData.map((e) => ({
-          id: e.id,
-          name: e.name,
-          fullName: e.full_name,
-          isActive: e.is_active,
-          statusBadge: e.status_badge,
-          targetFormat: e.target_format || '',
-          path: e.id === 'ielts' ? '/luyen-thi/ielts' : '#',
-        }))
-      }
-
-      // 3. Tải 7 cấp độ từ vựng từ vocab_levels
-      const { data: levelsData } = await client.from('vocab_levels').select('*').order('level_number', { ascending: true })
-      if (levelsData && levelsData.length > 0) {
-        vocabLevels.value = levelsData.map((l) => ({
-          level: l.level_number,
-          code: l.code,
-          title: l.title,
-          learned: Math.round(l.target_word_count * 0.4), // Mặc định hoặc join user progress
-          total: l.target_word_count,
-          colorTone: (l.color_tone as any) || 'ok',
-        }))
-      }
-
-      // 4. Tải Bảng xếp hạng tuần từ view weekly_leaderboard
-      const { data: boardData } = await client.from('weekly_leaderboard').select('*').limit(10)
-      if (boardData && boardData.length > 0) {
-        leaderboardUsers.value = boardData.map((b) => ({
-          rank: b.rank,
-          id: b.user_id,
-          name: b.full_name,
-          avatarChar: b.avatar_text || 'LA',
-          xp: b.weekly_xp,
-          isCurrentUser: authUser.value?.id === b.user_id,
-        }))
-      }
     } catch (err: any) {
-      console.warn('Lỗi khi tải dữ liệu từ Supabase, sử dụng mock fallback:', err.message)
-      loadError.value = err.message
+      console.error('Lỗi khi tải dữ liệu trang chủ từ Supabase:', err.message)
+      loadError.value = 'Không thể tải dữ liệu trang chủ. Vui lòng thử lại.'
     } finally {
       isLoading.value = false
     }
@@ -352,41 +424,38 @@ export const useHomeData = () => {
     }
   })
 
-  // Hành động: Điểm danh hôm nay (ghi vào Supabase)
+  // Hành động: Điểm danh hôm nay (ghi vào Supabase qua RPC claim_daily_checkin)
   const toggleCheckIn = async () => {
-    if (user.value.checkedInToday) return
+    if (user.value.checkedInToday || !authUser.value?.id) return
 
-    // Cập nhật optimistic UI ngay lập tức
+    // Optimistic update
     user.value.checkedInToday = true
     user.value.streakDays += 1
     user.value.xp += 20
     todayStats.value.xpGainedToday += 20
 
-    if (!isUseMock.value && authUser.value?.id) {
-      try {
-        // Gọi hàm RPC claim_daily_checkin an toàn (server tự cộng XP và tính streak)
-        const { data, error } = await client.rpc('claim_daily_checkin')
-        if (error) {
-          console.warn('Lỗi RPC claim_daily_checkin:', error.message)
-        } else if (data && typeof data === 'object') {
-          const res = data as Record<string, any>
-          if (res.total_xp) user.value.xp = res.total_xp
-          if (res.streak_days) user.value.streakDays = res.streak_days
-        }
-      } catch (e) {
-        console.warn('Ghi nhận điểm danh offline:', e)
+    try {
+      const { data, error } = await client.rpc('claim_daily_checkin')
+      if (error) {
+        console.warn('Lỗi RPC claim_daily_checkin:', error.message)
+      } else if (data && typeof data === 'object') {
+        const res = data as Record<string, any>
+        if (res.total_xp) user.value.xp = res.total_xp
+        if (res.streak_days) user.value.streakDays = res.streak_days
       }
+    } catch (e: any) {
+      console.warn('Ghi nhận điểm danh thất bại:', e.message)
     }
   }
 
-  // Hành động: Đánh dấu đã đọc thông báo (ghi vào Supabase)
+  // Hành động: Đánh dấu đã đọc thông báo
   const markNotificationAsRead = async (id: string) => {
     const item = notifications.value.find((n) => n.id === id)
     if (item) {
       item.isRead = true
     }
 
-    if (!isUseMock.value && authUser.value?.id) {
+    if (authUser.value?.id) {
       try {
         await client.from('notifications').update({ is_read: true }).eq('id', id).eq('user_id', authUser.value.id)
       } catch (_) {}
@@ -398,7 +467,7 @@ export const useHomeData = () => {
       n.isRead = true
     })
 
-    if (!isUseMock.value && authUser.value?.id) {
+    if (authUser.value?.id) {
       try {
         await client.from('notifications').update({ is_read: true }).eq('user_id', authUser.value.id)
       } catch (_) {}
