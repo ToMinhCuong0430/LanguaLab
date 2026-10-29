@@ -1,5 +1,8 @@
 -- ==============================================================================
--- SCRIPT KIEM THU TRANSACTION SEED (BEGIN ... ROLLBACK)
+-- SCRIPT KIỂM THỬ TRANSACTION SEED (BEGIN ... ROLLBACK)
+-- Được sinh tự động bởi generate.mjs
+-- Dùng để chạy thử nghiệm trên Supabase Remote SQL Editor nhằm kiểm tra tính idempotent
+-- (Không lưu dữ liệu vào DB vì luôn kết thúc bằng ROLLBACK)
 -- ==============================================================================
 BEGIN;
 
@@ -145,6 +148,12 @@ INSERT INTO public.typing_sentences (id, topic_id, content, reading, translation
   ('002a3c3d-e3e4-51a1-b337-ed3c8a2b4ba4', 'topic-ja-work', '今回のプロジェクトについて、全力を尽くします。', 'Konkai no purojekuto ni tsuite, zenryoku o tsukushimasu.', 'Về dự án lần này, chúng tôi sẽ nỗ lực hết mình để kịp tiến độ.', '全力を尽くす', 'Cụm thành ngữ "全力を尽くす" nghĩa là nỗ lực dốc toàn lực.', 4)
 ON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, translation = EXCLUDED.translation, reading = EXCLUDED.reading, hint_word = EXCLUDED.hint_word, grammar_note = EXCLUDED.grammar_note;
 
+-- Dọn dẹp câu luyện gõ mồ côi thuộc 8 chủ đề hệ thống vừa nạp (không ảnh hưởng đến chủ đề khác)
+-- Lưu ý an toàn: bảng public.typing_attempts lưu topic_id trực tiếp, không có khóa ngoại trỏ vào typing_sentences(id).
+DELETE FROM public.typing_sentences
+WHERE topic_id IN ('topic-en-shopping', 'topic-en-restaurant', 'topic-en-email', 'topic-en-meeting', 'topic-zh-shopping', 'topic-zh-work', 'topic-ja-restaurant', 'topic-ja-work')
+  AND id NOT IN ('eac24733-4cd3-50e5-9ac8-338f356e54ea', '8eb26c2c-5aac-5d77-be25-44a4aedd095b', 'b50a839c-8428-51ce-8b85-9ad054cdb0ef', 'ac9d1ddf-50ff-5c8b-8e49-cbaabc9739ff', 'd9fc1bc2-1104-5c01-9a39-040f21cc4290', '08ec73f6-6c69-561b-a0d0-895645f97653', '9c7d1516-9be0-573f-8f7e-cef9884f84eb', '3373bd3b-0531-5d3f-b1b0-78d3549341c9', 'c6152851-53e5-5854-b72d-b580e9ec9b8e', 'fdf302a0-f308-575e-a641-382c6f6cd549', '5aca3c4d-ebff-5ee7-8588-80c2802110f4', 'bb99cf79-179c-572b-8b01-3f2fc93ea4c4', 'fa868063-bb34-5a1f-a98a-7e8e9059edab', 'f594430d-00e2-525f-9e02-3708fcd9bf40', '9f9be0f3-f728-5911-ac38-ee63f88cd5e9', '75b02b5e-6aba-5c48-8b08-9fc183a43b12', 'd385ce22-6dad-5162-a29b-7832e4f45c48', '07417822-a853-50c9-a2c2-876f0fabc6a2', '37d2f4cc-a8b8-5ac9-9ca3-659b8c14c62e', 'f743a395-674f-5839-adeb-49ebb903eb35', '88b45783-3ce6-5b7b-a1b8-d32257db16d9', 'b3b1ca3e-53e2-5162-a44b-3db12c2004f0', '32feea7b-ea50-58be-98f4-b5c096e916fd', 'e3ca6574-5d84-582b-9f8e-19247d4868bd', 'bde4a84e-58e8-5fc2-bd03-eff5d4832d1c', '951e6d9f-b901-5384-bc64-793f4ef06f23', '1419bd6d-c2e8-5fb5-8bb4-6223cbbd1cc7', 'e0c87c84-63ca-59a6-ae26-50d47f8a30fc', '4f8aa759-ec58-55ca-8a19-c7889a751d7d', '15dfafe2-f8ab-5333-b596-9c82cb2138ac', '3636fc14-f1d7-5320-bb4b-75081f6ac40e', 'd0aa63e9-cfeb-5662-801b-400297791a88', 'b4fa1730-4fc2-546c-a165-d02f56af54f9', '838a71dc-22ff-55d2-9dca-bca1293c05be', '3aac2a09-e9e7-506c-8ff3-efe17e310aaa', '65129cd2-dafb-5ed5-8682-cc502bbaaa07', '3bbbda20-637c-5546-ac44-a4fa65f1ef2f', '849521ae-ae32-50a1-8802-043940bb8dcc', 'ff3c3e41-b81f-5e74-80d7-c4317b93994b', 'e96bbf99-a9d0-5c08-a61e-5341e7da4a43', '0e996f5b-b475-5f74-8d1a-b56b5072133f', 'b6c85389-278e-52ee-9a0b-3436b72ff840', '3ab96c3e-c36e-58ee-85ad-da7a7fa1af3c', '6ea22d03-25e8-5e29-a8f1-ca32c74d89f2', '925bab3d-7df6-5209-a3d6-697143adaec9', '905cf4e0-ac15-5497-a5dd-0740c42fea2f', '0de86994-a1fe-590c-85fa-ec9502677c06', '002a3c3d-e3e4-51a1-b337-ed3c8a2b4ba4');
+
 -- 6. BỘ TỪ VỰNG HỆ THỐNG & TỪ VỰNG CHI TIẾT (Kỳ vọng: 5 bộ từ, 50 từ vựng)
 INSERT INTO public.vocab_sets (id, user_id, level_id, title, description, is_system, language, is_public) VALUES
 
@@ -208,6 +217,13 @@ INSERT INTO public.vocab_words (id, set_id, word, phonetic, part_of_speech, mean
   ('b0000005-0000-0000-0000-000000000009', 'a0000000-0000-0000-0000-000000000005', '誠実', 'せいじつ (Seijitsu)', 'tính từ na', 'Thành thực, chân thành và đáng tin cậy.', '誠実な仕事ぶりが高く評価され、昇進が決まった。', 'Tác phong làm việc chân chính được đánh giá cao và anh đã được thăng chức.', NULL, '[]'::jsonb),
   ('b0000005-0000-0000-0000-000000000010', 'a0000000-0000-0000-0000-000000000005', '綿密', 'めんみつ (Menmitsu)', 'tính từ na', 'Tỉ mỉ, chu đáo, cẩn thận từng chi tiết nhỏ.', '綿密な計画を立ててから実行に移すことが成功の秘訣だ。', 'Lập kế hoạch tỉ mỉ chu đáo trước khi thực hiện là bí quyết của thành công.', NULL, '[]'::jsonb)
 ON CONFLICT (id) DO UPDATE SET meaning_vi = EXCLUDED.meaning_vi, example_sentence = EXCLUDED.example_sentence, phonetic = EXCLUDED.phonetic;
+
+-- Dọn dẹp từ vựng mồ côi thuộc 5 bộ từ hệ thống (is_system = true, user_id IS NULL)
+-- Lưu ý an toàn: Điều kiện WHERE chỉ nhắm đúng 5 UUID bộ từ hệ thống định danh sẵn, tuyệt đối KHÔNG xóa từ thuộc bộ từ riêng của người dùng (user_id IS NOT NULL).
+-- Nếu có bản ghi tiến trình user_word_progress liên kết với từ mồ côi cũ, ràng buộc FK ON DELETE CASCADE sẽ dọn sạch nhất quán.
+DELETE FROM public.vocab_words
+WHERE set_id IN ('a0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000005')
+  AND id NOT IN ('b0000001-0000-0000-0000-000000000001', 'b0000001-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000003', 'b0000001-0000-0000-0000-000000000004', 'b0000001-0000-0000-0000-000000000005', 'b0000001-0000-0000-0000-000000000006', 'b0000001-0000-0000-0000-000000000007', 'b0000001-0000-0000-0000-000000000008', 'b0000001-0000-0000-0000-000000000009', 'b0000001-0000-0000-0000-000000000010', 'b0000002-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', 'b0000002-0000-0000-0000-000000000003', 'b0000002-0000-0000-0000-000000000004', 'b0000002-0000-0000-0000-000000000005', 'b0000002-0000-0000-0000-000000000006', 'b0000002-0000-0000-0000-000000000007', 'b0000002-0000-0000-0000-000000000008', 'b0000002-0000-0000-0000-000000000009', 'b0000002-0000-0000-0000-000000000010', 'b0000003-0000-0000-0000-000000000001', 'b0000003-0000-0000-0000-000000000002', 'b0000003-0000-0000-0000-000000000003', 'b0000003-0000-0000-0000-000000000004', 'b0000003-0000-0000-0000-000000000005', 'b0000003-0000-0000-0000-000000000006', 'b0000003-0000-0000-0000-000000000007', 'b0000003-0000-0000-0000-000000000008', 'b0000003-0000-0000-0000-000000000009', 'b0000003-0000-0000-0000-000000000010', 'b0000004-0000-0000-0000-000000000001', 'b0000004-0000-0000-0000-000000000002', 'b0000004-0000-0000-0000-000000000003', 'b0000004-0000-0000-0000-000000000004', 'b0000004-0000-0000-0000-000000000005', 'b0000004-0000-0000-0000-000000000006', 'b0000004-0000-0000-0000-000000000007', 'b0000004-0000-0000-0000-000000000008', 'b0000004-0000-0000-0000-000000000009', 'b0000004-0000-0000-0000-000000000010', 'b0000005-0000-0000-0000-000000000001', 'b0000005-0000-0000-0000-000000000002', 'b0000005-0000-0000-0000-000000000003', 'b0000005-0000-0000-0000-000000000004', 'b0000005-0000-0000-0000-000000000005', 'b0000005-0000-0000-0000-000000000006', 'b0000005-0000-0000-0000-000000000007', 'b0000005-0000-0000-0000-000000000008', 'b0000005-0000-0000-0000-000000000009', 'b0000005-0000-0000-0000-000000000010');
 
 -- 7. CẤP ĐỘ NGỮ PHÁP (GRAMMAR LEVELS) (Kỳ vọng: 6 bản ghi)
 INSERT INTO public.grammar_levels (language, code, name, description, sort_order) VALUES
@@ -325,12 +341,24 @@ INSERT INTO public.media_cues (id, media_id, subtitle_lang, start_ms, end_ms, te
   ('8fb8e50f-c79c-5c50-894d-5f4dacaebfb9', 'media-ja-daily-routine', 'ja', 18000, 30000, '近所の人に笑顔で「いってきます」と声をかけると、気持ちよく一日が始まります。', 'Khi mỉm cười chào "Tôi đi đây nhé" với hàng xóm, ngày mới sẽ bắt đầu thật dễ chịu.', '[{"word":"近所","meaning":"Hàng xóm láng giềng gần nhà"}]'::jsonb, 3)
 ON CONFLICT (id) DO UPDATE SET text = EXCLUDED.text, translation_vi = EXCLUDED.translation_vi, vocab_hints = EXCLUDED.vocab_hints;
 
+-- Dọn dẹp phụ đề cue mồ côi thuộc 4 bài học video/podcast hệ thống vừa nạp
+-- Lưu ý an toàn: media_dictation_attempts chỉ lưu media_id, không có foreign key trỏ đến media_cues(id).
+DELETE FROM public.media_cues
+WHERE media_id IN ('media-en-ted-memory', 'media-en-bbc-habit', 'media-zh-tea-culture', 'media-ja-daily-routine')
+  AND id NOT IN ('1a23ed89-89be-56c1-9435-9ce248c4274a', 'e15fef72-ee7b-55c1-8560-8305630032cb', '10723890-a639-553b-a3ee-528e0a179d3b', '457b827a-ee1e-5902-89d9-e7e14cbbd450', '619fbcc4-0465-57d2-aaff-9746e2f3211b', 'a13f1638-c764-55dd-bb85-c9d6f931ea4d', '80924df7-5934-5d4c-9e10-1ceb099582fc', '6ad492f8-c428-5977-8b54-aedc1f2c00bd', '3433057d-264c-5ffc-9cdf-3edbd8ba6187', '1ea77234-c976-526c-a758-4e057478a401', 'e5f6b31c-ff1c-5673-8f68-3a649e85f976', '624fc71b-45ea-5b77-b19e-105e8b3c8d12', '7a9e9e6a-1db6-5103-b088-d30dda56aa38', '16348247-0bd4-5101-a58c-dd29393c1ba9', '8fb8e50f-c79c-5c50-894d-5f4dacaebfb9');
+
 INSERT INTO public.media_quiz_questions (id, media_id, segment_time_sec, question, options, correct_index, explanation) VALUES
 
   ('6c3dbdd7-4019-55c7-bab0-d35cc346bf80', 'media-en-ted-memory', 8, 'Ký ức được mã hoá trong não bộ nhờ cơ chế nào?', '["Nhờ sự lưu trữ tĩnh của các tế bào mỡ","Mạng lưới neuron kích hoạt theo mô thức đồng bộ","Thông qua việc ghi chép trực tiếp vào võng mạc","Não bộ không tự mã hoá mà phụ thuộc vào âm thanh"]'::jsonb, 1, 'Đoạn thoại nêu rõ: "Memories are encoded by networks of neurons firing in specific synchronous patterns".'),
   ('6f58de99-e197-5d32-9589-c2521f069b4d', 'media-en-ted-memory', 38, 'Não bộ củng cố ký ức dài hạn chủ yếu vào thời điểm nào?', '["Khi đang tập thể dục thể thao cường độ cao","Trong giấc ngủ nhờ hoạt động của vùng hồi hải mã","Ngay lập tức sau khi uống cà phê","Vào buổi sáng sớm trước khi ăn sáng"]'::jsonb, 1, 'Đoạn thoại chỉ ra: "During sleep, the hippocampus replays these events to strengthen synaptic connections".'),
   ('e8758b80-06e5-57b5-87f8-c2b14c27339b', 'media-en-bbc-habit', 19, 'Vòng lặp thói quen thần kinh bao gồm 3 yếu tố nào?', '["Mục tiêu, Kế hoạch và Thành công","Tín hiệu (Cue), Hành vi (Routine) và Phần thưởng (Reward)","Suy nghĩ, Cảm xúc và Hành động","Bắt đầu, Thử thách và Kết thúc"]'::jsonb, 1, 'Bài nói chỉ rõ: "habits form a neurological loop: cue, routine, and reward".')
 ON CONFLICT (id) DO UPDATE SET question = EXCLUDED.question, options = EXCLUDED.options, correct_index = EXCLUDED.correct_index, explanation = EXCLUDED.explanation;
+
+-- Dọn dẹp câu hỏi trắc nghiệm quiz mồ côi thuộc 4 bài học video/podcast hệ thống vừa nạp
+-- Lưu ý an toàn: Không có bảng nào trong toàn bộ schema có FK trỏ đến media_quiz_questions(id).
+DELETE FROM public.media_quiz_questions
+WHERE media_id IN ('media-en-ted-memory', 'media-en-bbc-habit', 'media-zh-tea-culture', 'media-ja-daily-routine')
+  AND id NOT IN ('6c3dbdd7-4019-55c7-bab0-d35cc346bf80', '6f58de99-e197-5d32-9589-c2521f069b4d', 'e8758b80-06e5-57b5-87f8-c2b14c27339b');
 
 -- 10. BÀI ĐỌC SONG NGỮ & VĂN BẢN HỌC THUẬT (Kỳ vọng: 7 bài đọc, 12 đoạn văn)
 INSERT INTO public.reading_items (id, content_type, language, level, title, vietnamese_title, author, source_note, word_count, reading_time_minutes, license, is_published) VALUES
@@ -359,6 +387,12 @@ INSERT INTO public.reading_sections (id, reading_id, sort_order, original_text, 
   ('ec323c09-b93d-590f-808d-dcc031c02306', 'read-ja-momotaro', 1, '昔々、ある所におじいさんとおばあさんが住んでいました。おじいさんは山へ柴刈りに、おばあさんは川へ洗濯に行きました。', 'Ngày xửa ngày xưa, ở một ngôi làng nọ có một ông lão và một bà lão sinh sống. Ông lão lên núi đốn củi, còn bà lão ra bờ sông giặt giũ quần áo.', '[{"word":"柴刈り","meaning":"Đốn củi, nhặt cành cây khô"},{"word":"洗濯","meaning":"Giặt giũ đồ"}]'::jsonb),
   ('7949e625-bcef-53bb-8dab-b858d815f7c6', 'read-ja-momotaro', 2, 'おばあさんが洗濯をしていると、川上から大きな桃がどんぶらこ、どんぶらこと流れてきました。家に持ち帰って切ってみると、中から元気な男の子が生まれました。', 'Khi bà lão đang giặt áo thì từ thượng nguồn dòng sông, một quả đào khổng lồ bồng bềnh trôi xuôi về phía bà. Đem về nhà bổ ra xem thì thấy một cậu bé khoẻ mạnh kháu khỉnh sinh ra từ bên trong.', '[{"word":"どんぶらこ","meaning":"Từ tượng hình chỉ vật bồng bềnh dập dềnh trôi trên nước"},{"word":"持ち帰る","meaning":"Mang về nhà"}]'::jsonb)
 ON CONFLICT (id) DO UPDATE SET original_text = EXCLUDED.original_text, translated_text = EXCLUDED.translated_text, vocab_notes = EXCLUDED.vocab_notes;
+
+-- Dọn dẹp đoạn văn đọc mồ côi thuộc 7 bài đọc hệ thống vừa nạp
+-- Lưu ý an toàn: Bảng user_reading_progress chỉ tham chiếu reading_id, không có FK trỏ đến reading_sections(id).
+DELETE FROM public.reading_sections
+WHERE reading_id IN ('read-en-tortoise-hare', 'read-en-alice-rabbit-hole', 'read-en-shakespeare-stage', 'read-en-science-habits', 'read-en-walden-woods', 'read-zh-saiweng', 'read-ja-momotaro')
+  AND id NOT IN ('afe3cd1d-f3fe-5b88-87a9-287888b0c991', 'f000a13a-bfb2-5732-80ba-54bdfa14b390', '6ff69fdd-a4bb-54f9-95d4-a29aeb9726e4', 'd37e5c1b-74a2-5fe8-85f6-6e5b7725e053', '0954dcd9-cd27-55ec-a28f-9d3c08414445', '9d4f5f33-9d7f-5750-a94d-5b71ad76a32b', '466558e2-0193-54c0-b41a-e5956a860eb7', '5a9704d9-5ba1-5fd3-ae06-ef1212329f8b', '036ae8f4-0799-5711-9232-8cf4625aea65', 'a90bfdea-d037-5e85-8a8a-f8adb9efab66', 'ec323c09-b93d-590f-808d-dcc031c02306', '7949e625-bcef-53bb-8dab-b858d815f7c6');
 
 -- 11. ĐỀ THI LUYỆN THI IELTS & BỘ CÂU HỎI HỌC THUẬT (Kỳ vọng: 5 đề thi, 20 câu hỏi)
 INSERT INTO public.exam_tests (
@@ -456,7 +490,14 @@ INSERT INTO public.exam_questions (id, test_id, question_number, type, question_
   ('c56755fc-f6cf-5bcf-8595-a554d520013d', 'speak_cue_travel', 1, 'speaking_prompt', 'Part 1: Phỏng vấn ngắn về thói quen du lịch.', '[]'::jsonb, 'Fluency & Coherence, Lexical Resource, Pronunciation, Grammar.', 'Trả lời tự nhiên từ 2-3 câu.', 'Speaking Part 1', ''),
   ('c55b4af0-661a-526f-94bb-b2d283e2e50d', 'speak_cue_travel', 2, 'speaking_prompt', 'Part 2: 1 phút chuẩn bị, 2 phút nói về chuyến đi đáng nhớ.', '[]'::jsonb, 'Nói đủ thời lượng từ 1:45 đến 2:00 phút.', 'Cấu trúc bài nói 2 phút: thời gian, phương tiện, điều xảy ra, cảm xúc.', 'Speaking Part 2', ''),
   ('4c02789c-9cdb-59b4-a7b3-8d7cc8add159', 'speak_cue_travel', 3, 'speaking_prompt', 'Part 3: Thảo luận chuyên sâu về du lịch và bảo vệ môi trường.', '[]'::jsonb, 'Phản biện, câu phức, liên từ nguyên nhân - hệ quả.', 'Nêu quan điểm khách quan hai chiều.', 'Speaking Part 3', '')
-ON CONFLICT (id) DO UPDATE SET question_text = EXCLUDED.question_text, options = EXCLUDED.options, correct_answer = EXCLUDED.correct_answer, explanation = EXCLUDED.explanation;
+ON CONFLICT ON CONSTRAINT uq_test_question_number DO UPDATE SET 
+  type = EXCLUDED.type,
+  question_text = EXCLUDED.question_text, 
+  options = EXCLUDED.options, 
+  correct_answer = EXCLUDED.correct_answer, 
+  explanation = EXCLUDED.explanation,
+  category_tag = EXCLUDED.category_tag,
+  passage_section_ref = EXCLUDED.passage_section_ref;
 
 -- 12. MỤC TỪ ĐIỂN MẪU TÍCH HỢP (Kỳ vọng: 2 mục)
 INSERT INTO public.dictionary_entries (id, language, headword, source, license, data) VALUES
@@ -515,10 +556,25 @@ INSERT INTO public.dictionary_entries (id, language, headword, source, license, 
 ON CONFLICT (language, headword) DO UPDATE SET data = EXCLUDED.data;
 
 
-SELECT 'exam_tests' AS t, count(*) FROM public.exam_tests
-UNION ALL SELECT 'exam_questions', count(*) FROM public.exam_questions
-UNION ALL SELECT 'reading_items', count(*) FROM public.reading_items
+-- BẢNG THỐNG KÊ SỐ LƯỢNG BẢN GHI TRONG TRANSACTION SEED:
+SELECT 'vocab_levels' AS table_name, count(*) AS total_rows FROM public.vocab_levels
+UNION ALL SELECT 'exams', count(*) FROM public.exams
+UNION ALL SELECT 'exam_skills', count(*) FROM public.exam_skills
+UNION ALL SELECT 'learning_stages', count(*) FROM public.learning_stages
+UNION ALL SELECT 'typing_topics', count(*) FROM public.typing_topics
+UNION ALL SELECT 'typing_sentences', count(*) FROM public.typing_sentences
+UNION ALL SELECT 'vocab_sets', count(*) FROM public.vocab_sets
 UNION ALL SELECT 'vocab_words', count(*) FROM public.vocab_words
-UNION ALL SELECT 'grammar_exercises', count(*) FROM public.grammar_exercises;
+UNION ALL SELECT 'grammar_levels', count(*) FROM public.grammar_levels
+UNION ALL SELECT 'grammar_points', count(*) FROM public.grammar_points
+UNION ALL SELECT 'grammar_exercises', count(*) FROM public.grammar_exercises
+UNION ALL SELECT 'media_items', count(*) FROM public.media_items
+UNION ALL SELECT 'media_cues', count(*) FROM public.media_cues
+UNION ALL SELECT 'media_quiz_questions', count(*) FROM public.media_quiz_questions
+UNION ALL SELECT 'reading_items', count(*) FROM public.reading_items
+UNION ALL SELECT 'reading_sections', count(*) FROM public.reading_sections
+UNION ALL SELECT 'exam_tests', count(*) FROM public.exam_tests
+UNION ALL SELECT 'exam_questions', count(*) FROM public.exam_questions
+UNION ALL SELECT 'dictionary_entries', count(*) FROM public.dictionary_entries;
 
 ROLLBACK;

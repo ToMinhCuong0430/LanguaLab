@@ -24,13 +24,13 @@ if (!fs.existsSync(sourcePath)) {
 const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
 
 // ====================================================================
-// 2. TRÍCH XUẤT TỰ ĐỘNG DANH SÁCH WHITELIST TỪ MIGRATIONS 1 ĐẾN 10
-// (Tuyệt đối KHÔNG gõ tay, đọc trực tiếp từ schema định nghĩa trên DB)
+// 2. TRÍCH XUẤT TỰ ĐỘNG DANH SÁCH WHITELIST & NATURAL UNIQUE KEYS TỪ MIGRATIONS
+// (Đọc trực tiếp từ schema định nghĩa trên DB: migrations 1 đến 10 + 20261029000010)
 // ====================================================================
-function extractSchemaWhitelist() {
+function extractSchemaWhitelistAndConstraints() {
   const migrationsDir = path.join(rootDir, 'backend/supabase/migrations');
   const files = fs.readdirSync(migrationsDir)
-    .filter(f => f <= '20261025000010_ielts_rpc_and_strict_rls.sql' && f.endsWith('.sql'))
+    .filter(f => f <= '20261029000010_grammar_schema_fix.sql' && f.endsWith('.sql'))
     .sort();
 
   const allSql = files.map(f => fs.readFileSync(path.join(migrationsDir, f), 'utf8')).join('\n');
@@ -47,17 +47,58 @@ function extractSchemaWhitelist() {
   // Parse table-scoped CHECK IN constraints
   const tableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?(\w+)\s*\(([\s\S]*?)\n\);/gi;
   const tableChecks = {};
+  const naturalUniqueKeys = {};
+
   while ((match = tableRegex.exec(allSql)) !== null) {
     const tableName = match[1];
     const body = match[2];
     tableChecks[tableName] = tableChecks[tableName] || {};
     
+    // Check IN constraints
     const checkInRegex = /(\w+)\s+[^,\n]*?CHECK\s*\(\s*\1\s+IN\s*\(([^)]+)\)\s*\)/gi;
     let cm;
     while ((cm = checkInRegex.exec(body)) !== null) {
       const colName = cm[1];
       tableChecks[tableName][colName] = cm[2].split(',').map(s => s.trim().replace(/^'|'$/g, ''));
     }
+
+    // Table CONSTRAINT ... UNIQUE (...)
+    const tableUqRegex = /CONSTRAINT\s+(\w+)\s+UNIQUE\s*\(([^)]+)\)/gi;
+    let uqm;
+    while ((uqm = tableUqRegex.exec(body)) !== null) {
+      const constraintName = uqm[1];
+      const cols = uqm[2].split(',').map(c => c.trim());
+      naturalUniqueKeys[tableName] = naturalUniqueKeys[tableName] || [];
+      naturalUniqueKeys[tableName].push({ name: constraintName, columns: cols });
+    }
+
+    // Column UNIQUE (trừ id PRIMARY KEY)
+    const lines = body.split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (/^\s*--/.test(trimmed)) continue;
+      const colUqMatch = /^(\w+)\s+[^,\n]*?\bUNIQUE\b/i.exec(trimmed);
+      if (colUqMatch) {
+        const colName = colUqMatch[1];
+        if (colName !== 'id') {
+          naturalUniqueKeys[tableName] = naturalUniqueKeys[tableName] || [];
+          if (!naturalUniqueKeys[tableName].some(u => u.columns.length === 1 && u.columns[0] === colName)) {
+            naturalUniqueKeys[tableName].push({ name: null, columns: [colName] });
+          }
+        }
+      }
+    }
+  }
+
+  // Parse standalone UNIQUE INDEX: CREATE UNIQUE INDEX name ON table (cols)
+  const uqIndexRegex = /CREATE\s+UNIQUE\s+INDEX\s+(\w+)\s+ON\s+(?:public\.)?(\w+)\s*\(([^)]+)\)/gi;
+  let idxMatch;
+  while ((idxMatch = uqIndexRegex.exec(allSql)) !== null) {
+    const idxName = idxMatch[1];
+    const tblName = idxMatch[2];
+    const cols = idxMatch[3].split(',').map(c => c.trim());
+    naturalUniqueKeys[tblName] = naturalUniqueKeys[tblName] || [];
+    naturalUniqueKeys[tblName].push({ name: idxName, columns: cols });
   }
 
   // Parse BETWEEN constraints (vd: level_number BETWEEN 1 AND 7)
@@ -75,6 +116,7 @@ function extractSchemaWhitelist() {
   return {
     enums,
     tableChecks,
+    naturalUniqueKeys,
     reading_items: {
       content_type: tableChecks.reading_items?.content_type || [],
       license: tableChecks.reading_items?.license || [],
@@ -116,14 +158,34 @@ function extractSchemaWhitelist() {
   };
 }
 
-const whitelist = extractSchemaWhitelist();
-console.log('✅ Đã nạp thành công bộ WHITELIST từ migrations 1-10:');
+const schemaData = extractSchemaWhitelistAndConstraints();
+const whitelist = schemaData;
+console.log('✅ Đã nạp thành công bộ WHITELIST & CONSTRAINTS từ migrations:');
 console.log('   - reading_items.license:', whitelist.reading_items.license);
 console.log('   - reading_items.content_type:', whitelist.reading_items.content_type);
 console.log('   - media_items.media_type:', whitelist.media_items.media_type);
 console.log('   - typing_topics.group_type:', whitelist.typing_topics.group_type);
 console.log('   - learning_language:', whitelist.vocab_sets.language);
 console.log('   - exam_questions.type:', whitelist.exam_questions.type);
+console.log('   - Natural UNIQUE keys phát hiện trong schema:');
+for (const [tbl, uqs] of Object.entries(schemaData.naturalUniqueKeys)) {
+  console.log(`     * ${tbl}: ${uqs.map(u => (u.name ? `${u.name}(${u.columns.join(',')})` : `(${u.columns.join(',')})`)).join('; ')}`);
+}
+
+// Hàm kiểm tra quy tắc ON CONFLICT: Bảng có UNIQUE tự nhiên thì TUYỆT ĐỐI không được ON CONFLICT (id)
+function assertNaturalUniqueOnConflict(tableName, onConflictTarget) {
+  const uqs = schemaData.naturalUniqueKeys[tableName] || [];
+  if (uqs.length > 0) {
+    if (onConflictTarget.trim().toLowerCase() === '(id)') {
+      console.error(`\n❌ [LỖI VI PHẠM RÀNG BUỘC KHÓA TỰ NHIÊN]`);
+      console.error(`   - Bảng: public.${tableName} có các khóa UNIQUE tự nhiên:`);
+      uqs.forEach(u => console.error(`     * ${u.name || 'ANONYMOUS'}: (${u.columns.join(', ')})`));
+      console.error(`   - Nhưng lệnh ON CONFLICT trong generator lại đang dùng: "${onConflictTarget}"`);
+      console.error(`   - Quy tắc: Phải dùng khóa tự nhiên hoặc constraint name của khóa tự nhiên, KHÔNG dùng (id)!`);
+      process.exit(1);
+    }
+  }
+}
 
 // Hàm kiểm tra whitelist nghiêm ngặt
 function assertWhitelist(table, column, value, allowedValues, context) {
@@ -242,6 +304,7 @@ out.push(`-- ===================================================================
 // -----------------------------------------------------------------------------
 // 1. VOCAB LEVELS (7 bản ghi)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('vocab_levels', '(level_number)');
 out.push(`-- 1. CÁC CẤP ĐỘ TỪ VỰNG CHUẨN KHUNG CEFR (Kỳ vọng: 7 bản ghi)
 INSERT INTO public.vocab_levels (level_number, code, title, cefr_equivalent, target_word_count, color_tone, description) VALUES
   (1, 'A1', 'Khởi động & Sinh tồn cơ bản', 'A1 Breakthrough', 500, 'ocean', 'Vốn từ thiết yếu cho các giao tiếp thường ngày cực kỳ đơn giản.'),
@@ -265,6 +328,7 @@ for (let lvl = 1; lvl <= 7; lvl++) {
 // -----------------------------------------------------------------------------
 // 2. EXAMS (5 bản ghi)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('exams', '(id)');
 out.push(`-- 2. DANH MỤC KỲ THI CHỨNG CHỈ QUỐC TẾ (Kỳ vọng: 5 bản ghi)
 INSERT INTO public.exams (id, name, full_name, is_active, status_badge, target_format, sort_order) VALUES
   ('ielts', 'IELTS Academic', 'International English Language Testing System (Academic)', true, 'Phổ biến nhất', 'Academic 4 Skills', 1),
@@ -282,6 +346,7 @@ ON CONFLICT (id) DO UPDATE SET
 // -----------------------------------------------------------------------------
 // 3. EXAM SKILLS (4 bản ghi)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('exam_skills', '(exam_id, skill_code)');
 out.push(`-- 3. CÁC PHẦN THI KỸ NĂNG IELTS (Kỳ vọng: 4 bản ghi)
 INSERT INTO public.exam_skills (exam_id, skill_code, name, english_name, description, tone) VALUES
 `);
@@ -295,6 +360,7 @@ out.push(skillRows.join(',\n') + '\nON CONFLICT (exam_id, skill_code) DO UPDATE 
 // -----------------------------------------------------------------------------
 // 4. LEARNING STAGES (25 bản ghi)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('learning_stages', '(id)');
 const learningStagesData = [
   // Tiếng Anh Typing (10 chặng)
   ['stage-en-type-1', 'typing', 'en', 'A1', 'Chào hỏi & Làm quen', 'Luyện gõ các mẫu câu chào hỏi và giới thiệu căn bản nhất.', 1, 0],
@@ -348,6 +414,7 @@ out.push(stageRows.join(',\n') + `\nON CONFLICT (id) DO UPDATE SET
 // -----------------------------------------------------------------------------
 // 5. TYPING TOPICS & SENTENCES (8 chủ đề, 48 câu)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('typing_topics', '(id)');
 out.push(`-- 5. CHỦ ĐỀ GÕ CÂU & CÂU LUYỆN TẬP THỰC TẾ (Kỳ vọng: 8 chủ đề, 48 câu)
 INSERT INTO public.typing_topics (id, language, level, group_type, title, description, icon_name, sort_order) VALUES
 `);
@@ -361,9 +428,13 @@ out.push(topicRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLU
 
 out.push(`INSERT INTO public.typing_sentences (id, topic_id, content, reading, translation, hint_word, grammar_note, sort_order) VALUES\n`);
 const sentenceRows = [];
+const seededTopicIds = source.typingTopics.map(t => t.id);
+const seededSentenceIds = [];
+
 for (const topic of source.typingTopics) {
   (topic.sentences || []).forEach((s, idx) => {
     const sId = uuidv5(`typing:${topic.id}:${idx + 1}`);
+    seededSentenceIds.push(sId);
     const content = s.targetText || s.content || s.text;
     const translation = s.sourceText || s.translation || s.meaning;
     const reading = s.phonetic || s.reading || null;
@@ -374,9 +445,17 @@ for (const topic of source.typingTopics) {
 }
 out.push(sentenceRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, translation = EXCLUDED.translation, reading = EXCLUDED.reading, hint_word = EXCLUDED.hint_word, grammar_note = EXCLUDED.grammar_note;\n');
 
+// Dọn dẹp câu luyện gõ mồ côi (Orphan Cleanup)
+out.push(`-- Dọn dẹp câu luyện gõ mồ côi thuộc 8 chủ đề hệ thống vừa nạp (không ảnh hưởng đến chủ đề khác)
+-- Lưu ý an toàn: bảng public.typing_attempts lưu topic_id trực tiếp, không có khóa ngoại trỏ vào typing_sentences(id).
+DELETE FROM public.typing_sentences
+WHERE topic_id IN (${seededTopicIds.map(sqlStr).join(', ')})
+  AND id NOT IN (${seededSentenceIds.map(sqlStr).join(', ')});\n`);
+
 // -----------------------------------------------------------------------------
 // 6. VOCAB SETS & WORDS (5 bộ, 50 từ)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('vocab_sets', '(id)');
 out.push(`-- 6. BỘ TỪ VỰNG HỆ THỐNG & TỪ VỰNG CHI TIẾT (Kỳ vọng: 5 bộ từ, 50 từ vựng)
 INSERT INTO public.vocab_sets (id, user_id, level_id, title, description, is_system, language, is_public) VALUES
 `);
@@ -399,10 +478,12 @@ out.push(setRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLUDE
 
 out.push(`INSERT INTO public.vocab_words (id, set_id, word, phonetic, part_of_speech, meaning_vi, example_sentence, example_translation, reading, examples) VALUES\n`);
 const wordRows = [];
+const seededWordIds = [];
 source.curatedVocabSets.forEach((set, setIdx) => {
   const setId = vocabSetUuids[setIdx];
   (set.words || []).forEach((w, wIdx) => {
     const wordId = `b000000${setIdx + 1}-0000-0000-0000-${String(wIdx + 1).padStart(12, '0')}`;
+    seededWordIds.push(wordId);
     wordRows.push(
       `  ('${wordId}', '${setId}', ${sqlStr(w.term)}, ${sqlStr(w.phonetic)}, ${sqlStr(w.partOfSpeech)}, ${sqlStr(w.meaning)}, ${sqlStr(w.exampleTarget)}, ${sqlStr(w.exampleMeaning)}, NULL, '[]'::jsonb)`
     );
@@ -410,9 +491,18 @@ source.curatedVocabSets.forEach((set, setIdx) => {
 });
 out.push(wordRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET meaning_vi = EXCLUDED.meaning_vi, example_sentence = EXCLUDED.example_sentence, phonetic = EXCLUDED.phonetic;\n');
 
+// Dọn dẹp từ vựng mồ côi (Orphan Cleanup)
+out.push(`-- Dọn dẹp từ vựng mồ côi thuộc 5 bộ từ hệ thống (is_system = true, user_id IS NULL)
+-- Lưu ý an toàn: Điều kiện WHERE chỉ nhắm đúng 5 UUID bộ từ hệ thống định danh sẵn, tuyệt đối KHÔNG xóa từ thuộc bộ từ riêng của người dùng (user_id IS NOT NULL).
+-- Nếu có bản ghi tiến trình user_word_progress liên kết với từ mồ côi cũ, ràng buộc FK ON DELETE CASCADE sẽ dọn sạch nhất quán.
+DELETE FROM public.vocab_words
+WHERE set_id IN (${vocabSetUuids.map(sqlStr).join(', ')})
+  AND id NOT IN (${seededWordIds.map(sqlStr).join(', ')});\n`);
+
 // -----------------------------------------------------------------------------
 // 7. GRAMMAR LEVELS (6 bản ghi)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('grammar_levels', '(language, code)');
 out.push(`-- 7. CẤP ĐỘ NGỮ PHÁP (GRAMMAR LEVELS) (Kỳ vọng: 6 bản ghi)
 INSERT INTO public.grammar_levels (language, code, name, description, sort_order) VALUES
 `);
@@ -432,6 +522,8 @@ out.push(grammarLevelRows.join(',\n') + '\nON CONFLICT (language, code) DO UPDAT
 // -----------------------------------------------------------------------------
 // 8. GRAMMAR POINTS & EXERCISES (24 điểm, 28 bài tập)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('grammar_points', '(id)');
+assertNaturalUniqueOnConflict('grammar_exercises', '(id)');
 out.push(`-- 8. ĐIỂM NGỮ PHÁP & BÀI TẬP THỰC CHIẾN (Kỳ vọng: 24 điểm, 28 bài tập)
 INSERT INTO public.grammar_points (id, language, level, title, vietnamese_title, summary, formula, explanation, explanation_notes, examples, common_mistakes, xp_reward, sort_order) VALUES
 `);
@@ -488,6 +580,7 @@ out.push(exerciseRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET prompt = E
 // -----------------------------------------------------------------------------
 // 9. MEDIA ITEMS, CUES & QUIZZES (4 bài học, 15 cues, 3 quiz)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('media_items', '(id)');
 out.push(`-- 9. BÀI HỌC MEDIA VIDEO / PODCAST (Kỳ vọng: 4 bài học, 15 cues, 3 câu quiz)
 INSERT INTO public.media_items (id, media_type, language, level, topic, title, vietnamese_title, speaker, provider, source_url, duration_seconds, is_published) VALUES
 `);
@@ -504,6 +597,9 @@ out.push(mediaItemRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = E
 out.push(`INSERT INTO public.media_cues (id, media_id, subtitle_lang, start_ms, end_ms, text, translation_vi, vocab_hints, sort_order) VALUES\n`);
 const cueRows = [];
 const quizRows = [];
+const seededMediaIds = source.curatedMediaList.map(m => m.id);
+const seededCueIds = [];
+const seededQuizIds = [];
 
 source.curatedMediaList.forEach((m) => {
   (m.subtitles || []).forEach((c, cIdx) => {
@@ -513,6 +609,7 @@ source.curatedMediaList.forEach((m) => {
     assertWhitelist('media_cues', 'subtitle_lang', m.lang, whitelist.media_items.language, { media_id: m.id, cue: c });
 
     const cueId = uuidv5(`media_cue:${m.id}:${c.start}:${cIdx + 1}`);
+    seededCueIds.push(cueId);
     cueRows.push(
       `  ('${cueId}', ${sqlStr(m.id)}, ${sqlStr(m.lang)}, ${start_ms}, ${end_ms}, ${sqlStr(c.text)}, ${sqlStr(c.vi)}, ${sqlJson(c.vocabHints || [])}, ${cIdx + 1})`
     );
@@ -520,6 +617,7 @@ source.curatedMediaList.forEach((m) => {
 
   (m.quiz || []).forEach((q, qIdx) => {
     const qId = uuidv5(`media_quiz:${m.id}:${qIdx + 1}`);
+    seededQuizIds.push(qId);
     quizRows.push(
       `  ('${qId}', ${sqlStr(m.id)}, ${q.segmentTime || 0}, ${sqlStr(q.question)}, ${sqlJson(q.options || [])}, ${q.correctIndex || 0}, ${sqlStr(q.explanation || '')})`
     );
@@ -528,12 +626,27 @@ source.curatedMediaList.forEach((m) => {
 
 out.push(cueRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET text = EXCLUDED.text, translation_vi = EXCLUDED.translation_vi, vocab_hints = EXCLUDED.vocab_hints;\n');
 
+// Dọn dẹp media_cues mồ côi (Orphan Cleanup)
+out.push(`-- Dọn dẹp phụ đề cue mồ côi thuộc 4 bài học video/podcast hệ thống vừa nạp
+-- Lưu ý an toàn: media_dictation_attempts chỉ lưu media_id, không có foreign key trỏ đến media_cues(id).
+DELETE FROM public.media_cues
+WHERE media_id IN (${seededMediaIds.map(sqlStr).join(', ')})
+  AND id NOT IN (${seededCueIds.map(sqlStr).join(', ')});\n`);
+
 out.push(`INSERT INTO public.media_quiz_questions (id, media_id, segment_time_sec, question, options, correct_index, explanation) VALUES\n`);
 out.push(quizRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET question = EXCLUDED.question, options = EXCLUDED.options, correct_index = EXCLUDED.correct_index, explanation = EXCLUDED.explanation;\n');
+
+// Dọn dẹp media_quiz_questions mồ côi (Orphan Cleanup)
+out.push(`-- Dọn dẹp câu hỏi trắc nghiệm quiz mồ côi thuộc 4 bài học video/podcast hệ thống vừa nạp
+-- Lưu ý an toàn: Không có bảng nào trong toàn bộ schema có FK trỏ đến media_quiz_questions(id).
+DELETE FROM public.media_quiz_questions
+WHERE media_id IN (${seededMediaIds.map(sqlStr).join(', ')})
+  AND id NOT IN (${seededQuizIds.map(sqlStr).join(', ')});\n`);
 
 // -----------------------------------------------------------------------------
 // 10. READING ITEMS & SECTIONS (7 bài đọc, 12 đoạn)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('reading_items', '(id)');
 out.push(`-- 10. BÀI ĐỌC SONG NGỮ & VĂN BẢN HỌC THUẬT (Kỳ vọng: 7 bài đọc, 12 đoạn văn)
 INSERT INTO public.reading_items (id, content_type, language, level, title, vietnamese_title, author, source_note, word_count, reading_time_minutes, license, is_published) VALUES
 `);
@@ -556,9 +669,13 @@ out.push(readingItemRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title =
 
 out.push(`INSERT INTO public.reading_sections (id, reading_id, sort_order, original_text, translated_text, vocab_notes) VALUES\n`);
 const sectionRows = [];
+const seededReadingIds = source.readingList.map(r => r.id);
+const seededSectionIds = [];
+
 source.readingList.forEach((r) => {
   (r.paragraphs || []).forEach((p, pIdx) => {
     const secId = uuidv5(`reading_section:${r.id}:${pIdx + 1}`);
+    seededSectionIds.push(secId);
     const origText = p.targetText || p.original_text || p.text;
     const transText = p.viTranslation || p.translated_text || p.vi;
     sectionRows.push(
@@ -568,9 +685,17 @@ source.readingList.forEach((r) => {
 });
 out.push(sectionRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET original_text = EXCLUDED.original_text, translated_text = EXCLUDED.translated_text, vocab_notes = EXCLUDED.vocab_notes;\n');
 
+// Dọn dẹp reading_sections mồ côi (Orphan Cleanup)
+out.push(`-- Dọn dẹp đoạn văn đọc mồ côi thuộc 7 bài đọc hệ thống vừa nạp
+-- Lưu ý an toàn: Bảng user_reading_progress chỉ tham chiếu reading_id, không có FK trỏ đến reading_sections(id).
+DELETE FROM public.reading_sections
+WHERE reading_id IN (${seededReadingIds.map(sqlStr).join(', ')})
+  AND id NOT IN (${seededSectionIds.map(sqlStr).join(', ')});\n`);
+
 // -----------------------------------------------------------------------------
 // 11. IELTS TESTS & QUESTIONS (5 đề thi, 20 câu hỏi)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('exam_tests', '(id)');
 out.push(`-- 11. ĐỀ THI LUYỆN THI IELTS & BỘ CÂU HỎI HỌC THUẬT (Kỳ vọng: 5 đề thi, 20 câu hỏi)
 INSERT INTO public.exam_tests (
   id, exam_id, skill, title, subtitle, difficulty, time_minutes, total_questions, category_tags,
@@ -615,6 +740,7 @@ out.push(testRows.join(',\n') + `\nON CONFLICT (id) DO UPDATE SET
   prompts = EXCLUDED.prompts,
   is_published = EXCLUDED.is_published;\n`);
 
+assertNaturalUniqueOnConflict('exam_questions', 'ON CONSTRAINT uq_test_question_number');
 out.push(`INSERT INTO public.exam_questions (id, test_id, question_number, type, question_text, options, correct_answer, explanation, category_tag, passage_section_ref) VALUES\n`);
 const examQuestionRows = [];
 source.ielts.tests.forEach((t) => {
@@ -628,11 +754,19 @@ source.ielts.tests.forEach((t) => {
     );
   });
 });
-out.push(examQuestionRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET question_text = EXCLUDED.question_text, options = EXCLUDED.options, correct_answer = EXCLUDED.correct_answer, explanation = EXCLUDED.explanation;\n');
+out.push(examQuestionRows.join(',\n') + `\nON CONFLICT ON CONSTRAINT uq_test_question_number DO UPDATE SET 
+  type = EXCLUDED.type,
+  question_text = EXCLUDED.question_text, 
+  options = EXCLUDED.options, 
+  correct_answer = EXCLUDED.correct_answer, 
+  explanation = EXCLUDED.explanation,
+  category_tag = EXCLUDED.category_tag,
+  passage_section_ref = EXCLUDED.passage_section_ref;\n`);
 
 // -----------------------------------------------------------------------------
 // 12. DICTIONARY ENTRIES (2 mục)
 // -----------------------------------------------------------------------------
+assertNaturalUniqueOnConflict('dictionary_entries', '(language, headword)');
 out.push(`-- 12. MỤC TỪ ĐIỂN MẪU TÍCH HỢP (Kỳ vọng: 2 mục)
 INSERT INTO public.dictionary_entries (id, language, headword, source, license, data) VALUES
   ('c0000000-0000-0000-0000-000000000001', 'en', 'pragmatic', 'in_house', 'CC-BY-SA 4.0', '{
@@ -693,6 +827,43 @@ ON CONFLICT (language, headword) DO UPDATE SET data = EXCLUDED.data;
 const finalSql = out.join('\n');
 const targetMigrationPath = path.join(rootDir, 'backend/supabase/migrations/20261029000011_seed_learning_content.sql');
 fs.writeFileSync(targetMigrationPath, finalSql, 'utf8');
+
+// Đồng thời sinh ra test_seed_in_transaction.sql (BEGIN ... ROLLBACK)
+const testScriptPath = path.join(rootDir, 'backend/supabase/scripts/test_seed_in_transaction.sql');
+const testSql = `-- ==============================================================================
+-- SCRIPT KIỂM THỬ TRANSACTION SEED (BEGIN ... ROLLBACK)
+-- Được sinh tự động bởi generate.mjs
+-- Dùng để chạy thử nghiệm trên Supabase Remote SQL Editor nhằm kiểm tra tính idempotent
+-- (Không lưu dữ liệu vào DB vì luôn kết thúc bằng ROLLBACK)
+-- ==============================================================================
+BEGIN;
+
+${finalSql}
+
+-- BẢNG THỐNG KÊ SỐ LƯỢNG BẢN GHI TRONG TRANSACTION SEED:
+SELECT 'vocab_levels' AS table_name, count(*) AS total_rows FROM public.vocab_levels
+UNION ALL SELECT 'exams', count(*) FROM public.exams
+UNION ALL SELECT 'exam_skills', count(*) FROM public.exam_skills
+UNION ALL SELECT 'learning_stages', count(*) FROM public.learning_stages
+UNION ALL SELECT 'typing_topics', count(*) FROM public.typing_topics
+UNION ALL SELECT 'typing_sentences', count(*) FROM public.typing_sentences
+UNION ALL SELECT 'vocab_sets', count(*) FROM public.vocab_sets
+UNION ALL SELECT 'vocab_words', count(*) FROM public.vocab_words
+UNION ALL SELECT 'grammar_levels', count(*) FROM public.grammar_levels
+UNION ALL SELECT 'grammar_points', count(*) FROM public.grammar_points
+UNION ALL SELECT 'grammar_exercises', count(*) FROM public.grammar_exercises
+UNION ALL SELECT 'media_items', count(*) FROM public.media_items
+UNION ALL SELECT 'media_cues', count(*) FROM public.media_cues
+UNION ALL SELECT 'media_quiz_questions', count(*) FROM public.media_quiz_questions
+UNION ALL SELECT 'reading_items', count(*) FROM public.reading_items
+UNION ALL SELECT 'reading_sections', count(*) FROM public.reading_sections
+UNION ALL SELECT 'exam_tests', count(*) FROM public.exam_tests
+UNION ALL SELECT 'exam_questions', count(*) FROM public.exam_questions
+UNION ALL SELECT 'dictionary_entries', count(*) FROM public.dictionary_entries;
+
+ROLLBACK;
+`;
+fs.writeFileSync(testScriptPath, testSql, 'utf8');
 
 console.log(`\n🎉 Sinh thành công file migration seed: ${targetMigrationPath}`);
 console.log(`- vocab_levels: 7`);
