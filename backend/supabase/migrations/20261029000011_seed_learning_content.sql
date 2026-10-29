@@ -357,50 +357,77 @@ ON CONFLICT (id) DO UPDATE SET original_text = EXCLUDED.original_text, translate
 
 -- 11. ĐỀ THI LUYỆN THI IELTS & BỘ CÂU HỎI HỌC THUẬT (Kỳ vọng: 5 đề thi, 20 câu hỏi)
 INSERT INTO public.exam_tests (
-  id, exam_id, skill_id, title, description, time_allowed_minutes, total_questions, is_published,
-  passage_title, passage_content, passage_summary, category_tags, audio_url
+  id, exam_id, skill, title, subtitle, difficulty, time_minutes, total_questions, category_tags,
+  passage_title, passage_content, audio_title, audio_duration_seconds, audio_url, audio_script,
+  task_number, min_words, prompt_requirements, part_number, prep_time_seconds, speak_time_seconds,
+  prompts, is_published
 ) VALUES
 
   (
-    'read_cam18_p1', 'ielts', 'reading', 'Lịch sử Cây Chè và Con đường Trà Mã Cổ Đạo', 'Cambridge IELTS Academic 18 - Passage 1', 20, 6, true,
+    'read_cam18_p1', 'ielts', 'reading', 'Lịch sử Cây Chè và Con đường Trà Mã Cổ Đạo', 'Cambridge IELTS Academic 18 - Passage 1', 'Dễ', 20, 6, ARRAY['True/False/Not Given', 'Điền từ', 'Lịch sử']::text[],
     'The Ancient Tea Horse Road: Heritage and Trade', 'Tea has shaped human civilizations for millennia. Originating in the lush highlands of southwestern China, wild tea plants (Camellia sinensis) were first harvested not as a leisurely brew, but as a bitter medicinal herb. According to legendary records dating back to Emperor Shennong around 2737 BCE, leaves fell into a cauldron of boiling water, unleashing a refreshing fragrance that marked the serendipitous birth of tea consumption.
 
 By the Tang Dynasty (618–907 CE), tea had transformed from an elite remedy into a national obsession. Buddhist monks embraced the beverage to maintain alertness during marathon meditation sessions, fostering an elaborate culture of tea preparation. However, it was during the Song Dynasty that tea acquired geopolitical importance through the creation of the Tea Horse Road (Cha Ma Gu Dao).
 
 Stretching across thousands of perilous kilometers through snowy passes, sheer gorges, and dense subtropical jungles, the Tea Horse Road linked Sichuan and Yunnan provinces with the Tibetan plateau. Tibetans required tremendous amounts of brick tea to balance their high-meat, high-fat diet in sub-zero altitudes. In exchange, the Chinese imperial military urgently needed hardy Tibetan mountain horses to defend their northern frontiers against nomadic incursions. An elaborate barter exchange flourished: one prime Tibetan warhorse could command up to sixty kilograms of compressed brick tea.
 
-The human porters and mule caravans faced unimaginable hardships. Caravans navigated cliffside paths barely two feet wide, suspended precariously over roaring currents of the Yangtze and Mekong rivers. Modern preservationists consider this ancient network a cultural conduit comparable in significance to the Silk Road, demonstrating how a simple beverage bridged disparate geographies and empires.', NULL, '["True/False/Not Given","Điền từ","Lịch sử"]'::jsonb, NULL
+The human porters and mule caravans faced unimaginable hardships. Caravans navigated cliffside paths barely two feet wide, suspended precariously over roaring currents of the Yangtze and Mekong rivers. Modern preservationists consider this ancient network a cultural conduit comparable in significance to the Silk Road, demonstrating how a simple beverage bridged disparate geographies and empires.', NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, 60, 120,
+    '{}'::text[], true
   ),
   (
-    'read_coral_p2', 'ielts', 'reading', 'Bảo Tồn Rạn San Hô và Giải Pháp Công Nghệ Sinh Học', 'Cambridge IELTS Academic 17 - Passage 2', 20, 5, true,
+    'read_coral_p2', 'ielts', 'reading', 'Bảo Tồn Rạn San Hô và Giải Pháp Công Nghệ Sinh Học', 'Cambridge IELTS Academic 17 - Passage 2', 'Trung bình', 20, 5, ARRAY['Matching Headings', 'Multiple Choice', 'Sinh học môi trường']::text[],
     'Coral Reef Restoration: Engineering Resilient Ecosystems', 'Coral reefs occupy less than one percent of the ocean floor, yet they harbor an astonishing twenty-five percent of all marine species. Often celebrated as the underwater rainforests of our planet, these biological wonderlands provide vital coastal protection, sustain global fishing economies, and generate crucial revenue from eco-tourism.
 
 Tragically, rising seawater temperatures triggered by atmospheric greenhouse gas emissions have induced unprecedented global coral bleaching events. When marine temperatures exceed normal thresholds by as little as one degree Celsius for sustained periods, corals expel their symbiotic microalgae (zooxanthellae), stripping them of their vibrant pigmentation and their primary photosynthetic nutrient source. Left untreated, starved coral skeletons turn bone-white and perish.
 
 In response, marine biologists at the Australian Institute of Marine Science have pioneered assisted gene flow and selective cross-breeding. By cultivating thermally resilient "super corals" that have naturally survived in hyper-warm tidal lagoons, scientists can selectively breed larvae with elevated thermal tolerance. When reseeded onto damaged reefs, these engineered colonies demonstrate a significantly reduced susceptibility to bleaching.
 
-Nevertheless, conservationists emphasize that localized biological interventions are fundamentally stopgap measures. Without aggressive global commitments to carbon neutrality, even the hardiest laboratory-bred corals will eventually succumb to acidified and overheated seas.', NULL, '["Matching Headings","Multiple Choice","Sinh học môi trường"]'::jsonb, NULL
+Nevertheless, conservationists emphasize that localized biological interventions are fundamentally stopgap measures. Without aggressive global commitments to carbon neutrality, even the hardiest laboratory-bred corals will eventually succumb to acidified and overheated seas.', NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, 60, 120,
+    '{}'::text[], true
   ),
   (
-    'list_sec1_homestay', 'ielts', 'listening', 'Đăng Ký Lưu Trú Homestay Tại New Zealand', 'Cambridge IELTS 18 - Listening Section 1', 10, 5, true,
-    'Section 1: International Student Homestay Application', 'OFFICER: Good morning. Welcome to Auckland International Student Services. How can I help you today?
-STUDENT: Hello. I am Keiko Tanaka. That is T-A-N-A-K-A. I study Environmental Science. I arrive on the 15th of February. Strictly no seafood, and I am allergic to cats.', NULL, '["Form Completion","Thông tin cá nhân","Section 1"]'::jsonb, NULL
+    'list_sec1_homestay', 'ielts', 'listening', 'Đăng Ký Lưu Trú Homestay Tại New Zealand', 'Cambridge IELTS 18 - Listening Section 1', 'Dễ', 10, 5, ARRAY['Form Completion', 'Thông tin cá nhân', 'Section 1']::text[],
+    NULL, NULL, 'Section 1: International Student Homestay Application', 180, NULL, 'OFFICER: Good morning. Welcome to Auckland International Student Services. How can I help you today?
+STUDENT: Hello. I am Keiko Tanaka. That is T-A-N-A-K-A. I study Environmental Science. I arrive on the 15th of February. Strictly no seafood, and I am allergic to cats.',
+    NULL, NULL, NULL, NULL, 60, 120,
+    '{}'::text[], true
   ),
   (
-    'write_task2_ai', 'ielts', 'writing', 'Trí Tuệ Nhân Tạo và Tương Lai Giáo Dục', 'IELTS Academic Writing Task 2 - Essay', 40, 1, true,
-    NULL, 'Some people believe that artificial intelligence and automated teaching applications will soon replace human teachers in classrooms. Others argue that human educators remain irreplaceable in developing emotional intelligence and critical thinking.
+    'write_task2_ai', 'ielts', 'writing', 'Trí Tuệ Nhân Tạo và Tương Lai Giáo Dục', 'IELTS Academic Writing Task 2 - Essay', 'Khó', 40, 1, ARRAY['Task 2', 'Nghị luận xã hội', 'Agree or Disagree']::text[],
+    NULL, NULL, NULL, NULL, NULL, NULL,
+    2, 250, 'Some people believe that artificial intelligence and automated teaching applications will soon replace human teachers in classrooms. Others argue that human educators remain irreplaceable in developing emotional intelligence and critical thinking.
 
-Discuss both views and give your own opinion. Write at least 250 words.', NULL, '["Task 2","Nghị luận xã hội","Agree or Disagree"]'::jsonb, NULL
+Discuss both views and give your own opinion. Write at least 250 words.', NULL, 60, 120,
+    '{}'::text[], true
   ),
   (
-    'speak_cue_travel', 'ielts', 'speaking', 'Chuyến Đi Đáng Nhớ và Văn Hóa Bản Địa', 'IELTS Speaking Full 3 Parts', 14, 3, true,
-    NULL, 'Part 1: Do you prefer travelling alone or with friends? What was the most interesting place you visited recently?
-
-Part 2 (Cue Card): Describe a memorable journey you made by public transport. You should say: Where you went, What transport you used, Who was with you, and explain why this journey was so memorable to you.
-
-Part 3: How has modern high-speed transportation changed tourism? Do you think remote natural attractions should limit visitor numbers to prevent pollution?', NULL, '["Part 1, 2, 3","Cue Card","Du lịch & Văn hóa"]'::jsonb, NULL
+    'speak_cue_travel', 'ielts', 'speaking', 'Chuyến Đi Đáng Nhớ và Văn Hóa Bản Địa', 'IELTS Speaking Full 3 Parts', 'Trung bình', 14, 3, ARRAY['Part 1, 2, 3', 'Cue Card', 'Du lịch & Văn hóa']::text[],
+    NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, 2, 60, 120,
+    ARRAY['Part 1: Do you prefer travelling alone or with friends? What was the most interesting place you visited recently?', 'Part 2 (Cue Card): Describe a memorable journey you made by public transport. You should say: Where you went, What transport you used, Who was with you, and explain why this journey was so memorable to you.', 'Part 3: How has modern high-speed transportation changed tourism? Do you think remote natural attractions should limit visitor numbers to prevent pollution?']::text[], true
   )
-ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, passage_title = EXCLUDED.passage_title, passage_content = EXCLUDED.passage_content;
+ON CONFLICT (id) DO UPDATE SET 
+  title = EXCLUDED.title, 
+  subtitle = EXCLUDED.subtitle, 
+  difficulty = EXCLUDED.difficulty, 
+  time_minutes = EXCLUDED.time_minutes, 
+  total_questions = EXCLUDED.total_questions, 
+  category_tags = EXCLUDED.category_tags, 
+  passage_title = EXCLUDED.passage_title, 
+  passage_content = EXCLUDED.passage_content,
+  audio_title = EXCLUDED.audio_title,
+  audio_duration_seconds = EXCLUDED.audio_duration_seconds,
+  audio_script = EXCLUDED.audio_script,
+  task_number = EXCLUDED.task_number,
+  min_words = EXCLUDED.min_words,
+  prompt_requirements = EXCLUDED.prompt_requirements,
+  part_number = EXCLUDED.part_number,
+  prep_time_seconds = EXCLUDED.prep_time_seconds,
+  speak_time_seconds = EXCLUDED.speak_time_seconds,
+  prompts = EXCLUDED.prompts,
+  is_published = EXCLUDED.is_published;
 
 INSERT INTO public.exam_questions (id, test_id, question_number, type, question_text, options, correct_answer, explanation, category_tag, passage_section_ref) VALUES
 

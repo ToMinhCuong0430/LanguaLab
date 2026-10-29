@@ -224,6 +224,11 @@ function sqlJson(obj) {
   return `'${jsonStr.replace(/'/g, "''")}'::jsonb`;
 }
 
+function sqlTextArray(arr) {
+  if (!arr || !Array.isArray(arr) || arr.length === 0) return "'{}'::text[]";
+  return `ARRAY[${arr.map(sqlStr).join(', ')}]::text[]`;
+}
+
 const out = [];
 
 out.push(`-- ====================================================================
@@ -568,8 +573,10 @@ out.push(sectionRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET original_te
 // -----------------------------------------------------------------------------
 out.push(`-- 11. ĐỀ THI LUYỆN THI IELTS & BỘ CÂU HỎI HỌC THUẬT (Kỳ vọng: 5 đề thi, 20 câu hỏi)
 INSERT INTO public.exam_tests (
-  id, exam_id, skill_id, title, description, time_allowed_minutes, total_questions, is_published,
-  passage_title, passage_content, passage_summary, category_tags, audio_url
+  id, exam_id, skill, title, subtitle, difficulty, time_minutes, total_questions, category_tags,
+  passage_title, passage_content, audio_title, audio_duration_seconds, audio_url, audio_script,
+  task_number, min_words, prompt_requirements, part_number, prep_time_seconds, speak_time_seconds,
+  prompts, is_published
 ) VALUES
 `);
 
@@ -580,19 +587,33 @@ const testRows = source.ielts.tests.map((t) => {
     assertWhitelist('exam_tests', 'task_number', t.taskNumber, whitelist.exam_tests.task_number, t);
   }
 
-  const passageTitle = t.passageTitle || t.audioTitle || null;
-  let passageContent = t.passageContent || t.audioScript || t.promptRequirements || null;
-  if (!passageContent && t.prompts) {
-    if (Array.isArray(t.prompts)) passageContent = t.prompts.join('\n\n');
-    else if (typeof t.prompts === 'object') passageContent = Object.values(t.prompts).join('\n\n');
-  }
-
   return `  (
-    ${sqlStr(t.id)}, 'ielts', ${sqlStr(t.skill)}, ${sqlStr(t.title)}, ${sqlStr(t.subtitle || t.title)}, ${t.timeMinutes || 20}, ${t.totalQuestions || (t.questions || []).length}, true,
-    ${sqlStr(passageTitle)}, ${sqlStr(passageContent)}, NULL, ${sqlJson(t.categoryTags || [])}, NULL
+    ${sqlStr(t.id)}, 'ielts', ${sqlStr(t.skill)}, ${sqlStr(t.title)}, ${sqlStr(t.subtitle || null)}, ${sqlStr(t.difficulty || 'Trung bình')}, ${t.timeMinutes || 20}, ${t.totalQuestions || (t.questions || []).length}, ${sqlTextArray(t.categoryTags || [])},
+    ${sqlStr(t.passageTitle || null)}, ${sqlStr(t.passageContent || null)}, ${sqlStr(t.audioTitle || null)}, ${t.audioDurationSeconds !== undefined ? t.audioDurationSeconds : 'NULL'}, ${sqlStr(t.audioUrl || null)}, ${sqlStr(t.audioScript || null)},
+    ${t.taskNumber !== undefined ? t.taskNumber : 'NULL'}, ${t.minWords !== undefined ? t.minWords : 'NULL'}, ${sqlStr(t.promptRequirements || null)}, ${t.partNumber !== undefined ? t.partNumber : 'NULL'}, ${t.prepTimeSeconds !== undefined ? t.prepTimeSeconds : 60}, ${t.speakTimeSeconds !== undefined ? t.speakTimeSeconds : 120},
+    ${sqlTextArray(t.prompts || [])}, true
   )`;
 });
-out.push(testRows.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, passage_title = EXCLUDED.passage_title, passage_content = EXCLUDED.passage_content;\n');
+out.push(testRows.join(',\n') + `\nON CONFLICT (id) DO UPDATE SET 
+  title = EXCLUDED.title, 
+  subtitle = EXCLUDED.subtitle, 
+  difficulty = EXCLUDED.difficulty, 
+  time_minutes = EXCLUDED.time_minutes, 
+  total_questions = EXCLUDED.total_questions, 
+  category_tags = EXCLUDED.category_tags, 
+  passage_title = EXCLUDED.passage_title, 
+  passage_content = EXCLUDED.passage_content,
+  audio_title = EXCLUDED.audio_title,
+  audio_duration_seconds = EXCLUDED.audio_duration_seconds,
+  audio_script = EXCLUDED.audio_script,
+  task_number = EXCLUDED.task_number,
+  min_words = EXCLUDED.min_words,
+  prompt_requirements = EXCLUDED.prompt_requirements,
+  part_number = EXCLUDED.part_number,
+  prep_time_seconds = EXCLUDED.prep_time_seconds,
+  speak_time_seconds = EXCLUDED.speak_time_seconds,
+  prompts = EXCLUDED.prompts,
+  is_published = EXCLUDED.is_published;\n`);
 
 out.push(`INSERT INTO public.exam_questions (id, test_id, question_number, type, question_text, options, correct_answer, explanation, category_tag, passage_section_ref) VALUES\n`);
 const examQuestionRows = [];
