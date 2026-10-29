@@ -25,6 +25,18 @@ INSERT INTO auth.users (
   ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'thuylinh@langua.local', crypt('Password123!', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Vũ Thuỳ Linh"}', NOW(), NOW(), 'authenticated', 'authenticated')
 ON CONFLICT (id) DO NOTHING;
 
+-- GoTrue không đọc được NULL ở các cột token (lỗi "Database error querying schema" khi đăng nhập)
+UPDATE auth.users SET
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change = COALESCE(email_change, ''),
+  email_change_token_current = COALESCE(email_change_token_current, ''),
+  phone_change = COALESCE(phone_change, ''),
+  phone_change_token = COALESCE(phone_change_token, ''),
+  reauthentication_token = COALESCE(reauthentication_token, '')
+WHERE email LIKE '%@langua.local';
+
 -- Cập nhật/chèn Profile chi tiết cho Minh Hoàng
 INSERT INTO public.profiles (
   id,
