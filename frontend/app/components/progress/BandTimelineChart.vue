@@ -68,7 +68,9 @@ const fmtDate = (t: number | string) => new Date(t).toLocaleDateString('vi-VN', 
 const xTicks = computed(() => {
   const count = Math.max(2, Math.min(5, Math.floor(innerW.value / 110)))
   const [a, b] = xDomain.value
-  return Array.from({ length: count }, (_, i) => a + ((b - a) * i) / (count - 1))
+  const ticks = Array.from({ length: count }, (_, i) => a + ((b - a) * i) / (count - 1))
+  // Khoảng thời gian ngắn cho ra nhiều mốc cùng ngày: chỉ giữ một nhãn cho mỗi ngày
+  return ticks.filter((t, i) => i === 0 || fmtDate(t) !== fmtDate(ticks[i - 1]!))
 })
 
 const series = computed(() =>
