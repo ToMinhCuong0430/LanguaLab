@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          details: Json
+          entity_ids: string[]
+          entity_type: string
+          id: number
+          summary: string
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_ids?: string[]
+          entity_type: string
+          id?: never
+          summary: string
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_ids?: string[]
+          entity_type?: string
+          id?: never
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       ai_feedback: {
         Row: {
           attempt_id: string | null
@@ -118,8 +190,328 @@ export type Database = {
             foreignKeyName: "ai_feedback_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      assignments: {
+        Row: {
+          class_id: string
+          created_at: string
+          created_by: string | null
+          due_at: string | null
+          id: string
+          instructions: string | null
+          student_ids: string[] | null
+          test_id: string
+          title: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          instructions?: string | null
+          student_ids?: string[] | null
+          test_id: string
+          title: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          instructions?: string | null
+          student_ids?: string[] | null
+          test_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "exam_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_invites: {
+        Row: {
+          class_id: string
+          created_at: string
+          email: string
+          id: string
+          invited_by: string | null
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          email: string
+          id?: string
+          invited_by?: string | null
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_invites_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      class_members: {
+        Row: {
+          class_id: string
+          joined_at: string
+          joined_via: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          joined_at?: string
+          joined_via: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          joined_at?: string
+          joined_via?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_members_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_archived: boolean
+          join_code: string
+          name: string
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_archived?: boolean
+          join_code: string
+          name: string
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_archived?: boolean
+          join_code?: string
+          name?: string
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -198,6 +590,75 @@ export type Database = {
           },
         ]
       }
+      content_reviews: {
+        Row: {
+          actor_id: string | null
+          content_id: string
+          content_type: string
+          created_at: string
+          from_status: string
+          id: number
+          note: string | null
+          to_status: string
+        }
+        Insert: {
+          actor_id?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string
+          from_status: string
+          id?: never
+          note?: string | null
+          to_status: string
+        }
+        Update: {
+          actor_id?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          from_status?: string
+          id?: never
+          note?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       daily_checkins: {
         Row: {
           checkin_date: string
@@ -248,6 +709,72 @@ export type Database = {
           },
           {
             foreignKeyName: "daily_checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      diagnostic_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          id: string
+          results: Json
+          self_ratings: Json
+          skills: string[]
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          results: Json
+          self_ratings?: Json
+          skills: string[]
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          results?: Json
+          self_ratings?: Json
+          skills?: string[]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "weekly_user_summary"
@@ -531,6 +1058,7 @@ export type Database = {
           prep_time_seconds: number | null
           prompt_requirements: string | null
           prompts: string[] | null
+          review_status: string
           skill: Database["public"]["Enums"]["ielts_skill"]
           speak_time_seconds: number | null
           subtitle: string | null
@@ -558,6 +1086,7 @@ export type Database = {
           prep_time_seconds?: number | null
           prompt_requirements?: string | null
           prompts?: string[] | null
+          review_status?: string
           skill: Database["public"]["Enums"]["ielts_skill"]
           speak_time_seconds?: number | null
           subtitle?: string | null
@@ -585,6 +1114,7 @@ export type Database = {
           prep_time_seconds?: number | null
           prompt_requirements?: string | null
           prompts?: string[] | null
+          review_status?: string
           skill?: Database["public"]["Enums"]["ielts_skill"]
           speak_time_seconds?: number | null
           subtitle?: string | null
@@ -936,7 +1466,6 @@ export type Database = {
           correct_index: number | null
           correct_order: Json | null
           created_at: string
-          evidence_quote: string | null
           explanation: string
           hint: string | null
           id: string
@@ -953,7 +1482,6 @@ export type Database = {
           correct_index?: number | null
           correct_order?: Json | null
           created_at?: string
-          evidence_quote?: string | null
           explanation: string
           hint?: string | null
           id?: string
@@ -970,7 +1498,6 @@ export type Database = {
           correct_index?: number | null
           correct_order?: Json | null
           created_at?: string
-          evidence_quote?: string | null
           explanation?: string
           hint?: string | null
           id?: string
@@ -1034,6 +1561,7 @@ export type Database = {
           is_published: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status: string
           sort_order: number
           summary: string | null
           title: string
@@ -1052,6 +1580,7 @@ export type Database = {
           is_published?: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status?: string
           sort_order?: number
           summary?: string | null
           title: string
@@ -1070,6 +1599,7 @@ export type Database = {
           is_published?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level?: string
+          review_status?: string
           sort_order?: number
           summary?: string | null
           title?: string
@@ -1172,6 +1702,7 @@ export type Database = {
           level: string
           media_type: string
           provider: string
+          review_status: string
           source_url: string
           speaker: string | null
           title: string
@@ -1188,6 +1719,7 @@ export type Database = {
           level: string
           media_type: string
           provider: string
+          review_status?: string
           source_url: string
           speaker?: string | null
           title: string
@@ -1204,6 +1736,7 @@ export type Database = {
           level?: string
           media_type?: string
           provider?: string
+          review_status?: string
           source_url?: string
           speaker?: string | null
           title?: string
@@ -1453,6 +1986,7 @@ export type Database = {
           level: string
           license: string
           reading_time_minutes: number
+          review_status: string
           source_note: string | null
           source_url: string | null
           title: string
@@ -1470,6 +2004,7 @@ export type Database = {
           level: string
           license: string
           reading_time_minutes?: number
+          review_status?: string
           source_note?: string | null
           source_url?: string | null
           title: string
@@ -1487,6 +2022,7 @@ export type Database = {
           level?: string
           license?: string
           reading_time_minutes?: number
+          review_status?: string
           source_note?: string | null
           source_url?: string | null
           title?: string
@@ -1531,6 +2067,217 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "reading_items"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_plan_items: {
+        Row: {
+          category: string | null
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          description: string
+          estimated_minutes: number
+          id: string
+          item_type: string
+          link: string | null
+          plan_id: string
+          skill: Database["public"]["Enums"]["ielts_skill"] | null
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          description: string
+          estimated_minutes?: number
+          id?: string
+          item_type: string
+          link?: string | null
+          plan_id: string
+          skill?: Database["public"]["Enums"]["ielts_skill"] | null
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          description?: string
+          estimated_minutes?: number
+          id?: string
+          item_type?: string
+          link?: string | null
+          plan_id?: string
+          skill?: Database["public"]["Enums"]["ielts_skill"] | null
+          sort_order?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_plan_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "study_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_plans: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          diagnostic_id: string | null
+          duration_days: number
+          focus: Json
+          id: string
+          start_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          diagnostic_id?: string | null
+          duration_days: number
+          focus?: Json
+          id?: string
+          start_date?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          diagnostic_id?: string | null
+          duration_days?: number
+          focus?: Json
+          id?: string
+          start_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_plans_diagnostic_id_fkey"
+            columns: ["diagnostic_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      teacher_feedback: {
+        Row: {
+          ai_band: number | null
+          attempt_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          override_band: number | null
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          ai_band?: number | null
+          attempt_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          override_band?: number | null
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          ai_band?: number | null
+          attempt_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          override_band?: number | null
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_feedback_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "exam_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1734,6 +2481,7 @@ export type Database = {
           is_published: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status: string
           sort_order: number
           title: string
           updated_at: string
@@ -1747,6 +2495,7 @@ export type Database = {
           is_published?: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status?: string
           sort_order?: number
           title: string
           updated_at?: string
@@ -1760,11 +2509,72 @@ export type Database = {
           is_published?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level?: string
+          review_status?: string
           sort_order?: number
           title?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      user_bans: {
+        Row: {
+          banned_by: string | null
+          banned_until: string | null
+          created_at: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          banned_by?: string | null
+          banned_until?: string | null
+          created_at?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          banned_by?: string | null
+          banned_until?: string | null
+          created_at?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_grammar_progress: {
         Row: {
@@ -2519,6 +3329,7 @@ export type Database = {
           is_system: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level_id: number | null
+          review_status: string
           title: string
           updated_at: string
           user_id: string | null
@@ -2532,6 +3343,7 @@ export type Database = {
           is_system?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level_id?: number | null
+          review_status?: string
           title: string
           updated_at?: string
           user_id?: string | null
@@ -2545,6 +3357,7 @@ export type Database = {
           is_system?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level_id?: number | null
+          review_status?: string
           title?: string
           updated_at?: string
           user_id?: string | null
@@ -2912,25 +3725,158 @@ export type Database = {
       }
     }
     Functions: {
+      admin_ban_user: {
+        Args: { p_days?: number; p_reason: string; p_user: string }
+        Returns: undefined
+      }
+      admin_list_audit: {
+        Args: {
+          p_action?: string
+          p_actor?: string
+          p_entity?: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
+      }
+      admin_list_users: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_role?: string
+          p_search?: string
+          p_status?: string
+        }
+        Returns: Json
+      }
+      admin_platform_stats: { Args: { p_days?: number }; Returns: Json }
+      admin_review_counts: { Args: never; Returns: Json }
+      admin_set_user_role: {
+        Args: { p_role: string; p_user: string }
+        Returns: undefined
+      }
+      admin_unban_user: { Args: { p_user: string }; Returns: undefined }
+      assignment_status_for: {
+        Args: { p_assignment: string; p_student: string }
+        Returns: Json
+      }
       award_xp: {
         Args: { p_ref_id?: string; p_source: string; p_user_id?: string }
         Returns: Json
       }
       claim_daily_checkin: { Args: never; Returns: Json }
       complete_stage: { Args: { p_stage_id: string }; Returns: Json }
-      get_my_today_stats: {
-        Args: never
-        Returns: {
-          completed_lessons: number
-          learning_time_minutes: number
-          new_words_learned: number
-          xp_gained_today: number
-        }[]
+      content_table_for: { Args: { p_type: string }; Returns: string }
+      create_assignment: {
+        Args: {
+          p_class: string
+          p_due_at?: string
+          p_instructions?: string
+          p_student_ids?: string[]
+          p_test_id: string
+          p_title: string
+        }
+        Returns: string
       }
+      create_class: {
+        Args: { p_description?: string; p_name: string }
+        Returns: string
+      }
+      create_study_plan: {
+        Args: { p_diagnostic_id?: string; p_duration: number }
+        Returns: string
+      }
+      current_app_role: { Args: never; Returns: string }
+      delete_assignment: { Args: { p_assignment: string }; Returns: undefined }
+      generate_join_code: { Args: never; Returns: string }
+      get_class_detail: { Args: { p_class: string }; Returns: Json }
+      get_diagnostic_questions: {
+        Args: { p_per_skill?: number; p_skills: string[] }
+        Returns: Json
+      }
+      get_my_classes: { Args: never; Returns: Json }
+      get_my_progress: { Args: { p_since?: string }; Returns: Json }
+      get_my_today_stats: { Args: never; Returns: Json }
+      get_student_progress: { Args: { p_student: string }; Returns: Json }
+      get_teacher_overview: { Args: never; Returns: Json }
       get_user_streak: { Args: { p_user_id: string }; Returns: number }
+      ielts_band_from_raw: {
+        Args: { p_raw: number; p_skill: string; p_total: number }
+        Returns: number
+      }
+      invite_to_class: {
+        Args: { p_class: string; p_emails: string[] }
+        Returns: Json
+      }
       is_admin: { Args: never; Returns: boolean }
+      is_class_member: { Args: { p_class: string }; Returns: boolean }
+      is_class_teacher: { Args: { p_class: string }; Returns: boolean }
+      is_teacher: { Args: never; Returns: boolean }
+      join_class: { Args: { p_code: string }; Returns: Json }
+      leave_class: { Args: { p_class: string }; Returns: undefined }
+      list_assignable_tests: { Args: never; Returns: Json }
+      list_staff: { Args: never; Returns: Json }
+      log_admin_action: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_entity_ids: string[]
+          p_entity_type: string
+          p_summary: string
+        }
+        Returns: undefined
+      }
+      my_email: { Args: never; Returns: string }
+      progress_for_user: {
+        Args: { p_since?: string; p_uid: string }
+        Returns: Json
+      }
+      question_category_label: {
+        Args: {
+          p_tag: string
+          p_type: Database["public"]["Enums"]["question_type"]
+        }
+        Returns: string
+      }
+      regenerate_join_code: { Args: { p_class: string }; Returns: string }
+      remove_class_member: {
+        Args: { p_class: string; p_student: string }
+        Returns: undefined
+      }
+      respond_invite: {
+        Args: { p_accept: boolean; p_invite: string }
+        Returns: undefined
+      }
       review_word: {
         Args: { p_rating: number; p_word_id: string }
+        Returns: Json
+      }
+      revoke_invite: { Args: { p_invite: string }; Returns: undefined }
+      role_label_vi: { Args: { p_role: string }; Returns: string }
+      set_review_status: {
+        Args: {
+          p_ids: string[]
+          p_note?: string
+          p_status: string
+          p_type: string
+        }
+        Returns: Json
+      }
+      set_study_item_done: {
+        Args: { p_done: boolean; p_item_id: string }
+        Returns: string
+      }
+      set_user_role: {
+        Args: { p_email: string; p_role: string }
+        Returns: Json
+      }
+      study_focus_copy: {
+        Args: { p_category: string; p_skill: string }
+        Returns: Json
+      }
+      study_support_copy: { Args: { p_skill: string }; Returns: Json }
+      submit_diagnostic: {
+        Args: { p_answers: Json; p_self_ratings?: Json; p_skills: string[] }
         Returns: Json
       }
       submit_exam_attempt: {
@@ -2961,10 +3907,24 @@ export type Database = {
         }
         Returns: Json
       }
+      teaches_student: { Args: { p_student: string }; Returns: boolean }
       toggle_feature_vote: { Args: { p_request_id: string }; Returns: Json }
+      update_class: {
+        Args: {
+          p_archived: boolean
+          p_class: string
+          p_description: string
+          p_name: string
+        }
+        Returns: undefined
+      }
+      upsert_teacher_feedback: {
+        Args: { p_attempt: string; p_comment: string; p_override_band: number }
+        Returns: Json
+      }
     }
     Enums: {
-      difficulty_level: "Dß╗à" | "Trung b├¼nh" | "Kh├│"
+      difficulty_level: "Dễ" | "Trung bình" | "Khó"
       exam_mode: "practice" | "exam"
       ielts_skill: "listening" | "reading" | "writing" | "speaking"
       learning_language: "en" | "zh" | "ja"
@@ -3604,7 +4564,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      difficulty_level: ["Dß╗à", "Trung b├¼nh", "Kh├│"],
+      difficulty_level: ["Dễ", "Trung bình", "Khó"],
       exam_mode: ["practice", "exam"],
       ielts_skill: ["listening", "reading", "writing", "speaking"],
       learning_language: ["en", "zh", "ja"],
