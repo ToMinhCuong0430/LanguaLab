@@ -14,6 +14,8 @@ import {
   Clock,
   Check,
   TrendingUp,
+  School,
+  Presentation,
 } from '@lucide/vue'
 import OnboardingModal from '~/components/auth/OnboardingModal.vue'
 import { BRAND_NAME } from '~/constants/brand'
@@ -21,6 +23,9 @@ import { BRAND_NAME } from '~/constants/brand'
 const { items, isActive } = useNavigation()
 const { mode: themeMode, setMode: setThemeMode } = useTheme()
 const { user, profile, isAdmin, signOut } = useAuth()
+// Vai trò để hiện mục "Dạy học" cho giáo viên (quyền thật kiểm tra ở server)
+const { isTeacher, loadRole } = useClasses()
+watch(() => user.value?.sub, (uid) => { if (uid && import.meta.client) loadRole() }, { immediate: true })
 
 const isMobileMenuOpen = ref(false)
 const isUserMenuOpen = ref(false)
@@ -193,6 +198,25 @@ onUnmounted(() => {
               >
                 <TrendingUp class="h-4 w-4" :stroke-width="2.5" />
                 <span>Tiến độ & Lộ trình học</span>
+              </NuxtLink>
+
+              <NuxtLink
+                to="/lop-hoc"
+                class="flex w-full items-center gap-2 rounded-brut border border-transparent p-2 text-xs font-bold text-ink hover:border-line hover:bg-surface-2 cursor-pointer transition-all"
+                @click="closeUserMenu"
+              >
+                <School class="h-4 w-4" :stroke-width="2.5" />
+                <span>Lớp của tôi</span>
+              </NuxtLink>
+
+              <NuxtLink
+                v-if="isTeacher"
+                to="/giao-vien"
+                class="flex w-full items-center gap-2 rounded-brut border border-line bg-surface-2 p-2 text-xs font-bold text-ink hover:bg-surface cursor-pointer transition-all"
+                @click="closeUserMenu"
+              >
+                <Presentation class="h-4 w-4" :stroke-width="2.5" />
+                <span>Dạy học (Giáo viên)</span>
               </NuxtLink>
 
               <NuxtLink

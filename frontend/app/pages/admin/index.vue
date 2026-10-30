@@ -14,6 +14,7 @@ import {
   History,
 } from '@lucide/vue'
 import type { Database } from '~/types/database.types'
+import AdminRolesPanel from '~/components/admin/AdminRolesPanel.vue'
 
 definePageMeta({
   layout: 'admin',
@@ -248,5 +249,8 @@ const featureCards = [
         </table>
       </div>
     </BaseCard>
+
+    <!-- Phân quyền giáo viên -->
+    <AdminRolesPanel />
   </div>
 </template>
