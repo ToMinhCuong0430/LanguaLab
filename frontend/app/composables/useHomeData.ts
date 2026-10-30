@@ -253,13 +253,13 @@ export const useHomeData = () => {
           name: b.full_name || 'Học viên',
           avatarChar: b.avatar_text || 'LL',
           xp: b.weekly_xp || 0,
-          isCurrentUser: authUser.value?.id === b.user_id,
+          isCurrentUser: authUser.value?.sub === b.user_id,
         }))
       }
 
       // 4. Nếu người dùng đã đăng nhập: Tải Profile, điểm danh, tiến độ cá nhân
-      if (authUser.value?.id) {
-        const uid = authUser.value.id
+      if (authUser.value?.sub) {
+        const uid = authUser.value.sub
         const todayStr = new Date().toISOString().split('T')[0]
 
         const [profileRes, checkinRes, xpRes, notifRes, statsRes, dueRes, weeklyRes] = await Promise.all([
@@ -426,7 +426,7 @@ export const useHomeData = () => {
 
   // Hành động: Điểm danh hôm nay (ghi vào Supabase qua RPC claim_daily_checkin)
   const toggleCheckIn = async () => {
-    if (user.value.checkedInToday || !authUser.value?.id) return
+    if (user.value.checkedInToday || !authUser.value?.sub) return
 
     // Optimistic update
     user.value.checkedInToday = true
@@ -455,9 +455,9 @@ export const useHomeData = () => {
       item.isRead = true
     }
 
-    if (authUser.value?.id) {
+    if (authUser.value?.sub) {
       try {
-        await client.from('notifications').update({ is_read: true }).eq('id', id).eq('user_id', authUser.value.id)
+        await client.from('notifications').update({ is_read: true }).eq('id', id).eq('user_id', authUser.value.sub)
       } catch (_) {}
     }
   }
@@ -467,9 +467,9 @@ export const useHomeData = () => {
       n.isRead = true
     })
 
-    if (authUser.value?.id) {
+    if (authUser.value?.sub) {
       try {
-        await client.from('notifications').update({ is_read: true }).eq('user_id', authUser.value.id)
+        await client.from('notifications').update({ is_read: true }).eq('user_id', authUser.value.sub)
       } catch (_) {}
     }
   }

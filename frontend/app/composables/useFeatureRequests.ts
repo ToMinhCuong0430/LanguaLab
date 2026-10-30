@@ -43,7 +43,7 @@ export const useFeatureRequests = () => {
 
   // Kiểm tra quyền Admin
   const checkAdminRole = async () => {
-    if (!authUser.value?.id) {
+    if (!authUser.value?.sub) {
       isAdmin.value = false
       return
     }
@@ -64,7 +64,7 @@ export const useFeatureRequests = () => {
 
     try {
       await checkAdminRole()
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải danh sách từ view bảo mật feature_requests_public
       const { data: publicRows, error: reqErr } = await client
@@ -145,7 +145,7 @@ export const useFeatureRequests = () => {
     const item = requests.value.find((r) => r.id === id)
     if (!item) return
 
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid) {
       alert('Vui lòng đăng nhập để bình chọn tính năng!')
       return
@@ -182,7 +182,7 @@ export const useFeatureRequests = () => {
 
   // Gửi đề xuất mới
   const addRequest = async (data: { title: string; description: string; category: FeatureCategory }) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid) {
       throw new Error('Vui lòng đăng nhập để gửi đề xuất tính năng')
     }
@@ -222,7 +222,7 @@ export const useFeatureRequests = () => {
     const item = requests.value.find((r) => r.id === requestId)
     if (!item || !content.trim()) return
 
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid) {
       throw new Error('Vui lòng đăng nhập để gửi bình luận')
     }

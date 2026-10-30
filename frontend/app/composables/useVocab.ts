@@ -553,7 +553,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải bộ đề xuất hệ thống
       const { data: curatedData, error: curatedErr } = await client
@@ -662,7 +662,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
 
   // Bộ của tôi
   const mySets = computed(() => {
-    if (authUser.value?.id) {
+    if (authUser.value?.sub) {
       return dbMySets.value
     }
     return localMySets.value.filter(s => s.lang === currentLang.value)
@@ -670,7 +670,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
 
   // Quản lý Bộ của tôi (Tạo, Sửa, Xóa)
   const createMySet = async (title: string, description: string, level: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (uid) {
       try {
@@ -728,7 +728,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const updateMySet = async (id: string, title: string, description: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (uid && !id.startsWith('custom-set-')) {
       try {
@@ -753,7 +753,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const deleteMySet = async (id: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (uid && !id.startsWith('custom-set-')) {
       try {
@@ -779,7 +779,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const addWordToMySet = async (setId: string, word: Omit<VocabWord, 'id'>) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (uid && !setId.startsWith('custom-set-')) {
       try {
@@ -832,7 +832,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const removeWordFromMySet = async (setId: string, wordId: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (uid && !wordId.startsWith('word-')) {
       try {
@@ -858,7 +858,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     targetSetId?: string,
     contextSentence?: string
   ) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid) return { success: false, error: 'Chưa đăng nhập' }
 
     try {
@@ -888,7 +888,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     wordText: string,
     wordId?: string
   ) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
     if (!uid) return { success: false, error: 'Chưa đăng nhập' }
 
     try {
@@ -944,7 +944,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
       easy: 4,
     }
 
-    if (!authUser.value?.id) {
+    if (!authUser.value?.sub) {
       return { success: false, error: 'Vui lòng đăng nhập để lưu kết quả ôn tập' }
     }
 

@@ -864,7 +864,7 @@ export const useGrammar = (targetLang?: Ref<LearningLanguage>) => {
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải các điểm ngữ pháp kèm bài tập
       const { data: pointsData, error: pointsErr } = await client
@@ -976,7 +976,7 @@ export const useGrammar = (targetLang?: Ref<LearningLanguage>) => {
     answers: Record<string, string>,
     durationSeconds: number = 0
   ) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
     if (uid) {
       try {

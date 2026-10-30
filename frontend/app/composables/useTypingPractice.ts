@@ -567,7 +567,7 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải Lộ trình chặng (learning_stages) & tiến trình người dùng
       const stagesQuery = client
@@ -707,7 +707,7 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
     accuracy: number,
     durationSeconds: number
   ) => {
-    if (!authUser.value?.id) {
+    if (!authUser.value?.sub) {
       return { success: false, error: 'Vui lòng đăng nhập để lưu kết quả bài gõ' }
     }
 
@@ -735,7 +735,7 @@ export const useTypingPractice = (targetLang?: Ref<LearningLanguage>) => {
 
   // RPC: Hoàn thành chặng học
   const completeStage = async (stageId: string) => {
-    if (!authUser.value?.id) {
+    if (!authUser.value?.sub) {
       return { success: false, error: 'Vui lòng đăng nhập để hoàn thành chặng' }
     }
 
