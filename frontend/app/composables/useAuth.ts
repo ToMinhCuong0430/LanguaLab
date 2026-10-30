@@ -20,6 +20,9 @@ export const useAuth = () => {
     if (msg.includes('Invalid login credentials')) {
       return 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
     }
+    if (msg.includes('User is banned') || err?.code === 'user_banned') {
+      return 'Tài khoản này đang bị tạm khoá. Liên hệ quản trị viên nếu bạn cho rằng đây là nhầm lẫn.'
+    }
     if (msg.includes('User already registered')) {
       return 'Địa chỉ email này đã được sử dụng. Vui lòng đăng nhập hoặc dùng email khác.'
     }
