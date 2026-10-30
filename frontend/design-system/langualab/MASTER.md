@@ -34,12 +34,12 @@ Mọi mã màu phải đi qua CSS variables hoặc Tailwind theme tokens; **tuy�
 
 | Vai trò | Biến CSS Light | Biến CSS Dark | Ý nghĩa & Ứng dụng |
 |---------|----------------|---------------|-------------------|
-| **Background** | `var(--bg)` (`#F5F6FA`) | `var(--bg)` (`#12131D`) | Nền tổng thể toàn trang |
-| **Surface** | `var(--surface)` (`#FFFFFF`) | `var(--surface)` (`#1E2132`) | Nền thẻ, card, modal |
-| **Surface-2** | `var(--surface-2)` (`#EAEBF4`) | `var(--surface-2)` (`#282C43`) | Nền ô input, header bảng |
-| **Ink (Chữ chính)** | `var(--ink)` (`#11141D`) | `var(--ink)` (`#F5F7FF`) | Tiêu đề, chữ văn bản (contrast ≥ 7:1) |
-| **Ink-soft (Chữ phụ)** | `var(--ink-soft)` (`#4E5569`) | `var(--ink-soft)` (`#A3A8BE`) | Mô tả, nhãn phụ (contrast ≥ 4.5:1) |
-| **Line (Viền & Bóng)** | `var(--line)` (`#11141D`) | `var(--line)` (`#F5F7FF`) | Viền neo-brutalism, bóng đổ cứng |
+| **Background** | `var(--bg)` (`#F5F6FA`) | `var(--bg)` (`#0F1119`) | Nền tổng thể toàn trang |
+| **Surface** | `var(--surface)` (`#FFFFFF`) | `var(--surface)` (`#181B28`) | Nền thẻ, card, modal |
+| **Surface-2** | `var(--surface-2)` (`#EAEBF4`) | `var(--surface-2)` (`#232739`) | Nền ô input, header bảng |
+| **Ink (Chữ chính)** | `var(--ink)` (`#11141D`) | `var(--ink)` (`#F2F4FC`) | Tiêu đề, chữ văn bản (contrast ≥ 7:1) |
+| **Ink-soft (Chữ phụ)** | `var(--ink-soft)` (`#4E5569`) | `var(--ink-soft)` (`#B3B9D1`) | Mô tả, nhãn phụ (contrast ≥ 4.5:1) |
+| **Line (Viền & Bóng)** | `var(--line)` (`#11141D`) | `var(--line)` (`#7C85AB`), bóng `var(--shadow-ink)` (`#3D456B`) | Viền neo-brutalism, bóng đổ cứng (dark: viền xám-xanh, bóng chàm trầm) |
 | **Primary (Chính)** | `var(--c-blue)` (`#2F5BFF`), ink `#FFFFFF` (5.17:1) | `var(--c-blue)` (`#547BFF`), ink `#11141D` (4.95:1) | Hành động chính, điều hướng |
 | **Secondary (Phụ)** | `var(--c-violet)` (`#9B6BFF`), ink `#11141D` (5.20:1) | `var(--c-violet)` (`#B18CFF`), ink `#11141D` (6.80:1) | Hành động phụ, badge kỹ năng |
 | **Accent / CTA** | `var(--c-yellow)` (`#FFD23F`), ink `#11141D` (12.74:1) | `var(--c-yellow)` (`#FFDC5C`), ink `#11141D` (13.10:1) | Nút "Học ngay", "Bắt đầu", nổi bật |
@@ -211,3 +211,10 @@ Mỗi tính năng có bộ 3 token: `solid`, `soft` (nền nhạt) và `ink` (m�
   - Cột phải: Linh vật quyển sách mở đeo tai nghe (`HeroMascot.vue`), thẻ chào nghiêng -8°, thẻ mục tiêu kỳ thi nghiêng +8°, nền theo buổi (Sáng: mặt trời cười + mây + cà phê; Chiều: mặt trời cam + ly nước mát; Tối: trăng lưỡi liềm + sao + đèn bàn).
   - Dưới đáy: Đồi lượn sóng phẳng cùng tông màu, **không viền đen**, cao tối đa 90px, nằm sau nội dung (`z-0`).
   - Đảm bảo tuân thủ 100% quy tắc kỹ thuật SVG transform ngoài, animation CSS trong, text font-family inline style, reduced motion $\le 3$px và 0 lỗi Axe Core trên cả 2 theme.
+
+### 2026-10-29 — Nâng cấp Dark mode "Brutalism dịu" & Chế độ theme theo giờ
+- **Light mode giữ nguyên 100%**: không đổi bất kỳ token nào trong `:root`.
+- **Dark mode**: nền sâu hơn (`--bg #0F1119`, `--surface #181B28`, `--surface-2 #232739`), chữ phụ sáng hơn (`--ink-soft #B3B9D1`). Viền đổi từ trắng chói sang xám-xanh `--line #7C85AB` (≥ 3:1 so với nền và surface), bóng cứng dùng token mới `--shadow-ink #3D456B` thay cho màu viền.
+- **HomeHero**: cố định thêm `--shadow`, `--shadow-sm`, `--shadow-lg` màu `#11141D` trong `.home-hero-root` để banner vẫn là artwork độc lập ở Dark mode.
+- **Chế độ hiển thị**: `useTheme()` có thêm `mode` / `setMode()` với 4 giá trị `light`, `dark`, `system`, `auto`. Chế độ `auto` ("Theo giờ") bật tối từ 18:00 đến 5:00 (cùng mốc buổi "tối" của HomeHero) và lưu ở `localStorage['langua-theme-auto']`. Plugin `plugins/theme-schedule.client.ts` khôi phục lựa chọn sau `onNuxtReady` và kiểm tra lại mỗi phút.
+- **Giao diện**: nút theme trên `AppNavbar` mở menu 4 lựa chọn (`role="menu"`, `menuitemradio`, Esc để đóng, vùng bấm ≥ 44px); trang `cai-dat` có thêm nút "Theo giờ". `toggleTheme()` ở layout `auth` giữ nguyên hành vi (và tắt chế độ theo giờ).
