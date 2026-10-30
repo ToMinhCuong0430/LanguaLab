@@ -12,17 +12,28 @@ import {
 } from '@lucide/vue'
 import type { IeltsTestDetail, TestMode } from '~/composables/useIelts'
 import { convertRawToBand } from '~/composables/useIelts'
+import type { AiFeedback, AiScoreError, AiScoreState } from '~/composables/useAiScoring'
+import AiScoreReport from '~/components/ielts/AiScoreReport.vue'
 
 const props = defineProps<{
   test: IeltsTestDetail
   userAnswers: Record<number, string>
   timeSpentSeconds: number
   mode: TestMode
+  // Writing / Speaking: kết quả chấm AI và bài làm gốc
+  submission?: string
+  aiState?: AiScoreState
+  aiFeedback?: AiFeedback | null
+  aiError?: AiScoreError | null
+  aiCanRetry?: boolean
 }>()
 
 const emit = defineEmits<{
   retry: []
+  retryAi: []
 }>()
+
+const isProductive = computed(() => props.test.skill === 'writing' || props.test.skill === 'speaking')
 
 // Tính số câu đúng
 const checkIsCorrect = (qNum: number, userAns?: string, correctAns?: string) => {
@@ -42,14 +53,19 @@ const correctCount = computed(() => {
 
 const totalQuestions = computed(() => props.test.questions.length)
 
-const bandScore = computed(() => {
-  if (props.test.skill === 'writing' || props.test.skill === 'speaking') {
-    return 6.5 // Mock band cho writing/speaking
+// Writing / Speaking lấy band từ kết quả chấm AI; null khi đang chấm hoặc chưa chấm được
+const bandScore = computed<number | null>(() => {
+  if (isProductive.value) {
+    return props.aiState === 'completed' ? (props.aiFeedback?.overall_band ?? null) : null
   }
   return convertRawToBand(correctCount.value, totalQuestions.value, props.test.skill)
 })
 
-const accuracyPct = computed(() => Math.round((correctCount.value / totalQuestions.value) * 100))
+const accuracyPct = computed(() =>
+  totalQuestions.value ? Math.round((correctCount.value / totalQuestions.value) * 100) : 0,
+)
+
+const submissionWordCount = computed(() => ((props.submission || '').trim().match(/\S+/g) || []).length)
 
 // Phân tích thống kê theo dạng bài
 const categoryStats = computed(() => {
@@ -103,14 +119,35 @@ function formatDuration(sec: number) {
         <div class="flex items-center gap-4">
           <div class="rounded-brut-lg border-[3px] border-line bg-warn p-4 text-center shadow-brut min-w-[130px]">
             <span class="text-[10px] font-black uppercase tracking-wider text-on-tone block">
-              Quy đổi IELTS
+              {{ isProductive ? 'Band tổng (AI chấm)' : 'Quy đổi IELTS' }}
             </span>
-            <span class="font-display text-4xl sm:text-5xl font-black text-on-tone">
+            <span v-if="bandScore !== null" class="font-display text-4xl sm:text-5xl font-black text-on-tone">
               Band {{ bandScore.toFixed(1) }}
+            </span>
+            <span v-else-if="aiState === 'loading'" class="font-display text-2xl font-black text-on-tone block py-2 animate-pulse">
+              Đang chấm
+            </span>
+            <span v-else class="font-display text-2xl font-black text-on-tone block py-2">
+              Chưa có
             </span>
           </div>
 
-          <div class="rounded-brut-lg border-[3px] border-line bg-surface-2 p-4 text-center shadow-brut min-w-[120px]">
+          <div
+            v-if="isProductive"
+            class="rounded-brut-lg border-[3px] border-line bg-surface-2 p-4 text-center shadow-brut min-w-[120px]"
+          >
+            <span class="text-[10px] font-black uppercase tracking-wider text-ink-soft block">
+              {{ test.skill === 'writing' ? 'Số từ' : 'Số từ đã nói' }}
+            </span>
+            <span class="font-display text-3xl sm:text-4xl font-black text-ink tabular-nums">
+              {{ submissionWordCount }}
+            </span>
+            <span v-if="test.skill === 'writing' && test.minWords" class="text-xs font-bold text-ink-soft block mt-0.5">
+              (tối thiểu {{ test.minWords }})
+            </span>
+          </div>
+
+          <div v-else class="rounded-brut-lg border-[3px] border-line bg-surface-2 p-4 text-center shadow-brut min-w-[120px]">
             <span class="text-[10px] font-black uppercase tracking-wider text-ink-soft block">
               Điểm số thô
             </span>
@@ -123,7 +160,7 @@ function formatDuration(sec: number) {
       </div>
 
       <!-- Phân tích tỷ lệ đúng theo từng dạng bài -->
-      <div class="mt-6 space-y-3">
+      <div v-if="!isProductive" class="mt-6 space-y-3">
         <h3 class="font-display text-sm font-black uppercase tracking-wider text-ink flex items-center gap-1.5">
           <PieChart class="h-4 w-4" :stroke-width="2.5" />
           <span>Phân tích độ chính xác theo dạng câu hỏi</span>
@@ -150,7 +187,10 @@ function formatDuration(sec: number) {
       </div>
 
       <!-- Nút hành động -->
-      <div class="mt-6 flex flex-wrap items-center gap-3 border-t-2 border-line pt-6">
+      <div
+        class="flex flex-wrap items-center gap-3"
+        :class="isProductive ? 'pt-6' : 'mt-6 border-t-2 border-line pt-6'"
+      >
         <BaseButton variant="primary" size="md" @click="emit('retry')">
           <RotateCcw class="h-4 w-4" :stroke-width="2.5" />
           <span>Làm lại đề này</span>
@@ -163,8 +203,21 @@ function formatDuration(sec: number) {
       </div>
     </div>
 
+    <!-- Writing / Speaking: Báo cáo chấm AI theo 4 tiêu chí -->
+    <AiScoreReport
+      v-if="isProductive"
+      :state="aiState || 'idle'"
+      :feedback="aiFeedback || null"
+      :error="aiError || null"
+      :can-retry="Boolean(aiCanRetry)"
+      :skill="test.skill as 'writing' | 'speaking'"
+      :task-number="test.taskNumber"
+      :submission="submission || ''"
+      @retry="emit('retryAi')"
+    />
+
     <!-- Chi tiết từng câu hỏi & Lời giải thích -->
-    <div class="space-y-4">
+    <div v-else class="space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xl font-black text-ink">
           Chi tiết bài làm & Giải thích đáp án
