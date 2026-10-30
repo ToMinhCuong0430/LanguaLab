@@ -246,7 +246,7 @@ export const useIelts = () => {
         const { data: attemptsData, error: attemptsErr } = await client
           .from('exam_attempts')
           .select('*, exam_tests(title, skill)')
-          .eq('user_id', authUser.value.id)
+          .eq('user_id', authUser.value.sub)
           .order('completed_at', { ascending: false })
           .limit(10)
 
