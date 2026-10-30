@@ -20,7 +20,10 @@
           {"id": "B", "text": "Foraging for nectar"}
         ],
         "correct_answer": "B",
-        "explanation": "Đoạn 1 nêu rõ: The worker bees forage for nectar."
+        "explanation": "Đoạn 1 nêu rõ: The worker bees forage for nectar.",
+        "evidence_quote": "The worker bees forage for nectar",
+        "audio_start_seconds": null,
+        "audio_end_seconds": null
       }
     ]
   }
