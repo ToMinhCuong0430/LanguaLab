@@ -76,8 +76,9 @@ watch(
       profileForm.full_name = p.full_name || ''
       profileForm.avatar_text = p.avatar_text || ''
       profileForm.avatar_url = p.avatar_url || ''
-      profileForm.learning_lang = (p.learning_lang as any) || 'en'
-      profileForm.target_exam = (p.target_exam as any) || 'ielts'
+      // Nếu hồ sơ trong DB đang lưu zh/ja/hsk/jlpt, form hiển thị en và ielts
+      profileForm.learning_lang = p.learning_lang === 'en' ? 'en' : 'en'
+      profileForm.target_exam = (p.target_exam && ['ielts', 'toeic', 'toefl'].includes(p.target_exam)) ? p.target_exam as any : 'ielts'
       profileForm.current_band = p.current_band !== null ? Number(p.current_band) : 5.5
       profileForm.target_band = p.target_band !== null ? Number(p.target_band) : 7.0
       profileForm.target_exam_date = p.target_exam_date || ''
@@ -499,8 +500,8 @@ const handleDeleteAccount = async () => {
                   class="w-full p-2.5 text-xs rounded-brut border-2 border-line bg-surface text-ink font-bold focus:outline-none cursor-pointer"
                 >
                   <option value="en">Tiếng Anh (English)</option>
-                  <option value="zh">Tiếng Trung (中文)</option>
-                  <option value="ja">Tiếng Nhật (日本語)</option>
+                  <option value="zh" disabled>Tiếng Trung (中文) - (đang phát triển)</option>
+                  <option value="ja" disabled>Tiếng Nhật (日本語) - (đang phát triển)</option>
                 </select>
               </div>
 
@@ -514,8 +515,8 @@ const handleDeleteAccount = async () => {
                   <option value="ielts">IELTS Academic / General</option>
                   <option value="toeic">TOEIC 4 Kỹ năng</option>
                   <option value="toefl">TOEFL iBT</option>
-                  <option value="hsk">HSK (Tiếng Trung)</option>
-                  <option value="jlpt">JLPT (Tiếng Nhật)</option>
+                  <option value="hsk" disabled>HSK (Tiếng Trung) - (đang phát triển)</option>
+                  <option value="jlpt" disabled>JLPT (Tiếng Nhật) - (đang phát triển)</option>
                 </select>
               </div>
             </div>

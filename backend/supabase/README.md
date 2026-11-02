@@ -17,6 +17,7 @@ backend/supabase/
 │   └── grant_admin.sql   # Script nâng cấp tài khoản thật thành Quản trị viên (Admin)
 ├── tests/
 │   ├── 01_rls_security_tests.sql  # Bộ test pgTAP kiểm thử RLS & anti-cheat (ROLLBACK sạch)
+│   ├── 02_lexicon_rls_tests.sql   # Bộ test pgTAP kiểm thử RLS, quyền và bảo mật kho từ vựng (lex_*)
 │   ├── create-test-users.mjs      # Script tạo test user (chỉ cho phép chạy trên localhost)
 │   └── rls_checklist.md           # Bảng ma trận kịch bản kiểm thử bảo mật
 ├── types/
@@ -33,7 +34,15 @@ backend/supabase/
     ├── 20261024000009_create_content_import_logs_and_admin_rls.sql
     ├── 20261025000010_ielts_rpc_and_strict_rls.sql
     ├── 20261029000011_seed_learning_content.sql    # Toàn bộ nội dung học thật của hệ thống
-    └── 20261029000012_security_hardening.sql       # Thắt chặt RLS, anti-cheat, storage RLS
+    ├── 20261029000012_security_hardening.sql       # Thắt chặt RLS, anti-cheat, storage RLS
+    ├── 20261030000013_ai_feedback.sql              # Bảng ai_feedback và cập nhật submit_exam_attempt
+    ├── 20261030000014_question_evidence.sql        # Bổ sung trích dẫn bằng chứng câu hỏi (evidence_quote, audio timestamps)
+    ├── 20261030000015_progress_and_diagnostics.sql # Kiểm tra đầu vào, lộ trình học 7/14/30 ngày & RPC phân tích kỹ năng
+    ├── 20261030000016_teachers_and_classes.sql     # Dashboard giáo viên, quản lý lớp học, bài tập & phản hồi
+    ├── 20261030000017_admin_and_content_reviews.sql # Quản trị viên, duyệt nội dung kiểm duyệt, cấm user & nhật ký kiểm toán
+    ├── 20261031000018_create_lexicon_core.sql      # Kho từ vựng trung tâm (Lexicon): bảng lex_*, RLS, tìm kiếm và kiểm soát xuất bản
+    ├── 20261031000019_vocab_level_difficulty_scale.sql # Chuẩn hóa 7 cấp độ từ vựng thành thang độ khó 1-7, sửa cấp 7 thành 'Chuyên sâu & Hiếm gặp', bảng ánh xạ lex_level_map
+    └── 20261101000020_lex_dictionary_helpers.sql   # Các hàm RPC tra cứu từ điển: từ của hôm nay theo ngày (lex_word_of_the_day) và danh sách từ nổi bật theo cấp độ (lex_featured_words)
 ```
 
 ---

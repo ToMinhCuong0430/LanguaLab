@@ -244,15 +244,88 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
   // State tra từ
   const searchQuery = ref('')
   const searchSuggestions = ref<string[]>([])
+  const searchSuggestionsWithLevel = ref<{ word: string; level?: string }[]>([])
   const isSearching = ref(false)
 
-  // Cập nhật gợi ý khi gõ
+  // Cập nhật gợi ý khi gõ kèm cấp độ CEFR
   const updateSuggestions = async (query: string) => {
     if (!query.trim()) {
       searchSuggestions.value = []
+      searchSuggestionsWithLevel.value = []
       return
     }
-    searchSuggestions.value = await provider.suggest(query, currentLang.value)
+    const withLevels = await provider.suggestWithLevel(query, currentLang.value)
+    searchSuggestionsWithLevel.value = withLevels
+    searchSuggestions.value = withLevels.map(i => i.word)
+  }
+
+  const suggestWithLevel = async (query: string) => {
+    return await provider.suggestWithLevel(query, currentLang.value)
+  }
+
+  // Từ của hôm nay & Từ gợi ý có preview (Tải từ RPC nếu có)
+  const wordOfTheDay = ref<{
+    term: string
+    phonetic?: string
+    pos?: string
+    shortMeaning: string
+    example?: string
+    exampleVi?: string
+    level?: string
+  } | null>(null)
+
+  const featuredWords = ref<{
+    word: string
+    pos?: string
+    meaning: string
+    level?: string
+  }[]>([])
+
+  const isHomeWordsLoading = ref(false)
+
+  const fetchWordOfTheDayAndFeatured = async () => {
+    isHomeWordsLoading.value = true
+    try {
+      const { data: wotdData } = await client.rpc('lex_word_of_the_day' as any, {
+        p_language: currentLang.value,
+      })
+
+      if (wotdData && Array.isArray(wotdData) && wotdData.length > 0) {
+        const item = wotdData[0] as any
+        wordOfTheDay.value = {
+          term: item.lemma,
+          phonetic: item.ipa || item.transcription || '',
+          pos: item.part_of_speech || item.pos || '',
+          shortMeaning: item.meaning_vi || item.definition || '',
+          example: item.example_sentence || item.sentence || '',
+          exampleVi: item.example_translation || item.sentence_vi || '',
+          level: item.level || undefined,
+        }
+      } else {
+        wordOfTheDay.value = null
+      }
+
+      const { data: featData } = await client.rpc('lex_featured_words' as any, {
+        p_language: currentLang.value,
+        p_limit: 4,
+      })
+
+      if (featData && Array.isArray(featData) && featData.length > 0) {
+        featuredWords.value = featData.map((f: any) => ({
+          word: f.lemma,
+          pos: f.part_of_speech || f.pos || '',
+          meaning: f.meaning_vi || f.definition || '',
+          level: f.level || undefined,
+        }))
+      } else {
+        featuredWords.value = []
+      }
+    } catch {
+      wordOfTheDay.value = null
+      featuredWords.value = []
+    } finally {
+      isHomeWordsLoading.value = false
+    }
   }
 
   // Tra cứu chi tiết
@@ -264,6 +337,7 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
   const searchHistory = ref<string[]>([])
 
   onMounted(() => {
+    fetchWordOfTheDayAndFeatured()
     if (import.meta.client) {
       const saved = localStorage.getItem('langua_dict_history')
       if (saved) {
@@ -337,6 +411,12 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
     providerName: provider.providerName,
     searchQuery,
     searchSuggestions,
+    searchSuggestionsWithLevel,
+    suggestWithLevel,
+    wordOfTheDay,
+    featuredWords,
+    isHomeWordsLoading,
+    fetchWordOfTheDayAndFeatured,
     searchHistory,
     isSearching,
     updateSuggestions,

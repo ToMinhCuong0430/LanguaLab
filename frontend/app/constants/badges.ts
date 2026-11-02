@@ -31,6 +31,10 @@ export interface BadgeConfig {
 export function levelBadge(level: string): BadgeConfig {
   const upper = level.toUpperCase()
 
+  if (upper.includes('C2+') || upper.includes('EXPERT') || upper.includes('CHUYÊN SÂU') || upper.includes('L7') || upper.includes('CẤP 7')) {
+    return { tone: 'coral', label: level }
+  }
+
   // Detect highest level in range (e.g. "A2 - B1" → "B1")
   const highestCefr = (() => {
     const matches = upper.match(/([ABC][12])/g)

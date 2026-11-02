@@ -55,6 +55,8 @@ export interface VocabLevelItem {
   level: number
   code: string
   title: string
+  description?: string | null
+  cefrEquivalent?: string | null
   learned: number
   total: number
   colorTone: 'surface' | 'ok' | 'warn' | 'accent' | 'mark'
@@ -232,6 +234,8 @@ export const useHomeData = () => {
           level: l.level_number,
           code: l.code,
           title: l.title,
+          description: l.description,
+          cefrEquivalent: l.cefr_equivalent,
           learned: 0,
           total: l.target_word_count,
           colorTone: (l.color_tone as any) || 'ok',
@@ -262,7 +266,7 @@ export const useHomeData = () => {
         const uid = authUser.value.sub
         const todayStr = new Date().toISOString().split('T')[0]
 
-        const [profileRes, checkinRes, xpRes, notifRes, statsRes, dueRes, weeklyRes] = await Promise.all([
+        const [profileRes, checkinRes, xpRes, notifRes, statsRes, dueRes, weeklyRes, vocabSummaryRes] = await Promise.all([
           client.from('profiles').select('*').eq('id', uid).maybeSingle(),
           client.from('daily_checkins').select('id').eq('user_id', uid).eq('checkin_date', todayStr).maybeSingle(),
           client.from('user_xp_totals').select('total_xp').eq('user_id', uid).maybeSingle(),
@@ -270,8 +274,16 @@ export const useHomeData = () => {
           client.from('daily_user_stats').select('*').eq('user_id', uid).maybeSingle(),
           client.from('words_due_today').select('word_id, is_critical').eq('user_id', uid),
           client.from('weekly_user_summary').select('*').eq('user_id', uid).maybeSingle(),
+          client.from('user_vocab_levels_summary').select('*').eq('user_id', uid),
         ])
 
+        if (vocabSummaryRes?.data && vocabSummaryRes.data.length > 0) {
+          const mapLearned = new Map(vocabSummaryRes.data.map((s: any) => [s.level_number, s.learned_count || 0]))
+          vocabLevels.value = vocabLevels.value.map((lvl) => ({
+            ...lvl,
+            learned: mapLearned.get(lvl.level) || 0,
+          }))
+        }
         if (profileRes.data) {
           const p = profileRes.data
           user.value = {

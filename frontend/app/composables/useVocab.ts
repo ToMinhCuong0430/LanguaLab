@@ -14,6 +14,21 @@ export interface VocabWord {
   lastReviewed?: string
 }
 
+export interface LexSenseItem {
+  id: string
+  entryId: string
+  term: string
+  phonetic: string
+  audioUrl?: string
+  partOfSpeech: string
+  definition: string
+  level?: string
+  levelSystem?: string
+  viMeaning?: string
+  exampleTarget?: string
+  exampleMeaning?: string
+}
+
 export interface VocabSet {
   id: string
   title: string
@@ -547,8 +562,25 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   // Bộ của tôi (lưu localStorage dự phòng)
   const localMySets = ref<VocabSet[]>([])
 
+  // Danh sách 7 cấp độ từ vựng từ vocab_levels
+  const vocabLevels = ref<any[]>([])
+  const fetchVocabLevels = async () => {
+    try {
+      const { data } = await client
+        .from('vocab_levels')
+        .select('*')
+        .order('level_number', { ascending: true })
+      if (data && data.length > 0) {
+        vocabLevels.value = data
+      }
+    } catch (e) {
+      console.warn('Lỗi tải vocab_levels:', e)
+    }
+  }
+
   // Tải dữ liệu từ Supabase
   const fetchVocabData = async () => {
+    fetchVocabLevels()
     isLoading.value = true
     errorMessage.value = null
 
@@ -558,7 +590,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
       // 1. Tải bộ đề xuất hệ thống
       const { data: curatedData, error: curatedErr } = await client
         .from('vocab_sets')
-        .select('*, vocab_words(*)')
+        .select('*, vocab_levels(*), vocab_words(*)')
         .eq('is_system', true)
         .eq('language', currentLang.value)
         .order('created_at', { ascending: true })
@@ -570,7 +602,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
           id: s.id,
           title: s.title,
           description: s.description || '',
-          level: s.level_id ? `Level ${s.level_id}` : 'B1 - B2',
+          level: s.vocab_levels?.title || (s.level_id ? `Cấp ${s.level_id}` : 'B1 - B2'),
           lang: (s.language as LearningLanguage) || 'en',
           isCustom: false,
           words: (s.vocab_words || []).map((w: any) => ({
@@ -982,8 +1014,152 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     selectedSetId.value = curatedSets.value[0]?.id || ''
   })
 
+  
+  // Kho từ vựng trung tâm theo cấp độ
+  const lexWords = ref<LexSenseItem[]>([])
+  const isLexLoading = ref(false)
+
+  const fetchLexWordsByLevel = async (level: string = 'A1', search: string = '', limit: number = 40) => {
+    isLexLoading.value = true
+    try {
+      let query = client
+        .from('lex_senses')
+        .select(`
+          id,
+          entry_id,
+          sense_order,
+          part_of_speech,
+          definition,
+          level,
+          level_system,
+          review_status,
+          lex_entries!inner (
+            id,
+            lemma,
+            language,
+            status,
+            lex_pronunciations (
+              transcription,
+              audio_url
+            )
+          ),
+          lex_translations (
+            language_code,
+            translated_text
+          ),
+          lex_examples (
+            sentence,
+            sentence_vi
+          )
+        `)
+        .eq('level', level)
+        .eq('lex_entries.language', currentLang.value)
+        .eq('lex_entries.status', 'published')
+        .order('sense_order', { ascending: true })
+        .limit(limit)
+
+      if (search && search.trim()) {
+        query = query.ilike('lex_entries.lemma', `%${search.trim().toLowerCase()}%`)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        console.warn('Lỗi khi tải từ theo cấp độ từ kho lex_senses:', error.message)
+        lexWords.value = []
+        return []
+      }
+
+      if (data) {
+        const mapped: LexSenseItem[] = data.map((row: any) => {
+          const pronList = row.lex_entries?.lex_pronunciations || []
+          const pron = pronList.find((p: any) => p.transcription) || pronList[0]
+          const viTrans = (row.lex_translations || []).find((t: any) => t.language_code === 'vi')?.translated_text
+          const ex = (row.lex_examples || [])[0]
+
+          return {
+            id: row.id,
+            entryId: row.entry_id,
+            term: row.lex_entries?.lemma || '',
+            phonetic: pron?.transcription || '',
+            audioUrl: pronList.find((p: any) => p.audio_url)?.audio_url,
+            partOfSpeech: row.part_of_speech || 'noun',
+            definition: row.definition,
+            level: row.level,
+            levelSystem: row.level_system,
+            viMeaning: viTrans || '',
+            exampleTarget: ex?.sentence || '',
+            exampleMeaning: ex?.sentence_vi || '',
+          }
+        })
+        lexWords.value = mapped
+        return mapped
+      }
+      return []
+    } catch (err: any) {
+      console.warn('Lỗi fetchLexWordsByLevel:', err)
+      return []
+    } finally {
+      isLexLoading.value = false
+    }
+  }
+
+  const studyLexLevelSet = (levelTitle: string, words: LexSenseItem[]) => {
+    const dynamicSet: VocabSet = {
+      id: `lex-set-${Date.now()}`,
+      title: `Kho từ vựng Cấp ${levelTitle}`,
+      description: `Danh sách ${words.length} từ vựng từ kho trung tâm`,
+      level: levelTitle,
+      lang: currentLang.value,
+      isCustom: false,
+      words: words.map((w, idx) => ({
+        id: w.id || `lex-w-${idx}`,
+        term: w.term,
+        phonetic: w.phonetic,
+        partOfSpeech: w.partOfSpeech,
+        meaning: w.viMeaning || w.definition,
+        exampleTarget: w.exampleTarget || '',
+        exampleMeaning: w.exampleMeaning || '',
+        srsState: 'new',
+      })),
+    }
+    dbCuratedSets.value = [dynamicSet, ...dbCuratedSets.value.filter(s => !s.id.startsWith('lex-set-'))]
+    selectedSetId.value = dynamicSet.id
+    activeTab.value = 'curated'
+  }
+
+  const saveLexWordToMySet = async (targetSetId: string | null, item: LexSenseItem) => {
+    let setId = targetSetId
+    if (!setId || setId === '') {
+      const existing = mySets.value[0]
+      if (existing) {
+        setId = existing.id
+      } else {
+        const created = await createMySet(
+          'Bộ từ Flashcard của tôi',
+          'Các từ vựng lưu từ kho trung tâm để luyện tập SRS',
+          item.level || 'B1'
+        )
+        if (created) setId = created.id
+      }
+    }
+
+    if (!setId) return null
+
+    return await addWordToMySet(setId, {
+      term: item.term,
+      phonetic: item.phonetic || `/${item.term}/`,
+      partOfSpeech: item.partOfSpeech || 'noun',
+      meaning: item.viMeaning || item.definition,
+      exampleTarget: item.exampleTarget || '',
+      exampleMeaning: item.exampleMeaning || '',
+      srsState: 'new',
+    })
+  }
+
   return {
     activeTab,
+    vocabLevels,
     curatedSets,
     mySets,
     selectedSetId,
@@ -999,5 +1175,10 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     saveWordToDatabase,
     uploadPronunciation,
     rateWordSrs,
+    lexWords,
+    isLexLoading,
+    fetchLexWordsByLevel,
+    studyLexLevelSet,
+    saveLexWordToMySet,
   }
 }

@@ -13,17 +13,20 @@ import {
 } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
 import { useDictionary } from '~/composables/useDictionary'
+import { useVocabLevels } from '~/composables/useVocabLevels'
 import { useMedia } from '~/composables/useMedia'
 import type { DictionaryEntry } from '~/composables/dictionary/provider'
 import PageBanner from '~/components/common/PageBanner.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
+import { levelBadge } from '~/constants/badges'
 
 const route = useRoute()
 const wordParam = computed(() => (route.params.tu as string) || 'pragmatic')
 
 const { currentLang, currentLanguageOption } = useLanguage()
-const { lookupWord, saveToHistory, providerName } = useDictionary(currentLang)
+const { lookupWord, saveToHistory, providerName, suggestWithLevel } = useDictionary(currentLang)
+const { fetchLevels, getLevelTitle } = useVocabLevels()
 const { saveVocabToMySet } = useMedia(currentLang)
 
 const entry = ref<DictionaryEntry | null>(null)
@@ -57,12 +60,23 @@ const guideSteps: GuideStep[] = [
   },
 ]
 
+const notFoundSuggestions = ref<{ word: string; level?: string }[]>([])
+
 const loadWord = async () => {
   isLoading.value = true
+  fetchLevels()
   const res = await lookupWord(wordParam.value)
   entry.value = res
   if (res) {
     saveToHistory(res.word)
+    notFoundSuggestions.value = []
+  } else {
+    try {
+      const suggestions = await suggestWithLevel(wordParam.value)
+      notFoundSuggestions.value = suggestions.slice(0, 5)
+    } catch {
+      notFoundSuggestions.value = []
+    }
   }
   isLoading.value = false
 }
@@ -79,8 +93,8 @@ useHead({
   title: computed(() => `Tra từ: ${entry.value?.word || wordParam.value} - Từ điển ${BRAND_NAME}`),
 })
 
-// Web Speech API
-const speak = () => {
+// Web Speech API & Native Audio
+const fallbackSpeak = () => {
   if (!import.meta.client || !window.speechSynthesis || !entry.value) return
   const utterance = new SpeechSynthesisUtterance(entry.value.word)
   if (currentLang.value === 'en') utterance.lang = 'en-US'
@@ -88,6 +102,22 @@ const speak = () => {
   else if (currentLang.value === 'ja') utterance.lang = 'ja-JP'
   window.speechSynthesis.cancel()
   window.speechSynthesis.speak(utterance)
+}
+
+const speak = () => {
+  if (entry.value?.audioUrl) {
+    try {
+      const audio = new Audio(entry.value.audioUrl)
+      audio.play().catch(() => {
+        fallbackSpeak()
+      })
+      return
+    } catch {
+      fallbackSpeak()
+      return
+    }
+  }
+  fallbackSpeak()
 }
 
 const handleSaveVocab = () => {
@@ -117,7 +147,13 @@ const handleSaveVocab = () => {
 
       <div class="flex items-center gap-2">
         <BaseBadge tone="warn" size="sm">{{ currentLanguageOption.name }}</BaseBadge>
-        <span class="text-xs font-mono font-bold text-ink-soft">Engine: {{ providerName }}</span>
+        <NuxtLink
+          to="/nguon-du-lieu"
+          class="text-xs font-mono font-bold text-ink-soft hover:text-accent underline transition-colors"
+          title="Xem nguồn dữ liệu mở và bản quyền"
+        >
+          Nguồn: {{ entry?.sourceProvider || providerName }}
+        </NuxtLink>
       </div>
     </div>
 
@@ -125,18 +161,51 @@ const handleSaveVocab = () => {
     <BaseEmptyState
       v-if="!isLoading && !entry"
       :title="`Không tìm thấy từ '${wordParam}'`"
-      description="Mục từ này hiện chưa có trong cơ sở dữ liệu từ điển. Bạn có thể tra cứu các từ có sẵn trong kho như: pragmatic, ubiquitous, resilient hoặc đóng góp từ mới."
+      description="Mục từ này hiện chưa có trong cơ sở dữ liệu từ điển."
       tone="warning"
     >
       <template #action>
-        <BaseButton to="/tu-dien" variant="primary" size="sm">
-          Quay lại trang tra từ
-        </BaseButton>
+        <div class="space-y-4">
+          <div v-if="notFoundSuggestions.length > 0" class="space-y-2">
+            <span class="text-xs font-black uppercase text-ink-soft tracking-wider block">
+              Có thể bạn muốn tìm:
+            </span>
+            <div class="flex flex-wrap justify-center gap-2">
+              <NuxtLink
+                v-for="sug in notFoundSuggestions"
+                :key="sug.word"
+                :to="`/tu-dien/${encodeURIComponent(sug.word.toLowerCase())}`"
+                class="px-3 py-1.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink text-xs font-bold shadow-brut-sm hover:-translate-y-0.5 transition-transform inline-flex items-center gap-1.5"
+              >
+                <span class="font-mono">{{ sug.word }}</span>
+                <BaseBadge v-if="sug.level" v-bind="levelBadge(sug.level)" size="sm">
+                  {{ sug.level }}
+                </BaseBadge>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <BaseButton to="/tu-dien" variant="primary" size="sm">
+              Quay lại trang tra từ
+            </BaseButton>
+          </div>
+        </div>
       </template>
     </BaseEmptyState>
 
     <!-- NỘI DUNG TRA TỪ CHI TIẾT -->
     <div v-else-if="entry" class="space-y-6">
+      <!-- Thông báo dạng từ khi tra qua form (ví dụ went -> go) -->
+      <div
+        v-if="entry.matchedForm && entry.matchedForm.toLowerCase() !== entry.word.toLowerCase()"
+        class="p-2.5 px-3.5 bg-accent/10 border-2 border-line text-ink rounded-brut text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-brut-sm"
+      >
+        <span class="font-mono text-accent font-black">{{ entry.matchedForm }}</span>
+        <span>là dạng của</span>
+        <span class="font-black underline">{{ entry.word }}</span>
+      </div>
+
       <!-- Word Header Card -->
       <BaseCard id="word-pronunciation-header" tone="surface">
         <div class="border-b-2 border-line pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -156,13 +225,32 @@ const handleSaveVocab = () => {
               </button>
             </div>
 
-            <div class="flex items-center gap-2">
-              <span class="text-base sm:text-lg font-mono font-bold text-ink-soft">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span v-if="entry.phonetic" class="text-base sm:text-lg font-mono font-bold text-ink-soft">
                 {{ entry.phonetic }}
               </span>
-              <BaseBadge v-if="entry.frequency" tone="warn" size="sm">
-                {{ entry.frequency }} Frequency
-              </BaseBadge>
+              <!-- Cấp độ của toàn mục từ kèm tên cấp độ từ database vocab_levels -->
+              <div v-if="entry.level" class="flex items-center gap-1.5">
+                <BaseBadge v-bind="levelBadge(entry.level)" size="sm">
+                  {{ entry.level }}
+                </BaseBadge>
+                <span v-if="entry.vocabLevel" class="text-xs font-bold text-ink-soft">
+                  Cấp {{ entry.vocabLevel }}<span v-if="getLevelTitle(entry.vocabLevel)"> · {{ getLevelTitle(entry.vocabLevel) }}</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Các dạng chia từ (Forms) -->
+            <div v-if="entry.forms && entry.forms.length > 0" class="pt-1 flex items-center gap-1.5 flex-wrap text-xs">
+              <span class="font-black text-ink-soft uppercase text-[10px] tracking-wider">Biến thể:</span>
+              <span
+                v-for="f in entry.forms"
+                :key="f.form + f.formType"
+                class="px-2 py-0.5 rounded-brut bg-surface-2 border border-line font-mono text-xs font-bold text-ink"
+              >
+                {{ f.form }}
+                <span class="text-ink-soft font-sans font-normal text-[10px]">({{ f.formType }})</span>
+              </span>
             </div>
           </div>
 
@@ -207,8 +295,32 @@ const handleSaveVocab = () => {
                 class="space-y-2.5"
               >
                 <div class="flex items-start gap-2.5 text-base sm:text-lg font-bold text-ink">
-                  <span class="font-mono text-accent font-black">#{{ def.index }}.</span>
-                  <span>{{ def.meaning }}</span>
+                  <span class="font-mono text-accent font-black shrink-0">#{{ def.index }}.</span>
+                  <div class="flex-1 space-y-1.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span>{{ def.meaning }}</span>
+                      <BaseBadge
+                        v-if="def.level"
+                        v-bind="levelBadge(def.level)"
+                        size="sm"
+                      >
+                        {{ def.level }}
+                      </BaseBadge>
+                    </div>
+                    <div
+                      v-if="def.viMeaning"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-brut bg-surface-2 border border-line text-xs sm:text-sm font-semibold text-ink"
+                    >
+                      <span class="text-[10px] font-black text-ink-soft uppercase tracking-wider">Tiếng Việt:</span>
+                      <span>{{ def.viMeaning }}</span>
+                    </div>
+                    <span
+                      v-else
+                      class="text-xs font-medium text-ink-soft/60 italic block"
+                    >
+                      Chưa có nghĩa tiếng Việt
+                    </span>
+                  </div>
                 </div>
 
                 <!-- Ví dụ song ngữ -->
@@ -227,6 +339,17 @@ const handleSaveVocab = () => {
               </div>
             </div>
           </div>
+
+          <!-- Chú thích cấp độ nguồn CEFR-J và Octanove -->
+          <p
+            v-if="entry.level"
+            class="text-[11px] text-ink-soft font-medium pt-2 border-t border-line/40 flex items-center gap-1 flex-wrap"
+          >
+            <span>Cấp độ A1-C2 chỉ gắn cho nghĩa phổ biến nhất của từng từ loại. Nguồn: CEFR-J và Octanove.</span>
+            <NuxtLink to="/nguon-du-lieu" class="text-accent underline font-bold hover:opacity-80">
+              Xem nguồn dữ liệu
+            </NuxtLink>
+          </p>
         </div>
 
         <!-- Cụm từ thường gặp (Collocations) -->

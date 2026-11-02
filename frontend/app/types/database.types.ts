@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -1647,6 +1647,758 @@ export type Database = {
           xp_required?: number
         }
         Relationships: []
+      }
+      lex_attributions: {
+        Row: {
+          attribution_text: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          license_name: string | null
+          raw_record_id: string | null
+          source_id: string
+          source_url: string | null
+        }
+        Insert: {
+          attribution_text?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          license_name?: string | null
+          raw_record_id?: string | null
+          source_id: string
+          source_url?: string | null
+        }
+        Update: {
+          attribution_text?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          license_name?: string | null
+          raw_record_id?: string | null
+          source_id?: string
+          source_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_attributions_raw_record_id_fkey"
+            columns: ["raw_record_id"]
+            isOneToOne: false
+            referencedRelation: "lex_raw_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_attributions_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_entries: {
+        Row: {
+          created_at: string
+          entry_type: string
+          frequency_rank: number | null
+          id: string
+          language: Database["public"]["Enums"]["learning_language"]
+          lemma: string
+          normalized_lemma: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entry_type?: string
+          frequency_rank?: number | null
+          id?: string
+          language?: Database["public"]["Enums"]["learning_language"]
+          lemma: string
+          normalized_lemma?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entry_type?: string
+          frequency_rank?: number | null
+          id?: string
+          language?: Database["public"]["Enums"]["learning_language"]
+          lemma?: string
+          normalized_lemma?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lex_entry_topics: {
+        Row: {
+          entry_id: string
+          topic_id: string
+        }
+        Insert: {
+          entry_id: string
+          topic_id: string
+        }
+        Update: {
+          entry_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_entry_topics_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_entry_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "lex_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_examples: {
+        Row: {
+          author_credit: string | null
+          content_origin: string
+          created_at: string
+          id: string
+          review_status: string
+          sense_id: string
+          sentence: string
+          sentence_vi: string | null
+          source_id: string | null
+          source_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_credit?: string | null
+          content_origin?: string
+          created_at?: string
+          id?: string
+          review_status?: string
+          sense_id: string
+          sentence: string
+          sentence_vi?: string | null
+          source_id?: string | null
+          source_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_credit?: string | null
+          content_origin?: string
+          created_at?: string
+          id?: string
+          review_status?: string
+          sense_id?: string
+          sentence?: string
+          sentence_vi?: string | null
+          source_id?: string | null
+          source_ref?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_examples_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_examples_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_forms: {
+        Row: {
+          entry_id: string
+          form: string
+          form_type: string
+          id: string
+        }
+        Insert: {
+          entry_id: string
+          form: string
+          form_type: string
+          id?: string
+        }
+        Update: {
+          entry_id?: string
+          form?: string
+          form_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_forms_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_import_batches: {
+        Row: {
+          batch_name: string
+          created_at: string
+          error_summary: Json
+          failed_records: number
+          finished_at: string | null
+          id: string
+          processed_records: number
+          source_id: string | null
+          started_by: string | null
+          status: string
+          total_records: number
+        }
+        Insert: {
+          batch_name: string
+          created_at?: string
+          error_summary?: Json
+          failed_records?: number
+          finished_at?: string | null
+          id?: string
+          processed_records?: number
+          source_id?: string | null
+          started_by?: string | null
+          status?: string
+          total_records?: number
+        }
+        Update: {
+          batch_name?: string
+          created_at?: string
+          error_summary?: Json
+          failed_records?: number
+          finished_at?: string | null
+          id?: string
+          processed_records?: number
+          source_id?: string | null
+          started_by?: string | null
+          status?: string
+          total_records?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_import_batches_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      lex_level_map: {
+        Row: {
+          level: string
+          level_system: string
+          vocab_level_number: number
+        }
+        Insert: {
+          level: string
+          level_system: string
+          vocab_level_number: number
+        }
+        Update: {
+          level?: string
+          level_system?: string
+          vocab_level_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_level_map_vocab_level_number_fkey"
+            columns: ["vocab_level_number"]
+            isOneToOne: false
+            referencedRelation: "user_vocab_levels_summary"
+            referencedColumns: ["level_number"]
+          },
+          {
+            foreignKeyName: "lex_level_map_vocab_level_number_fkey"
+            columns: ["vocab_level_number"]
+            isOneToOne: false
+            referencedRelation: "vocab_levels"
+            referencedColumns: ["level_number"]
+          },
+        ]
+      }
+      lex_pronunciations: {
+        Row: {
+          accent: string
+          audio_license: string | null
+          audio_source: string | null
+          audio_url: string | null
+          entry_id: string
+          id: string
+          kind: string
+          transcription: string | null
+        }
+        Insert: {
+          accent?: string
+          audio_license?: string | null
+          audio_source?: string | null
+          audio_url?: string | null
+          entry_id: string
+          id?: string
+          kind?: string
+          transcription?: string | null
+        }
+        Update: {
+          accent?: string
+          audio_license?: string | null
+          audio_source?: string | null
+          audio_url?: string | null
+          entry_id?: string
+          id?: string
+          kind?: string
+          transcription?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_pronunciations_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_raw_records: {
+        Row: {
+          batch_id: string
+          created_at: string
+          error_message: string | null
+          external_id: string | null
+          id: string
+          processing_status: string
+          raw_data: Json
+        }
+        Insert: {
+          batch_id: string
+          created_at?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          processing_status?: string
+          raw_data: Json
+        }
+        Update: {
+          batch_id?: string
+          created_at?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          processing_status?: string
+          raw_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_raw_records_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "lex_import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_relations: {
+        Row: {
+          created_at: string
+          id: string
+          relation_type: string
+          source_entry_id: string
+          source_sense_id: string | null
+          target_entry_id: string | null
+          target_text: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          relation_type: string
+          source_entry_id: string
+          source_sense_id?: string | null
+          target_entry_id?: string | null
+          target_text?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          relation_type?: string
+          source_entry_id?: string
+          source_sense_id?: string | null
+          target_entry_id?: string | null
+          target_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_relations_source_entry_id_fkey"
+            columns: ["source_entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_relations_source_sense_id_fkey"
+            columns: ["source_sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_relations_target_entry_id_fkey"
+            columns: ["target_entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_reports: {
+        Row: {
+          created_at: string
+          entry_id: string
+          id: string
+          message: string | null
+          report_type: string
+          resolved_at: string | null
+          sense_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          id?: string
+          message?: string | null
+          report_type: string
+          resolved_at?: string | null
+          sense_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          id?: string
+          message?: string | null
+          report_type?: string
+          resolved_at?: string | null
+          sense_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_reports_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_reports_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      lex_sense_levels: {
+        Row: {
+          created_at: string
+          id: string
+          level: string
+          level_system: string
+          sense_id: string
+          source_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level: string
+          level_system: string
+          sense_id: string
+          source_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: string
+          level_system?: string
+          sense_id?: string
+          source_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_sense_levels_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_sense_levels_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_senses: {
+        Row: {
+          content_origin: string
+          created_at: string
+          definition: string
+          definition_lang: string
+          entry_id: string
+          id: string
+          level: string | null
+          level_system: string
+          part_of_speech: string
+          review_status: string
+          sense_order: number
+          updated_at: string
+        }
+        Insert: {
+          content_origin?: string
+          created_at?: string
+          definition: string
+          definition_lang?: string
+          entry_id: string
+          id?: string
+          level?: string | null
+          level_system?: string
+          part_of_speech: string
+          review_status?: string
+          sense_order?: number
+          updated_at?: string
+        }
+        Update: {
+          content_origin?: string
+          created_at?: string
+          definition?: string
+          definition_lang?: string
+          entry_id?: string
+          id?: string
+          level?: string | null
+          level_system?: string
+          part_of_speech?: string
+          review_status?: string
+          sense_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_senses_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_sources: {
+        Row: {
+          attribution_text: string | null
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          license_name: string | null
+          license_url: string | null
+          license_verified: boolean
+          name: string
+          requires_share_alike: boolean | null
+          source_url: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          attribution_text?: string | null
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          license_name?: string | null
+          license_url?: string | null
+          license_verified?: boolean
+          name: string
+          requires_share_alike?: boolean | null
+          source_url?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          attribution_text?: string | null
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          license_name?: string | null
+          license_url?: string | null
+          license_verified?: boolean
+          name?: string
+          requires_share_alike?: boolean | null
+          source_url?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      lex_topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      lex_translations: {
+        Row: {
+          content_origin: string
+          created_at: string
+          id: string
+          language_code: string
+          note: string | null
+          review_status: string
+          sense_id: string
+          translated_text: string
+          updated_at: string
+        }
+        Insert: {
+          content_origin?: string
+          created_at?: string
+          id?: string
+          language_code?: string
+          note?: string | null
+          review_status?: string
+          sense_id: string
+          translated_text: string
+          updated_at?: string
+        }
+        Update: {
+          content_origin?: string
+          created_at?: string
+          id?: string
+          language_code?: string
+          note?: string | null
+          review_status?: string
+          sense_id?: string
+          translated_text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_translations_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       media_cues: {
         Row: {
@@ -3415,6 +4167,7 @@ export type Database = {
           example_translation: string | null
           examples: Json | null
           id: string
+          lex_sense_id: string | null
           meaning_vi: string
           part_of_speech: string | null
           phonetic: string | null
@@ -3429,6 +4182,7 @@ export type Database = {
           example_translation?: string | null
           examples?: Json | null
           id?: string
+          lex_sense_id?: string | null
           meaning_vi: string
           part_of_speech?: string | null
           phonetic?: string | null
@@ -3443,6 +4197,7 @@ export type Database = {
           example_translation?: string | null
           examples?: Json | null
           id?: string
+          lex_sense_id?: string | null
           meaning_vi?: string
           part_of_speech?: string | null
           phonetic?: string | null
@@ -3451,6 +4206,13 @@ export type Database = {
           word?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "vocab_words_lex_sense_id_fkey"
+            columns: ["lex_sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vocab_words_set_id_fkey"
             columns: ["set_id"]
@@ -3566,6 +4328,18 @@ export type Database = {
           title: string | null
           updated_at: string | null
           vote_count: number | null
+        }
+        Relationships: []
+      }
+      lex_coverage_stats: {
+        Row: {
+          entries: number | null
+          entry_type: string | null
+          language: Database["public"]["Enums"]["learning_language"] | null
+          level: string | null
+          level_system: string | null
+          senses: number | null
+          status: string | null
         }
         Relationships: []
       }
@@ -3814,6 +4588,16 @@ export type Database = {
       is_teacher: { Args: never; Returns: boolean }
       join_class: { Args: { p_code: string }; Returns: Json }
       leave_class: { Args: { p_class: string }; Returns: undefined }
+      lex_entry_is_published: { Args: { p_entry_id: string }; Returns: boolean }
+      lex_level_is_valid: {
+        Args: { p_level: string; p_system: string }
+        Returns: boolean
+      }
+      lex_sense_is_public: { Args: { p_sense_id: string }; Returns: boolean }
+      lex_vocab_level: {
+        Args: { p_level: string; p_system: string }
+        Returns: number
+      }
       list_assignable_tests: { Args: never; Returns: Json }
       list_staff: { Args: never; Returns: Json }
       log_admin_action: {
@@ -3853,6 +4637,50 @@ export type Database = {
       }
       revoke_invite: { Args: { p_invite: string }; Returns: undefined }
       role_label_vi: { Args: { p_role: string }; Returns: string }
+      lex_word_of_the_day: {
+        Args: {
+          p_date?: string
+          p_language?: Database["public"]["Enums"]["learning_language"]
+        }
+        Returns: {
+          definition: string
+          example_sentence: string
+          example_translation: string
+          ipa: string
+          lemma: string
+          level: string
+          meaning_vi: string
+          part_of_speech: string
+        }[]
+      }
+      lex_featured_words: {
+        Args: {
+          p_language?: Database["public"]["Enums"]["learning_language"]
+          p_level?: string
+          p_limit?: number
+        }
+        Returns: {
+          definition: string
+          lemma: string
+          level: string
+          meaning_vi: string
+          part_of_speech: string
+        }[]
+      }
+      search_lex_entries: {
+        Args: {
+          p_language?: Database["public"]["Enums"]["learning_language"]
+          p_limit?: number
+          p_query: string
+        }
+        Returns: {
+          entry_id: string
+          entry_type: string
+          lemma: string
+          match_rank: number
+          score: number
+        }[]
+      }
       set_review_status: {
         Args: {
           p_ids: string[]
@@ -3924,7 +4752,7 @@ export type Database = {
       }
     }
     Enums: {
-      difficulty_level: "Dễ" | "Trung bình" | "Khó"
+      difficulty_level: "Dß╗à" | "Trung b├¼nh" | "Kh├│"
       exam_mode: "practice" | "exam"
       ielts_skill: "listening" | "reading" | "writing" | "speaking"
       learning_language: "en" | "zh" | "ja"
@@ -4564,7 +5392,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      difficulty_level: ["Dễ", "Trung bình", "Khó"],
+      difficulty_level: ["Dß╗à", "Trung b├¼nh", "Kh├│"],
       exam_mode: ["practice", "exam"],
       ielts_skill: ["listening", "reading", "writing", "speaking"],
       learning_language: ["en", "zh", "ja"],

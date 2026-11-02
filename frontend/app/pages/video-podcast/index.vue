@@ -333,8 +333,8 @@ const formatDuration = (secs: number) => {
             <option value="A1">A1 - A2 (Cơ bản)</option>
             <option value="B1">B1 - B2 (Trung cấp)</option>
             <option value="C1">C1 - C2 (Nâng cao)</option>
-            <option value="HSK">HSK</option>
-            <option value="JLPT">JLPT</option>
+            <option value="HSK" disabled>HSK (đang phát triển)</option>
+            <option value="JLPT" disabled>JLPT (đang phát triển)</option>
           </select>
         </div>
 
