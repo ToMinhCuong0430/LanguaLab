@@ -14,6 +14,9 @@ import {
   RefreshCw,
   Send,
   Undo2,
+  ArrowRight,
+  Info,
+  BookA,
 } from '@lucide/vue'
 import { stringifyCsv } from '~/utils/csvParser'
 import ExamQuestionsEditor from '~/components/admin/ExamQuestionsEditor.vue'
@@ -401,6 +404,27 @@ const exportData = (format: 'csv' | 'json') => {
           <span>Import thêm dữ liệu</span>
         </NuxtLink>
       </div>
+    </div>
+
+    <!-- Thông báo hướng dẫn chuyển sang Lexicon nếu đang mở /admin/dictionary -->
+    <div
+      v-if="loai === 'dictionary'"
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-brut border-2 border-line bg-warn/20 shadow-brut-sm"
+      role="status"
+    >
+      <div class="flex items-center gap-2">
+        <Info class="h-5 w-5 text-ink shrink-0" />
+        <p class="text-xs sm:text-sm font-bold text-ink">
+          Mục từ điển cũ đang được lưu giữ để tham chiếu. Kho từ vựng trung tâm chuẩn hóa mới (8.500+ mục từ Wiktionary) hiện được quản lý tại trang Lexicon.
+        </p>
+      </div>
+      <NuxtLink
+        to="/admin/lexicon"
+        class="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-brut border-2 border-line bg-surface text-ink text-xs font-black shadow-brut-sm hover:bg-surface-2 whitespace-nowrap brut-press"
+      >
+        <BookA class="h-4 w-4" />
+        <span>Chuyển sang Quản lý Lexicon</span>
+      </NuxtLink>
     </div>
 
     <!-- Thanh công cụ tìm kiếm & bộ lọc -->
