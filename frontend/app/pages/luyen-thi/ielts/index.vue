@@ -12,6 +12,7 @@ import {
 import PageBanner from '~/components/common/PageBanner.vue'
 import SkillCard from '~/components/ielts/SkillCard.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
+import AnimeSparkle from '~/components/illustration/AnimeSparkle.vue'
 import { ieltsSkillBadge } from '~/constants/badges'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -50,7 +51,10 @@ const ieltsGuideSteps: GuideStep[] = [
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-8" data-feature="luyen-thi">
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-8 relative overflow-hidden" data-feature="luyen-thi">
+    <!-- Anime sparkle decoration -->
+    <AnimeSparkle color="#FF5A4E" color2="#2F5BFF" color3="#FFD23F" class="opacity-60 pointer-events-none" />
+
     <!-- Page Banner -->
     <PageBanner
       feature="luyen-thi"
@@ -77,32 +81,32 @@ const ieltsGuideSteps: GuideStep[] = [
       id="ielts-band-stats"
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
     >
-      <div class="rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut flex items-center justify-between">
+      <div class="rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut flex items-center justify-between hover-lift cursor-default transition-all">
         <div>
           <span class="text-xs font-bold text-ink-soft uppercase tracking-wider block">Band hiện tại</span>
           <span class="font-display text-3xl font-black text-ink">5.5 Overall</span>
         </div>
-        <div class="p-2.5 rounded-brut border-2 border-line bg-surface-2 text-ink font-display text-sm font-black">
+        <div class="p-2.5 rounded-brut border-2 border-line bg-surface-2 text-ink font-display text-sm font-black shadow-brut-sm">
           B2
         </div>
       </div>
 
-      <div class="rounded-brut-lg border-[3px] border-line bg-warn p-4 shadow-brut flex items-center justify-between text-on-tone">
+      <div class="rounded-brut-lg border-[3px] border-line bg-warn p-4 shadow-brut flex items-center justify-between text-on-tone hover-lift cursor-default transition-all">
         <div>
           <span class="text-xs font-bold uppercase tracking-wider block">Band mục tiêu</span>
           <span class="font-display text-3xl font-black">7.0 Overall</span>
         </div>
-        <div class="p-2.5 rounded-brut border-2 border-line bg-surface text-ink font-display text-sm font-black">
+        <div class="p-2.5 rounded-brut border-2 border-line bg-surface text-ink font-display text-sm font-black shadow-brut-sm">
           C1
         </div>
       </div>
 
-      <div class="rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut flex items-center justify-between">
+      <div class="rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut flex items-center justify-between hover-lift cursor-default transition-all">
         <div>
           <span class="text-xs font-bold text-ink-soft uppercase tracking-wider block">Đề đã hoàn thành</span>
           <span class="font-display text-3xl font-black text-ink">31 đề</span>
         </div>
-        <div class="p-2.5 rounded-brut border-2 border-line bg-ok text-on-tone font-display text-sm font-black">
+        <div class="p-2.5 rounded-brut border-2 border-line bg-ok text-on-tone font-display text-sm font-black shadow-brut-sm">
           ✓
         </div>
       </div>
@@ -110,7 +114,7 @@ const ieltsGuideSteps: GuideStep[] = [
       <!-- Nút Thi thử trọn bộ (Full Mock Test) -->
       <div
         id="ielts-full-mock"
-        class="rounded-brut-lg border-[3px] border-line bg-accent p-4 shadow-brut flex flex-col justify-between text-accent-ink"
+        class="rounded-brut-lg border-[3px] border-line bg-accent p-4 shadow-brut flex flex-col justify-between text-accent-ink hover-lift transition-all"
       >
         <div>
           <span class="text-[10px] font-black uppercase tracking-wider block opacity-90">Phòng thi giả lập</span>
@@ -123,6 +127,7 @@ const ieltsGuideSteps: GuideStep[] = [
             variant="secondary"
             size="sm"
             block
+            class="border-2x focus-ring"
           >
             <Play class="h-3.5 w-3.5 fill-current" :stroke-width="2.5" />
             <span>Bắt đầu Full Test (2h45p)</span>

@@ -27,22 +27,22 @@ const featureColorMap: Record<string, { bg: string; soft: string; ink: string }>
 <template>
   <NuxtLink
     :to="to"
-    class="group relative flex flex-col justify-between rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut transition-all duration-100 hover:translate-x-1 hover:translate-y-1 hover:shadow-brut-sm text-decoration-none"
+    class="group relative flex flex-col justify-between rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut transition-all duration-200 hover:-translate-y-1 hover:shadow-brut-lg text-decoration-none hover-bounce"
     :data-feature="feature"
   >
     <!-- Top Row: Icon + Stat pill -->
     <div class="flex items-center justify-between gap-3 mb-4">
       <div
-        class="flex h-12 w-12 items-center justify-center rounded-brut border-2 border-line shadow-brut-sm text-ink transition-transform group-hover:scale-105"
+        class="flex h-12 w-12 items-center justify-center rounded-brut border-2 border-line shadow-brut-sm text-ink transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-3"
         :style="{ backgroundColor: featureColorMap[feature]?.bg || 'var(--feature)' }"
       >
-        <component :is="icon" v-if="icon" class="h-6 w-6 text-on-tone" :stroke-width="2.5" />
+        <component :is="icon" v-if="icon" class="h-6 w-6 text-on-tone icon-bounce" :stroke-width="2.5" />
         <span v-else class="font-display font-black text-sm">LA</span>
       </div>
 
       <div
         v-if="statBadge"
-        class="inline-flex items-center gap-1 rounded-brut border border-line px-2 py-0.5 font-mono text-xs font-black"
+        class="inline-flex items-center gap-1 rounded-brut border-2 border-line px-2.5 py-1 font-mono text-xs font-black shadow-brut-sm transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
         :style="{ backgroundColor: featureColorMap[feature]?.soft || 'var(--surface-2)', color: featureColorMap[feature]?.ink || 'var(--ink)' }"
       >
         {{ statBadge }}
@@ -52,10 +52,12 @@ const featureColorMap: Record<string, { bg: string; soft: string; ink: string }>
     <!-- Middle: Title + Description -->
     <div class="space-y-1.5 flex-1">
       <div class="flex items-center justify-between">
-        <h3 class="font-display text-lg font-black tracking-tight text-ink group-hover:text-ink">
+        <h3 class="font-display text-lg font-black tracking-tight text-ink group-hover:text-primary transition-colors">
           {{ title }}
         </h3>
-        <ArrowUpRight class="h-4 w-4 text-ink-soft opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" :stroke-width="2.5" />
+        <div class="flex h-7 w-7 items-center justify-center rounded-brut border-2 border-transparent group-hover:border-line group-hover:bg-warn transition-all duration-150">
+          <ArrowUpRight class="h-4 w-4 text-ink-soft group-hover:text-on-tone transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" :stroke-width="2.5" />
+        </div>
       </div>
       <p v-if="description" class="text-xs font-medium text-ink-soft line-clamp-2 leading-relaxed">
         {{ description }}

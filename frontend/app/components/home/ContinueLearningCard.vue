@@ -14,7 +14,7 @@ const inProgressLesson = {
 </script>
 
 <template>
-  <div class="rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut flex flex-col justify-between h-full">
+  <div class="group rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut flex flex-col justify-between h-full hover-lift transition-all">
     <div>
       <div class="flex items-center justify-between mb-3">
         <BaseBadge tone="green" size="sm" :uppercase="true">
@@ -27,15 +27,15 @@ const inProgressLesson = {
 
       <div class="flex items-start gap-3.5 mb-3">
         <!-- Thumbnail / icon preview -->
-        <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-brut border-2 border-line bg-c-green shadow-brut-sm text-on-tone">
-          <Play class="h-6 w-6 fill-current ml-0.5" :stroke-width="2.5" />
+        <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-brut border-2 border-line bg-c-green shadow-brut-sm text-on-tone group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-200">
+          <Play class="h-6 w-6 fill-current ml-0.5 icon-bounce" :stroke-width="2.5" />
         </div>
 
         <div class="space-y-1">
           <span class="text-[11px] font-bold uppercase tracking-wider text-c-green-ink">
             {{ inProgressLesson.category }}
           </span>
-          <h3 class="font-display text-base font-black text-ink leading-snug line-clamp-2">
+          <h3 class="font-display text-base font-black text-ink leading-snug line-clamp-2 group-hover:text-c-green-ink transition-colors">
             {{ inProgressLesson.title }}
           </h3>
         </div>
@@ -63,10 +63,11 @@ const inProgressLesson = {
         variant="primary"
         size="md"
         block
+        class="border-2x focus-ring"
       >
         <span>Tiếp tục học ngay</span>
         <template #right>
-          <ArrowRight class="h-4 w-4" :stroke-width="2.5" />
+          <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" :stroke-width="2.5" />
         </template>
       </BaseButton>
     </div>
