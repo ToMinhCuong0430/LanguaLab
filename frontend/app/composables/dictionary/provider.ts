@@ -3,6 +3,9 @@ import type { LearningLanguage } from '../useLanguage'
 export interface DictionaryDefinition {
   index: number
   meaning: string
+  level?: string
+  levelSystem?: string
+  viMeaning?: string
   examples: {
     target: string
     vi: string
@@ -14,13 +17,31 @@ export interface DictionarySense {
   definitions: DictionaryDefinition[]
 }
 
+export interface DictionaryWordForm {
+  form: string
+  formType: string
+}
+
+export const CEFR_TO_VOCAB_LEVEL: Record<string, number> = {
+  A1: 1,
+  A2: 2,
+  B1: 3,
+  B2: 4,
+  C1: 5,
+  C2: 6,
+}
+
 export interface DictionaryEntry {
   word: string
   lang: LearningLanguage
   phonetic: string
   audioUrl?: string
   frequency?: 'High' | 'Medium' | 'Academic'
+  level?: string
+  vocabLevel?: number
+  matchedForm?: string
   etymology?: string
+  forms?: DictionaryWordForm[]
   senses: DictionarySense[]
   collocations: string[]
   synonyms: string[]
@@ -33,27 +54,18 @@ export interface DictionaryEntry {
  * KIẾN TRÚC TRỪU TƯỢNG: DICTIONARY PROVIDER INTERFACE
  * =========================================================================
  * 
- * LƯU Ý PHÁP LÝ VÀ BẢN QUYỀN DỮ LIỆU:
- * - Dự án "LanguaLab" định hướng cung cấp định nghĩa chuẩn mực kiểu Oxford.
- * - TUYỆT ĐỐI KHÔNG cào dữ liệu (web scrape) trực tiếp từ website của Oxford University Press
- *   hoặc Cambridge Dictionaries vì hành vi này vi phạm bản quyền và điều khoản dịch vụ (ToS).
- * 
- * CÁC HƯỚNG TÍCH HỢP HỢP PHÁP ĐƯỢC ĐỀ XUẤT CHO TƯƠNG LAI:
- * 1. API Thương mại có giấy phép:
- *    - Oxford Dictionaries API (thông qua Oxford Languages - https://developer.oxforddictionaries.com):
- *      Cung cấp dữ liệu từ điển Oxford chính thức với đầy đủ cấp độ CEFR, IPA, collocations và audio bản quyền.
- * 2. Nguồn dữ liệu Mở (Open-source / Creative Commons):
- *    - Wiktionary qua Kaikki.org (https://kaikki.org): Dữ liệu từ điển đa ngôn ngữ được parse sang JSON sạch.
- *    - Free Dictionary API (https://dictionaryapi.dev): REST API miễn phí dựa trên dữ liệu Wiktionary.
- *    - Princeton WordNet: Cơ sở dữ liệu ngữ nghĩa quan hệ từ vựng mở cho tiếng Anh.
- * 
- * Lớp MockDictionaryProvider bên dưới đóng vai trò minh hoạ hợp đồng dữ liệu chuẩn,
- * sẵn sàng cho việc cắm adapter của các provider thật ở trên mà không làm thay đổi tầng giao diện.
+ * NGUYÊN TẮC DỮ LIỆU & BẢN QUYỀN MỞ:
+ * - Dự án "LanguaLab" sử dụng hoàn toàn dữ liệu từ điển mã nguồn mở với giấy phép minh bạch:
+ *   + Wiktionary (trích xuất qua Kaikki.org) - Giấy phép CC BY-SA 4.0 & GFDL.
+ *   + CEFR-J Vocabulary Profile 1.5 & Octanove C1/C2 - Thang phân loại cấp độ năng lực ngôn ngữ mở.
+ * - TUYỆT ĐỐI KHÔNG cào dữ liệu (web scrape) từ Oxford Dictionaries, Cambridge Dictionaries hay bất kỳ nguồn đóng nào.
+ * - Minh bạch nguồn dữ liệu tại trang /nguon-du-lieu.
  */
 export interface DictionaryProvider {
   readonly providerName: string
   lookup(word: string, lang: LearningLanguage): Promise<DictionaryEntry | null>
   suggest(query: string, lang: LearningLanguage): Promise<string[]>
+  suggestWithLevel(query: string, lang: LearningLanguage): Promise<{ word: string; level?: string }[]>
 }
 
 export class MockDictionaryProvider implements DictionaryProvider {
@@ -260,14 +272,24 @@ export class MockDictionaryProvider implements DictionaryProvider {
       .filter(e => e.lang === lang && e.word.toLowerCase().startsWith(clean))
       .map(e => e.word)
   }
+
+  async suggestWithLevel(query: string, lang: LearningLanguage): Promise<{ word: string; level?: string }[]> {
+    const clean = query.trim().toLowerCase()
+    if (!clean) return []
+    return this.entries
+      .filter(e => e.lang === lang && e.word.toLowerCase().startsWith(clean))
+      .map(e => ({ word: e.word, level: e.level }))
+  }
 }
 
 /**
- * Provider đọc trực tiếp từ bảng dictionary_entries trong Supabase
- * Dữ liệu tự biên soạn hoặc nguồn giấy phép mở, tuyệt đối KHÔNG cào dữ liệu bản quyền Oxford.
+ * Provider đọc trực tiếp và độc quyền từ kho từ vựng trung tâm canonical (lex_entries, lex_senses, ...).
+ * Dữ liệu tự biên soạn hoặc nguồn giấy phép mở (Wiktionary CC BY-SA, CEFR-J, Octanove C1/C2),
+ * tuyệt đối KHÔNG cào dữ liệu bản quyền Oxford.
+ * Bảng legacy dictionary_entries đã được decommission hoàn toàn.
  */
 export class SupabaseDictionaryProvider implements DictionaryProvider {
-  readonly providerName = 'Từ điển LanguaLab (Supabase Clean Data)'
+  readonly providerName = 'Từ điển LanguaLab (Kho từ vựng trung tâm)'
   private client: any
 
   constructor(client: any) {
@@ -276,30 +298,247 @@ export class SupabaseDictionaryProvider implements DictionaryProvider {
 
   async lookup(word: string, lang: LearningLanguage): Promise<DictionaryEntry | null> {
     const cleanWord = word.trim().toLowerCase()
+    if (!cleanWord) return null
+
     try {
-      const { data, error } = await this.client
-        .from('dictionary_entries')
-        .select('*')
+      // 1. Thử tra cứu từ kho từ vựng trung tâm (lex_entries)
+      let { data: lexList, error: lexError } = await this.client
+        .from('lex_entries')
+        .select(`
+          id,
+          lemma,
+          language,
+          entry_type,
+          frequency_rank,
+          status,
+          lex_senses (
+            id,
+            sense_order,
+            part_of_speech,
+            definition,
+            definition_lang,
+            level,
+            level_system,
+            review_status,
+            lex_translations (
+              language_code,
+              translated_text
+            ),
+            lex_examples (
+              sentence,
+              sentence_vi
+            )
+          ),
+          lex_pronunciations (
+            kind,
+            accent,
+            transcription,
+            audio_url
+          ),
+          lex_forms (
+            form,
+            form_type
+          ),
+          lex_relations!source_entry_id (
+            relation_type,
+            target_text
+          )
+        `)
+        .eq('normalized_lemma', cleanWord)
         .eq('language', lang)
-        .ilike('headword', cleanWord)
-        .maybeSingle()
+        .eq('status', 'published')
+        .order('frequency_rank', { ascending: true, nullsFirst: false })
+        .limit(1)
 
-      if (error || !data) return null
+      let entryData = lexList?.[0]
 
-      const raw = data.data as any
-      return {
-        word: data.headword,
-        lang: data.language as LearningLanguage,
-        phonetic: raw.phonetic || '',
-        audioUrl: raw.audioUrl,
-        frequency: raw.frequency || 'Academic',
-        etymology: raw.etymology,
-        senses: Array.isArray(raw.senses) ? raw.senses : [],
-        collocations: Array.isArray(raw.collocations) ? raw.collocations : [],
-        synonyms: Array.isArray(raw.synonyms) ? raw.synonyms : [],
-        antonyms: Array.isArray(raw.antonyms) ? raw.antonyms : [],
-        sourceProvider: data.source || 'LanguaLab Open License',
+      let matchedForm: string | undefined = undefined
+
+      // 1.1 Nếu không tìm thấy bằng lemma, thử tìm qua các biến thể từ (lex_forms)
+      // Ví dụ: tra "went" -> dẫn tới "go"
+      if (!entryData) {
+        const escapedForm = cleanWord.replace(/([%_\\])/g, '\\$1')
+        const { data: formMatch } = await this.client
+          .from('lex_forms')
+          .select('entry_id')
+          .ilike('form', escapedForm)
+          .limit(1)
+          .maybeSingle()
+
+        if (formMatch?.entry_id) {
+          matchedForm = cleanWord
+          const { data: formEntryList } = await this.client
+            .from('lex_entries')
+            .select(`
+              id,
+              lemma,
+              language,
+              entry_type,
+              frequency_rank,
+              status,
+              lex_senses (
+                id,
+                sense_order,
+                part_of_speech,
+                definition,
+                definition_lang,
+                level,
+                level_system,
+                review_status,
+                lex_translations (
+                  language_code,
+                  translated_text
+                ),
+                lex_examples (
+                  sentence,
+                  sentence_vi
+                )
+              ),
+              lex_pronunciations (
+                kind,
+                accent,
+                transcription,
+                audio_url
+              ),
+              lex_forms (
+                form,
+                form_type
+              ),
+              lex_relations!source_entry_id (
+                relation_type,
+                target_text
+              )
+            `)
+            .eq('id', formMatch.entry_id)
+            .eq('language', lang)
+            .eq('status', 'published')
+            .limit(1)
+
+          entryData = formEntryList?.[0]
+        }
       }
+
+      // Nếu có dữ liệu trong kho lex_*, biến đổi thành DictionaryEntry
+      if (entryData) {
+        const posMap: Record<string, string> = {
+          noun: 'Danh từ (Noun)',
+          verb: 'Động từ (Verb)',
+          adjective: 'Tính từ (Adjective)',
+          adverb: 'Trạng từ (Adverb)',
+          preposition: 'Giới từ (Preposition)',
+          conjunction: 'Liên từ (Conjunction)',
+          pronoun: 'Đại từ (Pronoun)',
+          interjection: 'Thán từ (Interjection)',
+          determiner: 'Từ hạn định (Determiner)',
+          numeral: 'Số từ (Numeral)',
+          particle: 'Trợ từ (Particle)',
+          classifier: 'Lượng từ (Classifier)',
+          phrase: 'Cụm từ (Phrase)',
+          other: 'Nghĩa khác',
+        }
+
+        const pronList = entryData.lex_pronunciations || []
+        const ipaPron = pronList.find((p: any) => p.kind === 'ipa' && p.transcription) || pronList[0]
+        const phonetic = ipaPron?.transcription || ''
+        const audioUrl = pronList.find((p: any) => p.audio_url)?.audio_url
+
+        const forms = (entryData.lex_forms || []).map((f: any) => ({
+          form: f.form,
+          formType: f.form_type,
+        }))
+
+        // Gom nhóm senses theo part_of_speech
+        const sensesList = (entryData.lex_senses || []).sort(
+          (a: any, b: any) => (a.sense_order ?? 0) - (b.sense_order ?? 0)
+        )
+        const groups = new Map<string, DictionaryDefinition[]>()
+
+        for (const s of sensesList) {
+          const rawPos = (s.part_of_speech || 'other').toLowerCase()
+          const posLabel = posMap[rawPos] || (s.part_of_speech ? s.part_of_speech.toUpperCase() : 'Nghĩa')
+          if (!groups.has(posLabel)) {
+            groups.set(posLabel, [])
+          }
+          const defs = groups.get(posLabel)!
+
+          const viTrans = s.lex_translations?.find((t: any) => t.language_code === 'vi')?.translated_text
+          const exList = (s.lex_examples || []).map((ex: any) => ({
+            target: ex.sentence,
+            vi: ex.sentence_vi || '',
+          }))
+
+          defs.push({
+            index: defs.length + 1,
+            meaning: s.definition,
+            level: s.level || undefined,
+            levelSystem: s.level_system || undefined,
+            viMeaning: viTrans || undefined,
+            examples: exList,
+          })
+        }
+
+        const senses: DictionarySense[] = Array.from(groups.entries()).map(([partOfSpeech, definitions]) => ({
+          partOfSpeech,
+          definitions,
+        }))
+
+        const collocations: string[] = []
+        const synonyms: string[] = []
+        const antonyms: string[] = []
+        for (const r of (entryData.lex_relations || [])) {
+          const text = r.target_text?.trim()
+          if (!text) continue
+          if (r.relation_type === 'synonym' && !synonyms.includes(text)) synonyms.push(text)
+          else if (r.relation_type === 'antonym' && !antonyms.includes(text)) antonyms.push(text)
+          else if ((r.relation_type === 'collocation' || r.relation_type === 'derived_from') && !collocations.includes(text)) collocations.push(text)
+        }
+
+        // Tính cấp CEFR thấp nhất cho toàn bộ mục từ
+        const cefrLevels: string[] = (entryData.lex_senses || [])
+          .filter((s: any) => s.level_system === 'cefr' && s.level && CEFR_TO_VOCAB_LEVEL[s.level])
+          .map((s: any) => s.level)
+
+        let level: string | undefined = undefined
+        let vocabLevel: number | undefined = undefined
+
+        if (cefrLevels.length > 0) {
+          cefrLevels.sort((a, b) => CEFR_TO_VOCAB_LEVEL[a] - CEFR_TO_VOCAB_LEVEL[b])
+          level = cefrLevels[0]
+          vocabLevel = CEFR_TO_VOCAB_LEVEL[level]
+        }
+
+        // Chỉ gán frequency khi frequency_rank có giá trị, nếu không để undefined
+        let frequency: 'High' | 'Medium' | 'Academic' | undefined = undefined
+        if (entryData.frequency_rank != null) {
+          if (entryData.frequency_rank <= 3000) {
+            frequency = 'High'
+          } else if (entryData.frequency_rank <= 10000) {
+            frequency = 'Medium'
+          } else {
+            frequency = 'Academic'
+          }
+        }
+
+        return {
+          word: entryData.lemma,
+          lang: entryData.language as LearningLanguage,
+          phonetic,
+          audioUrl,
+          frequency,
+          level,
+          vocabLevel,
+          matchedForm,
+          forms,
+          senses,
+          collocations,
+          synonyms,
+          antonyms,
+          sourceProvider: 'Wiktionary · CEFR-J · Octanove',
+        }
+      }
+
+      // Không tìm thấy trong kho canonical lex_*
+      return null
     } catch {
       return null
     }
@@ -309,15 +548,74 @@ export class SupabaseDictionaryProvider implements DictionaryProvider {
     const q = query.trim().toLowerCase()
     if (!q) return []
     try {
-      const { data, error } = await this.client
-        .from('dictionary_entries')
-        .select('headword')
-        .eq('language', lang)
-        .ilike('headword', `${q}%`)
-        .limit(6)
+      // 1. Thử gợi ý bằng RPC search_lex_entries từ kho từ vựng trung tâm
+      const { data: rpcData, error: rpcErr } = await this.client.rpc('search_lex_entries', {
+        p_query: q,
+        p_language: lang,
+        p_limit: 8,
+      })
 
-      if (error || !data) return []
-      return data.map((d: any) => d.headword)
+      if (!rpcErr && Array.isArray(rpcData)) {
+        return rpcData.map((d: any) => d.lemma)
+      }
+      return []
+    } catch {
+      return []
+    }
+  }
+
+  async suggestWithLevel(query: string, lang: LearningLanguage): Promise<{ word: string; level?: string }[]> {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    try {
+      // 1. Gợi ý bằng RPC search_lex_entries từ kho từ vựng trung tâm
+      const { data: rpcData, error: rpcErr } = await this.client.rpc('search_lex_entries', {
+        p_query: q,
+        p_language: lang,
+        p_limit: 8,
+      })
+
+      if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
+        const lemmas: string[] = rpcData.map((d: any) => d.lemma)
+        const normalizedLemmas = lemmas.map(l => l.trim().toLowerCase())
+
+        // Truy vấn lấy cấp CEFR thấp nhất cho các lemma vừa tìm được
+        const { data: senseData } = await this.client
+          .from('lex_entries')
+          .select(`
+            lemma,
+            normalized_lemma,
+            lex_senses (
+              level,
+              level_system
+            )
+          `)
+          .in('normalized_lemma', normalizedLemmas)
+          .eq('language', lang)
+          .eq('status', 'published')
+
+        const levelMap = new Map<string, string>()
+        if (senseData) {
+          for (const item of senseData) {
+            const norm = item.normalized_lemma || item.lemma.toLowerCase()
+            const cefrLevels: string[] = (item.lex_senses || [])
+              .filter((s: any) => s.level_system === 'cefr' && s.level && CEFR_TO_VOCAB_LEVEL[s.level])
+              .map((s: any) => s.level)
+
+            if (cefrLevels.length > 0) {
+              cefrLevels.sort((a, b) => CEFR_TO_VOCAB_LEVEL[a] - CEFR_TO_VOCAB_LEVEL[b])
+              levelMap.set(norm, cefrLevels[0])
+            }
+          }
+        }
+
+        return lemmas.map(w => ({
+          word: w,
+          level: levelMap.get(w.trim().toLowerCase()),
+        }))
+      }
+
+      return []
     } catch {
       return []
     }

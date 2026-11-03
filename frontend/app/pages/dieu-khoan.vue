@@ -37,6 +37,11 @@ useHead({
       <p class="text-ink-soft">
         Các đề thi Cambridge IELTS và tài liệu tham khảo thuộc bản quyền của các tổ chức khảo thí tương ứng. Langua chỉ cung cấp giao diện mô phỏng phòng thi học tập trực tuyến.
       </p>
+
+      <h2 class="font-display text-lg font-black">4. Nguồn dữ liệu từ vựng & Giấy phép mở</h2>
+      <p class="text-ink-soft">
+        Kho từ vựng của Langua được tích hợp từ các nguồn học liệu mở và dự án ngôn ngữ học cộng đồng minh bạch (CEFR-J, Octanove, Wiktionary...). Chi tiết giấy phép, tác giả biên soạn và trích dẫn ghi công xem tại trang <NuxtLink to="/nguon-du-lieu" class="font-bold underline text-ink hover:text-accent">Nguồn dữ liệu & Giấy phép mở</NuxtLink>.
+      </p>
     </BaseCard>
   </div>
 </template>

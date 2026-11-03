@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { Heart, ShieldCheck, FileText } from '@lucide/vue'
+import { Heart, ShieldCheck, FileText, Database, Bell } from '@lucide/vue'
 import { BRAND_NAME } from '~/constants/brand'
+import { useWhatsNew } from '~/composables/useWhatsNew'
 
 const currentYear = new Date().getFullYear()
+const { openManual } = useWhatsNew()
 </script>
 
 <template>
@@ -34,6 +36,12 @@ const currentYear = new Date().getFullYear()
               </NuxtLink>
             </li>
             <li>
+              <NuxtLink to="/nguon-du-lieu" class="footer-link inline-flex items-center gap-1.5 py-1 min-h-[36px]">
+                <Database class="h-3.5 w-3.5" :stroke-width="2.5" />
+                <span>Nguồn dữ liệu từ vựng</span>
+              </NuxtLink>
+            </li>
+            <li>
               <NuxtLink to="/chinh-sach-quyen-rieng-tu" class="footer-link inline-flex items-center gap-1.5 py-1 min-h-[36px]">
                 <ShieldCheck class="h-3.5 w-3.5" :stroke-width="2.5" />
                 <span>Chính sách quyền riêng tư</span>
@@ -46,6 +54,16 @@ const currentYear = new Date().getFullYear()
         <div class="space-y-2">
           <h3 class="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-ink">Cộng đồng</h3>
           <ul class="space-y-1 text-xs sm:text-sm">
+            <li>
+              <button
+                type="button"
+                class="footer-link inline-flex items-center gap-1.5 py-1 min-h-[36px] text-left cursor-pointer bg-transparent border-0 p-0 font-inherit"
+                @click="openManual"
+              >
+                <Bell class="h-3.5 w-3.5" :stroke-width="2.5" />
+                <span>Có gì mới</span>
+              </button>
+            </li>
             <li>
               <NuxtLink to="/yeu-cau-tinh-nang" class="footer-link inline-flex items-center py-1 min-h-[36px]">
                 Góp ý & Yêu cầu tính năng

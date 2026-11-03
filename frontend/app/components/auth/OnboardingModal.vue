@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Star, Check, ArrowRight } from '@lucide/vue'
+import DevelopmentBadge from '~/components/common/DevelopmentBadge.vue'
 
 const { profile, updateProfile, isLoading } = useAuth()
 
@@ -16,8 +17,10 @@ watch(
   (p) => {
     if (p && (!p.full_name || p.full_name === 'Người học mới' || !p.target_band)) {
       fullName.value = p.full_name && p.full_name !== 'Người học mới' ? p.full_name : ''
-      selectedLang.value = p.learning_lang || 'en'
-      selectedExam.value = p.target_exam || 'ielts'
+      // Tiếng Trung / Nhật chuyển sang đang phát triển -> mặc định luôn là tiếng Anh
+      selectedLang.value = p.learning_lang === 'en' ? 'en' : 'en'
+      // HSK / JLPT chuyển sang đang phát triển -> mặc định là ielts
+      selectedExam.value = (p.target_exam && ['ielts', 'toeic', 'toefl'].includes(p.target_exam)) ? p.target_exam as any : 'ielts'
       currentBand.value = p.current_band || 5.5
       targetBand.value = p.target_band || 7.0
       isModalOpen.value = true
@@ -37,7 +40,7 @@ const handleSave = async () => {
   await updateProfile({
     full_name: fullName.value.trim(),
     avatar_text: avatar,
-    learning_lang: selectedLang.value,
+    learning_lang: 'en', // luôn lưu tiếng Anh đang sẵn sàng
     target_exam: selectedExam.value,
     current_band: Number(currentBand.value),
     target_band: Number(targetBand.value),
@@ -100,30 +103,35 @@ onUnmounted(() => {
       <!-- Chọn ngôn ngữ học -->
       <div class="space-y-1.5">
         <label class="font-display font-bold text-sm text-ink">Ngôn ngữ bạn muốn tập trung học:</label>
-        <div class="grid grid-cols-3 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <button
             type="button"
-            class="min-h-[44px] py-2 px-3 rounded-brut border-2 border-line font-display text-xs font-bold transition-all cursor-pointer"
-            :class="selectedLang === 'en' ? 'bg-accent text-accent-ink shadow-brut-sm ring-2 ring-line' : 'bg-surface-2 text-ink'"
+            class="min-h-[44px] py-2 px-3 rounded-brut border-2 border-line font-display text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            :class="selectedLang === 'en' ? 'bg-accent text-accent-ink shadow-brut-sm ring-2 ring-line font-black' : 'bg-surface-2 text-ink'"
             @click="selectedLang = 'en'"
           >
-            🇬🇧 Tiếng Anh
+            <span>🇬🇧 Tiếng Anh</span>
+            <Check v-if="selectedLang === 'en'" class="w-3.5 h-3.5" />
           </button>
+
           <button
             type="button"
-            class="min-h-[44px] py-2 px-3 rounded-brut border-2 border-line font-display text-xs font-bold transition-all cursor-pointer"
-            :class="selectedLang === 'zh' ? 'bg-accent text-accent-ink shadow-brut-sm ring-2 ring-line' : 'bg-surface-2 text-ink'"
-            @click="selectedLang = 'zh'"
+            disabled
+            aria-disabled="true"
+            class="min-h-[44px] py-2 px-3 rounded-brut border-2 border-dashed border-line font-display text-xs font-bold bg-surface-2 text-ink-soft opacity-60 cursor-not-allowed flex items-center justify-between gap-1"
           >
-            🇨🇳 Tiếng Trung
+            <span>🇨🇳 Tiếng Trung</span>
+            <DevelopmentBadge size="xs" />
           </button>
+
           <button
             type="button"
-            class="min-h-[44px] py-2 px-3 rounded-brut border-2 border-line font-display text-xs font-bold transition-all cursor-pointer"
-            :class="selectedLang === 'ja' ? 'bg-accent text-accent-ink shadow-brut-sm ring-2 ring-line' : 'bg-surface-2 text-ink'"
-            @click="selectedLang = 'ja'"
+            disabled
+            aria-disabled="true"
+            class="min-h-[44px] py-2 px-3 rounded-brut border-2 border-dashed border-line font-display text-xs font-bold bg-surface-2 text-ink-soft opacity-60 cursor-not-allowed flex items-center justify-between gap-1"
           >
-            🇯🇵 Tiếng Nhật
+            <span>🇯🇵 Tiếng Nhật</span>
+            <DevelopmentBadge size="xs" />
           </button>
         </div>
       </div>
@@ -134,19 +142,28 @@ onUnmounted(() => {
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <button
             v-for="exam in [
-              { id: 'ielts', label: 'IELTS Academic' },
-              { id: 'toeic', label: 'TOEIC' },
-              { id: 'toefl', label: 'TOEFL iBT' },
-              { id: 'hsk', label: 'HSK' },
-              { id: 'jlpt', label: 'JLPT' },
+              { id: 'ielts', label: 'IELTS Academic', available: true },
+              { id: 'toeic', label: 'TOEIC', available: true },
+              { id: 'toefl', label: 'TOEFL iBT', available: true },
+              { id: 'hsk', label: 'HSK', available: false },
+              { id: 'jlpt', label: 'JLPT', available: false },
             ]"
             :key="exam.id"
             type="button"
-            class="min-h-[44px] py-2 px-2.5 rounded-brut border-2 border-line font-display text-xs font-bold transition-all cursor-pointer"
-            :class="selectedExam === exam.id ? 'bg-warn text-on-tone shadow-brut-sm ring-2 ring-line' : 'bg-surface-2 text-ink'"
-            @click="selectedExam = exam.id as any"
+            :disabled="!exam.available"
+            :aria-disabled="!exam.available"
+            class="min-h-[44px] py-2 px-2.5 rounded-brut border-2 font-display text-xs font-bold transition-all flex items-center justify-between gap-1"
+            :class="[
+              !exam.available
+                ? 'border-dashed border-line bg-surface-2 text-ink-soft opacity-60 cursor-not-allowed'
+                : (selectedExam === exam.id
+                  ? 'border-line bg-warn text-on-tone shadow-brut-sm ring-2 ring-line cursor-pointer font-black'
+                  : 'border-line bg-surface-2 text-ink hover:bg-surface cursor-pointer'),
+            ]"
+            @click="exam.available && (selectedExam = exam.id as any)"
           >
-            {{ exam.label }}
+            <span>{{ exam.label }}</span>
+            <DevelopmentBadge v-if="!exam.available" size="xs" />
           </button>
         </div>
       </div>

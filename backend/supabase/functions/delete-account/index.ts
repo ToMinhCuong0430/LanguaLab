@@ -99,5 +99,5 @@ Deno.serve(async (req) => {
     return json({ error: delErr.message }, 500)
   }
 
-  return json({ ok: true })
+  return json({ success: true, ok: true }, 200)
 })

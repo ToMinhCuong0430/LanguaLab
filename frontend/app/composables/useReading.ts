@@ -264,14 +264,6 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
-
   // Bộ lọc
   const activeTab = ref<'catalog' | 'custom_paste'>('catalog')
   const typeFilter = ref<'all' | ReadingType>('all')
@@ -287,13 +279,11 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
 
   // Tải dữ liệu bài đọc từ Supabase
   const fetchReadingData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải kho bài đọc công khai (chỉ lấy is_published = true)
       const { data: itemsData, error: itemsErr } = await client
@@ -416,9 +406,9 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
     lang: LearningLanguage
     level: string
   }) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
-    if (!isUseMock.value && uid) {
+    if (uid) {
       try {
         const { data: row, error } = await client
           .from('user_texts')
@@ -516,9 +506,9 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
   }
 
   const deleteCustomText = async (id: string) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
-    if (!isUseMock.value && uid && !id.startsWith('custom-read-')) {
+    if (uid && !id.startsWith('custom-read-')) {
       try {
         await client.from('user_texts').delete().eq('id', id).eq('user_id', uid)
       } catch (err: any) {
@@ -533,14 +523,14 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
 
   // Danh sách hiển thị theo bộ lọc
   const myCustomTexts = computed(() => {
-    if (!isUseMock.value && authUser.value?.id) {
+    if (authUser.value?.sub) {
       return dbCustomTexts.value
     }
     return localCustomTexts.value
   })
 
   const filteredMaterials = computed(() => {
-    const catalog = !isUseMock.value && dbMaterials.value.length > 0
+    const catalog = dbMaterials.value.length > 0
       ? dbMaterials.value
       : PUBLIC_DOMAIN_READING_LIST.filter(r => r.lang === currentLang.value)
 
@@ -569,8 +559,8 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
     bookmarks: string[] = [],
     isCompleted: boolean = false
   ) => {
-    const uid = authUser.value?.id
-    if (!uid || isUseMock.value) return
+    const uid = authUser.value?.sub
+    if (!uid) return
 
     clearTimeout(progressTimer)
     progressTimer = setTimeout(async () => {
@@ -604,8 +594,8 @@ export const useReading = (targetLang?: Ref<LearningLanguage>) => {
 
   // Lưu bản tự dịch của người học vào translation_attempts
   const saveTranslationAttempt = async (sectionId: string, userTranslation: string) => {
-    const uid = authUser.value?.id
-    if (!uid || isUseMock.value || !userTranslation.trim()) return
+    const uid = authUser.value?.sub
+    if (!uid || !userTranslation.trim()) return
 
     try {
       await client.from('translation_attempts').insert({

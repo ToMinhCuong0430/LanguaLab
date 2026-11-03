@@ -1,67 +1,42 @@
-# Kịch Bản Kiểm Thử Row Level Security (RLS) & Chống Gian Lận (Langua)
+# Kịch Bản Kiểm Thử Row Level Security (RLS) & Chống Gian Lận (LanguaLab)
 
-Tài liệu này định nghĩa danh sách kiểm thử chi tiết chính sách bảo mật tầng hàng (RLS) và tính toàn vẹn dữ liệu cho backend Supabase của dự án **Langua**.
-
----
-
-## 1. Thiết Lập Môi Trường Thử Nghiệm
-
-Chuẩn bị 3 tài khoản kiểm thử đại diện cho 3 phân quyền:
-- **User A (Học viên 1)**: `00000000-0000-0000-0000-000000000001` (`hoang@langua.local` - kiêm **Admin**)
-- **User B (Học viên 2)**: `00000000-0000-0000-0000-000000000002` (`baoanh@langua.local` - **User thường**)
-- **User C (Học viên 3)**: `00000000-0000-0000-0000-000000000003` (`dangkhoa@langua.local` - **User thường**)
-- **Anonymous (Khách chưa đăng nhập)**: Token `anon`
+Tài liệu này định nghĩa danh sách kiểm thử chi tiết chính sách bảo mật tầng hàng (RLS), chống gian lận và tính toàn vẹn dữ liệu cho backend Supabase của dự án **LanguaLab**.
 
 ---
 
-## 2. Ma Trận Kịch Bản Kiểm Thử (Test Scenarios Matrix)
-
-| Mã | Khu Vực / Tính Năng | Kịch Bản Thử Nghiệm | Kỳ Vọng (Expected Outcome) | Đạt / Không Đạt |
-| :--- | :--- | :--- | :--- | :---: |
-| **RLS-01** | Quyền riêng tư cá nhân | User B thực hiện `SELECT * FROM daily_checkins WHERE user_id = 'A'` | ❌ Không trả về dòng nào (`0 rows returned`) | [ ] |
-| **RLS-02** | Quyền riêng tư cá nhân | User B thực hiện `SELECT * FROM user_videos WHERE user_id = 'A'` | ❌ Không xem được video cá nhân của User A | [ ] |
-| **RLS-03** | Quyền riêng tư cá nhân | User B thực hiện `SELECT * FROM user_video_cues WHERE user_id = 'A'` | ❌ Không xem được phụ đề riêng tư của User A | [ ] |
-| **RLS-04** | Quyền riêng tư cá nhân | User B truy vấn `user_texts` hoặc `user_saved_words` của User A | ❌ Chỉ thấy các bản ghi có `user_id = auth.uid()` | [ ] |
-| **RLS-05** | Storage riêng tư | User B gửi request HTTP download file từ bucket `pronunciation-recordings/{User_A_id}/audio.webm` | ❌ Bị từ chối `403 Forbidden` / Policy Storage chặn | [ ] |
-| **RLS-06** | Nội dung chung | User B (user thường) thực hiện `INSERT INTO grammar_points (...)` hoặc `UPDATE` | ❌ Bị chặn bởi RLS: `new row violates row-level security policy` | [ ] |
-| **RLS-07** | Nội dung chung | User B thực hiện `INSERT INTO media_items (...)` hoặc `reading_items` | ❌ Thất bại: Chỉ `public.is_admin()` mới có quyền ghi | [ ] |
-| **RLS-08** | Nội dung chung | User A (Admin) thực hiện `INSERT INTO grammar_points (...)` | ✅ Thành công do thoả mãn `public.is_admin()` | [ ] |
-| **RLS-09** | Từ điển | User B cố tình `INSERT` hoặc `DELETE` dòng trong `dictionary_entries` | ❌ Thất bại: Từ điển chỉ cho phép đọc công khai | [ ] |
-| **RLS-10** | Chống nâng quyền | User B tự thực hiện `UPDATE user_roles SET role = 'admin' WHERE user_id = 'B'` | ❌ Bị chặn hoàn toàn: Không có policy INSERT/UPDATE cho người dùng | [ ] |
-| **RLS-11** | Chống tự sửa điểm | User B gọi trực tiếp `INSERT INTO xp_events (user_id, xp_amount, source) VALUES ('B', 1000, 'cheat')` | ❌ Thất bại: Đã thu hồi quyền INSERT trực tiếp từ client trên `xp_events` | [ ] |
-| **RLS-12** | Chống tự sửa điểm SRS | User B gọi `UPDATE user_word_progress SET interval_days = 999` trực tiếp | ❌ Thất bại: Client chỉ có quyền `SELECT`, bắt buộc gọi RPC `review_word` | [ ] |
-| **RLS-13** | Bình chọn tính năng | User B gửi `INSERT INTO feature_request_votes` liên tiếp 2 lần cùng 1 `request_id` | ❌ Lần 2 thất bại do vi phạm khoá chính kép `(request_id, user_id)` | [ ] |
-| **RLS-14** | Bình chọn qua RPC | User B gọi RPC `toggle_feature_vote(req_id)` 2 lần liên tiếp | ✅ Lần 1: `has_voted = true`, `vote_count` +1. Lần 2: `has_voted = false`, `vote_count` -1 | [ ] |
-| **RLS-15** | Bảo vệ vote_count | User B gọi `UPDATE feature_requests SET vote_count = 9999 WHERE id = 'feat-1'` | ❌ Thất bại: RLS chặn người dùng sửa các cột trạng thái/điểm số | [ ] |
-| **RLS-16** | Tác giả sửa bài | User B tạo yêu cầu `feat-new`, khi trạng thái là `new` thì sửa được mô tả | ✅ Cập nhật thành công | [ ] |
-| **RLS-17** | Tác giả sửa bài | Khi Admin đổi trạng thái `feat-new` thành `in_progress`, User B cố sửa lại | ❌ Bị chặn: Tác giả chỉ được sửa khi `status = 'new'` | [ ] |
-| **RLS-18** | Bảo mật danh tính | Khách hoặc người dùng xem danh sách qua View `feature_requests_public` | ✅ Xem được tiêu đề, số vote, tên tác giả, avatar; ❌ KHÔNG lộ `email` hay `user_id` | [ ] |
-| **RLS-19** | Giới hạn phụ đề video | Người dùng tải lên dòng phụ đề thứ 1001 vào `user_video_cues` cho cùng 1 video | ❌ Trigger `check_user_video_cues_limit` ném lỗi ngoại lệ chặn vượt quota | [ ] |
-| **RLS-20** | Ràng buộc bản quyền | Admin thêm bài vào `reading_items` với `is_published = true` nhưng `license = NULL` | ❌ Ràng buộc `chk_reading_published_license` từ chối lưu bài | [ ] |
-| **RLS-21** | Idempotent XP | User B gọi `award_xp('typing_attempt', 'en-life-shopping')` 2 lần trong ngày | ✅ Lần 1: Nhận +30 XP. Lần 2: Báo `'Hoạt động này đã được cộng XP trước đó'`, 0 XP | [ ] |
-| **RLS-22** | Trần XP hàng ngày | User B hoàn thành liên tục các bài tập nhằm vượt quá 500 XP trong 1 ngày | ❌ Server tự động cắt bớt và chặn ở mức tối đa 500 XP/ngày | [ ] |
+## 1. Nguyên Tắc An Toàn Dữ Liệu
+- **Không sử dụng user giả cố định trong mã nguồn**: Mọi test case tự động được viết bằng `pgTAP` và bọc trong transaction `ROLLBACK`. Sau khi test chạy xong, database được hoàn nguyên 100%, không lưu bất kỳ user hay bản ghi rác nào.
+- **Bảo vệ môi trường Production**: Các script bổ trợ chạy cục bộ (như `create-test-users.mjs`) tích hợp sẵn cơ chế kiểm tra `SUPABASE_URL`, tự động chặn và ném lỗi nếu phát hiện URL không phải `localhost` hoặc `127.0.0.1`.
 
 ---
 
-## 3. Câu Lệnh SQL Mô Phỏng Kiểm Thử Nhanh (SQL Test Runner Snippets)
+## 2. Cách Chạy Bộ Kiểm Thử RLS Tự Động
 
-Thực thi trong SQL Editor của Supabase Studio hoặc psql để giả lập các phiên làm việc:
+### Cách 1: Sử dụng Supabase CLI (Khuyến nghị trên Local)
+```bash
+# Khởi động Supabase local nếu chưa chạy
+npx supabase start
 
-```sql
--- Giả lập phiên làm việc của User B (User thường)
-SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claims" = '{"sub": "00000000-0000-0000-0000-000000000002", "role": "authenticated"}';
-
--- Thử 1: Đọc trộm video của User A -> Phải ra 0 dòng
-SELECT * FROM public.user_videos WHERE user_id = '00000000-0000-0000-0000-000000000001';
-
--- Thử 2: Tự chèn XP vào xp_events -> Phải báo lỗi vi phạm RLS
-INSERT INTO public.xp_events (user_id, xp_amount, source) 
-VALUES ('00000000-0000-0000-0000-000000000002', 500, 'cheat');
-
--- Thử 3: Gọi RPC hợp lệ -> Phải thành công
-SELECT public.submit_typing_attempt('en-life-shopping', 65.5, 96.0, 45);
-
--- Khôi phục phiên làm việc mặc định
-RESET ROLE;
+# Chạy toàn bộ test suites trong thư mục tests
+npx supabase test db
 ```
+
+### Cách 2: Chạy trực tiếp trên Supabase Studio (SQL Editor)
+1. Mở file `backend/supabase/tests/01_rls_security_tests.sql`.
+2. Sao chép toàn bộ nội dung và dán vào tab **SQL Editor** trên Supabase Studio Dashboard.
+3. Bấm **Run**. Toàn bộ 6 test case sẽ được đánh giá và giao dịch được `ROLLBACK` an toàn ngay lập tức.
+
+---
+
+## 3. Ma Trận Kịch Bản Kiểm Thử Trọng Yếu (Critical Test Matrix)
+
+| Mã | Khu Vực / Tính Năng | Kịch Bản Thử Nghiệm | Kỳ Vọng (Expected Outcome) | Tự Động Hóa (pgTAP) |
+| :--- | :--- | :--- | :--- | :---: |
+| **RLS-01** | Quyền riêng tư | User A đọc `user_word_progress`, `exam_attempts` của User B | ❌ Không trả về dòng nào (`0 rows returned`) | ✅ TC1 trong `01_rls_security_tests.sql` |
+| **RLS-02** | Toàn vẹn hồ sơ | User A cố `UPDATE profiles` của User B | ❌ Bị chặn bởi RLS: 0 rows affected | ✅ TC2 trong `01_rls_security_tests.sql` |
+| **RLS-03** | Chống hack XP/Streak | User A tự gọi `UPDATE profiles SET total_xp = 999999` | ❌ Trigger `tr_protect_profile_fields` chặn và ném exception | ✅ TC3 trong `01_rls_security_tests.sql` |
+| **RLS-04** | Idempotent XP | Gọi `award_xp` 2 lần liên tiếp với cùng một `reference_id` | ✅ Lần 2 trả về `success: false, xp_gained: 0` | ✅ TC4 trong `01_rls_security_tests.sql` |
+| **RLS-05** | Phân quyền vai trò | User thường cố `INSERT/UPDATE` vào bảng `user_roles` | ❌ Bị chặn bởi RLS (`42501 Insufficient Privilege`) | ✅ TC5 trong `01_rls_security_tests.sql` |
+| **RLS-06** | Dữ liệu quản trị | User thường cố `SELECT` bảng `content_import_logs` | ❌ Không xem được bản ghi nào (`0 rows returned`) | ✅ TC6 trong `01_rls_security_tests.sql` |
+| **RLS-07** | Giới hạn trần XP | User tích lũy vượt 500 XP trong cùng một ngày | ❌ Server tự động cắt bớt và chặn ở mức tối đa 500 XP/ngày | ✅ Được bảo đảm qua hàm `award_xp` |
+| **RLS-08** | Storage riêng tư | User upload/xóa file ngoài thư mục `{auth.uid()}/*` | ❌ Bị chặn bởi Storage RLS policies | ✅ Kiểm tra bởi Storage policies |

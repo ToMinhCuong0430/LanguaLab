@@ -1,0 +1,33 @@
+{
+  "combined_rows": 9919,
+  "unique_lemmas": 8785,
+  "by_level": {
+    "A1": 1149,
+    "A2": 1433,
+    "B1": 2474,
+    "B2": 2844,
+    "C1": 1064,
+    "C2": 955
+  },
+  "by_source": {
+    "cefrj": 7900,
+    "octanove": 2019
+  },
+  "conflicts": 128,
+  "skipped": 71,
+  "skipped_by_reason": {
+    "ký tự đặc biệt hoặc viết tắt": 7,
+    "viết hoa (danh từ riêng hoặc viết tắt)": 64
+  },
+  "stats": {
+    "rows_cefrj": 7799,
+    "variants_split": 213,
+    "pos_renamed": 63,
+    "rows_octanove": 2136,
+    "pos_empty_to_any": 1
+  },
+  "sources": {
+    "cefrj": "CEFR-J Vocabulary Profile 1.5",
+    "octanove": "Octanove Vocabulary Profile C1/C2 1.0"
+  }
+}

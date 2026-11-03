@@ -635,6 +635,11 @@ export const CONTENT_TYPE_DEFINITIONS: Record<ContentType, ContentTypeDefinition
       if (!['Dễ', 'Trung bình', 'Khó'].includes(row.difficulty)) return `Dòng ${idx}: Độ khó phải là Dễ, Trung bình, hoặc Khó`
       if (!row.question_number) return `Dòng ${idx}: Thiếu số thứ tự câu hỏi`
       if (!row.correct_answer?.trim()) return `Dòng ${idx}: Thiếu đáp án đúng`
+      const start = row.audio_start_seconds?.toString().trim()
+      const end = row.audio_end_seconds?.toString().trim()
+      if (start && !/^\d+$/.test(start)) return `Dòng ${idx}: audio_start_seconds phải là số giây nguyên`
+      if (end && !/^\d+$/.test(end)) return `Dòng ${idx}: audio_end_seconds phải là số giây nguyên`
+      if (start && end && Number(end) < Number(start)) return `Dòng ${idx}: audio_end_seconds phải lớn hơn hoặc bằng audio_start_seconds`
       return null
     },
     importData: async (rows, client) => {
@@ -693,6 +698,12 @@ export const CONTENT_TYPE_DEFINITIONS: Record<ContentType, ContentTypeDefinition
             options: opts,
             correct_answer: q.correct_answer.trim(),
             explanation: q.explanation?.trim() || 'Giải thích đáp án',
+            category_tag: q.category_tag?.trim() || null,
+            passage_section_ref: q.passage_section_ref?.trim() || null,
+            // Dẫn chứng cho phần giải thích (cột tuỳ chọn)
+            evidence_quote: q.evidence_quote?.trim() || null,
+            audio_start_seconds: q.audio_start_seconds !== undefined && q.audio_start_seconds !== '' ? parseInt(q.audio_start_seconds) : null,
+            audio_end_seconds: q.audio_end_seconds !== undefined && q.audio_end_seconds !== '' ? parseInt(q.audio_end_seconds) : null,
           }
         })
 

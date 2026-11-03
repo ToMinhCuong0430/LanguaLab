@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -14,6 +14,507 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          details: Json
+          entity_ids: string[]
+          entity_type: string
+          id: number
+          summary: string
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_ids?: string[]
+          entity_type: string
+          id?: never
+          summary: string
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_ids?: string[]
+          entity_type?: string
+          id?: never
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      ai_feedback: {
+        Row: {
+          attempt_id: string | null
+          completed_at: string | null
+          created_at: string
+          criteria: Json | null
+          error_code: string | null
+          error_message: string | null
+          id: string
+          input_tokens: number | null
+          model: string | null
+          model_answer: string | null
+          output_tokens: number | null
+          overall_band: number | null
+          prompt_text: string
+          provider: string | null
+          run_count: number
+          skill: Database["public"]["Enums"]["ielts_skill"]
+          started_at: string | null
+          status: string
+          submission_text: string
+          suggestions: Json | null
+          summary: string | null
+          task_number: number | null
+          test_id: string
+          updated_at: string
+          user_id: string
+          word_count: number
+        }
+        Insert: {
+          attempt_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          criteria?: Json | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          model_answer?: string | null
+          output_tokens?: number | null
+          overall_band?: number | null
+          prompt_text: string
+          provider?: string | null
+          run_count?: number
+          skill: Database["public"]["Enums"]["ielts_skill"]
+          started_at?: string | null
+          status?: string
+          submission_text: string
+          suggestions?: Json | null
+          summary?: string | null
+          task_number?: number | null
+          test_id: string
+          updated_at?: string
+          user_id: string
+          word_count?: number
+        }
+        Update: {
+          attempt_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          criteria?: Json | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          model_answer?: string | null
+          output_tokens?: number | null
+          overall_band?: number | null
+          prompt_text?: string
+          provider?: string | null
+          run_count?: number
+          skill?: Database["public"]["Enums"]["ielts_skill"]
+          started_at?: string | null
+          status?: string
+          submission_text?: string
+          suggestions?: Json | null
+          summary?: string | null
+          task_number?: number | null
+          test_id?: string
+          updated_at?: string
+          user_id?: string
+          word_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "exam_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "exam_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ai_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      assignments: {
+        Row: {
+          class_id: string
+          created_at: string
+          created_by: string | null
+          due_at: string | null
+          id: string
+          instructions: string | null
+          student_ids: string[] | null
+          test_id: string
+          title: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          instructions?: string | null
+          student_ids?: string[] | null
+          test_id: string
+          title: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          instructions?: string | null
+          student_ids?: string[] | null
+          test_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "assignments_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "exam_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_invites: {
+        Row: {
+          class_id: string
+          created_at: string
+          email: string
+          id: string
+          invited_by: string | null
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          email: string
+          id?: string
+          invited_by?: string | null
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_invites_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      class_members: {
+        Row: {
+          class_id: string
+          joined_at: string
+          joined_via: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          joined_at?: string
+          joined_via: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          joined_at?: string
+          joined_via?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_members_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_archived: boolean
+          join_code: string
+          name: string
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_archived?: boolean
+          join_code: string
+          name: string
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_archived?: boolean
+          join_code?: string
+          name?: string
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       content_import_logs: {
         Row: {
           admin_id: string
@@ -89,6 +590,75 @@ export type Database = {
           },
         ]
       }
+      content_reviews: {
+        Row: {
+          actor_id: string | null
+          content_id: string
+          content_type: string
+          created_at: string
+          from_status: string
+          id: number
+          note: string | null
+          to_status: string
+        }
+        Insert: {
+          actor_id?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string
+          from_status: string
+          id?: never
+          note?: string | null
+          to_status: string
+        }
+        Update: {
+          actor_id?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          from_status?: string
+          id?: never
+          note?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_reviews_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       daily_checkins: {
         Row: {
           checkin_date: string
@@ -139,6 +709,72 @@ export type Database = {
           },
           {
             foreignKeyName: "daily_checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      diagnostic_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          id: string
+          results: Json
+          self_ratings: Json
+          skills: string[]
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          results: Json
+          self_ratings?: Json
+          skills: string[]
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          results?: Json
+          self_ratings?: Json
+          skills?: string[]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "diagnostic_attempts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "weekly_user_summary"
@@ -308,9 +944,12 @@ export type Database = {
       }
       exam_questions: {
         Row: {
+          audio_end_seconds: number | null
+          audio_start_seconds: number | null
           category_tag: string | null
           correct_answer: string
           created_at: string
+          evidence_quote: string | null
           explanation: string
           id: string
           options: Json | null
@@ -321,9 +960,12 @@ export type Database = {
           type: Database["public"]["Enums"]["question_type"]
         }
         Insert: {
+          audio_end_seconds?: number | null
+          audio_start_seconds?: number | null
           category_tag?: string | null
           correct_answer: string
           created_at?: string
+          evidence_quote?: string | null
           explanation: string
           id?: string
           options?: Json | null
@@ -334,9 +976,12 @@ export type Database = {
           type: Database["public"]["Enums"]["question_type"]
         }
         Update: {
+          audio_end_seconds?: number | null
+          audio_start_seconds?: number | null
           category_tag?: string | null
           correct_answer?: string
           created_at?: string
+          evidence_quote?: string | null
           explanation?: string
           id?: string
           options?: Json | null
@@ -413,6 +1058,7 @@ export type Database = {
           prep_time_seconds: number | null
           prompt_requirements: string | null
           prompts: string[] | null
+          review_status: string
           skill: Database["public"]["Enums"]["ielts_skill"]
           speak_time_seconds: number | null
           subtitle: string | null
@@ -440,6 +1086,7 @@ export type Database = {
           prep_time_seconds?: number | null
           prompt_requirements?: string | null
           prompts?: string[] | null
+          review_status?: string
           skill: Database["public"]["Enums"]["ielts_skill"]
           speak_time_seconds?: number | null
           subtitle?: string | null
@@ -467,6 +1114,7 @@ export type Database = {
           prep_time_seconds?: number | null
           prompt_requirements?: string | null
           prompts?: string[] | null
+          review_status?: string
           skill?: Database["public"]["Enums"]["ielts_skill"]
           speak_time_seconds?: number | null
           subtitle?: string | null
@@ -814,39 +1462,51 @@ export type Database = {
       }
       grammar_exercises: {
         Row: {
-          correct_answer: string
+          correct_answer: string | null
+          correct_index: number | null
+          correct_order: Json | null
           created_at: string
           explanation: string
+          hint: string | null
           id: string
           options: Json | null
           point_id: string
           prompt: string
           question: string | null
           question_type: string
+          scrambled_words: Json | null
           sort_order: number
         }
         Insert: {
-          correct_answer: string
+          correct_answer?: string | null
+          correct_index?: number | null
+          correct_order?: Json | null
           created_at?: string
           explanation: string
+          hint?: string | null
           id?: string
           options?: Json | null
           point_id: string
           prompt: string
           question?: string | null
           question_type: string
+          scrambled_words?: Json | null
           sort_order?: number
         }
         Update: {
-          correct_answer?: string
+          correct_answer?: string | null
+          correct_index?: number | null
+          correct_order?: Json | null
           created_at?: string
           explanation?: string
+          hint?: string | null
           id?: string
           options?: Json | null
           point_id?: string
           prompt?: string
           question?: string | null
           question_type?: string
+          scrambled_words?: Json | null
           sort_order?: number
         }
         Relationships: [
@@ -859,17 +1519,49 @@ export type Database = {
           },
         ]
       }
+      grammar_levels: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          language: Database["public"]["Enums"]["learning_language"]
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          language: Database["public"]["Enums"]["learning_language"]
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          language?: Database["public"]["Enums"]["learning_language"]
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       grammar_points: {
         Row: {
           common_mistakes: Json
           created_at: string
           examples: Json
           explanation: string
+          explanation_notes: Json
           formula: Json
           id: string
           is_published: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status: string
           sort_order: number
           summary: string | null
           title: string
@@ -882,11 +1574,13 @@ export type Database = {
           created_at?: string
           examples?: Json
           explanation: string
+          explanation_notes?: Json
           formula?: Json
           id: string
           is_published?: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status?: string
           sort_order?: number
           summary?: string | null
           title: string
@@ -899,11 +1593,13 @@ export type Database = {
           created_at?: string
           examples?: Json
           explanation?: string
+          explanation_notes?: Json
           formula?: Json
           id?: string
           is_published?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level?: string
+          review_status?: string
           sort_order?: number
           summary?: string | null
           title?: string
@@ -951,6 +1647,758 @@ export type Database = {
           xp_required?: number
         }
         Relationships: []
+      }
+      lex_attributions: {
+        Row: {
+          attribution_text: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          license_name: string | null
+          raw_record_id: string | null
+          source_id: string
+          source_url: string | null
+        }
+        Insert: {
+          attribution_text?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          license_name?: string | null
+          raw_record_id?: string | null
+          source_id: string
+          source_url?: string | null
+        }
+        Update: {
+          attribution_text?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          license_name?: string | null
+          raw_record_id?: string | null
+          source_id?: string
+          source_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_attributions_raw_record_id_fkey"
+            columns: ["raw_record_id"]
+            isOneToOne: false
+            referencedRelation: "lex_raw_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_attributions_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_entries: {
+        Row: {
+          created_at: string
+          entry_type: string
+          frequency_rank: number | null
+          id: string
+          language: Database["public"]["Enums"]["learning_language"]
+          lemma: string
+          normalized_lemma: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entry_type?: string
+          frequency_rank?: number | null
+          id?: string
+          language?: Database["public"]["Enums"]["learning_language"]
+          lemma: string
+          normalized_lemma?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entry_type?: string
+          frequency_rank?: number | null
+          id?: string
+          language?: Database["public"]["Enums"]["learning_language"]
+          lemma?: string
+          normalized_lemma?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lex_entry_topics: {
+        Row: {
+          entry_id: string
+          topic_id: string
+        }
+        Insert: {
+          entry_id: string
+          topic_id: string
+        }
+        Update: {
+          entry_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_entry_topics_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_entry_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "lex_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_examples: {
+        Row: {
+          author_credit: string | null
+          content_origin: string
+          created_at: string
+          id: string
+          review_status: string
+          sense_id: string
+          sentence: string
+          sentence_vi: string | null
+          source_id: string | null
+          source_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_credit?: string | null
+          content_origin?: string
+          created_at?: string
+          id?: string
+          review_status?: string
+          sense_id: string
+          sentence: string
+          sentence_vi?: string | null
+          source_id?: string | null
+          source_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_credit?: string | null
+          content_origin?: string
+          created_at?: string
+          id?: string
+          review_status?: string
+          sense_id?: string
+          sentence?: string
+          sentence_vi?: string | null
+          source_id?: string | null
+          source_ref?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_examples_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_examples_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_forms: {
+        Row: {
+          entry_id: string
+          form: string
+          form_type: string
+          id: string
+        }
+        Insert: {
+          entry_id: string
+          form: string
+          form_type: string
+          id?: string
+        }
+        Update: {
+          entry_id?: string
+          form?: string
+          form_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_forms_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_import_batches: {
+        Row: {
+          batch_name: string
+          created_at: string
+          error_summary: Json
+          failed_records: number
+          finished_at: string | null
+          id: string
+          processed_records: number
+          source_id: string | null
+          started_by: string | null
+          status: string
+          total_records: number
+        }
+        Insert: {
+          batch_name: string
+          created_at?: string
+          error_summary?: Json
+          failed_records?: number
+          finished_at?: string | null
+          id?: string
+          processed_records?: number
+          source_id?: string | null
+          started_by?: string | null
+          status?: string
+          total_records?: number
+        }
+        Update: {
+          batch_name?: string
+          created_at?: string
+          error_summary?: Json
+          failed_records?: number
+          finished_at?: string | null
+          id?: string
+          processed_records?: number
+          source_id?: string | null
+          started_by?: string | null
+          status?: string
+          total_records?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_import_batches_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_import_batches_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      lex_level_map: {
+        Row: {
+          level: string
+          level_system: string
+          vocab_level_number: number
+        }
+        Insert: {
+          level: string
+          level_system: string
+          vocab_level_number: number
+        }
+        Update: {
+          level?: string
+          level_system?: string
+          vocab_level_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_level_map_vocab_level_number_fkey"
+            columns: ["vocab_level_number"]
+            isOneToOne: false
+            referencedRelation: "user_vocab_levels_summary"
+            referencedColumns: ["level_number"]
+          },
+          {
+            foreignKeyName: "lex_level_map_vocab_level_number_fkey"
+            columns: ["vocab_level_number"]
+            isOneToOne: false
+            referencedRelation: "vocab_levels"
+            referencedColumns: ["level_number"]
+          },
+        ]
+      }
+      lex_pronunciations: {
+        Row: {
+          accent: string
+          audio_license: string | null
+          audio_source: string | null
+          audio_url: string | null
+          entry_id: string
+          id: string
+          kind: string
+          transcription: string | null
+        }
+        Insert: {
+          accent?: string
+          audio_license?: string | null
+          audio_source?: string | null
+          audio_url?: string | null
+          entry_id: string
+          id?: string
+          kind?: string
+          transcription?: string | null
+        }
+        Update: {
+          accent?: string
+          audio_license?: string | null
+          audio_source?: string | null
+          audio_url?: string | null
+          entry_id?: string
+          id?: string
+          kind?: string
+          transcription?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_pronunciations_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_raw_records: {
+        Row: {
+          batch_id: string
+          created_at: string
+          error_message: string | null
+          external_id: string | null
+          id: string
+          processing_status: string
+          raw_data: Json
+        }
+        Insert: {
+          batch_id: string
+          created_at?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          processing_status?: string
+          raw_data: Json
+        }
+        Update: {
+          batch_id?: string
+          created_at?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          processing_status?: string
+          raw_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_raw_records_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "lex_import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_relations: {
+        Row: {
+          created_at: string
+          id: string
+          relation_type: string
+          source_entry_id: string
+          source_sense_id: string | null
+          target_entry_id: string | null
+          target_text: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          relation_type: string
+          source_entry_id: string
+          source_sense_id?: string | null
+          target_entry_id?: string | null
+          target_text?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          relation_type?: string
+          source_entry_id?: string
+          source_sense_id?: string | null
+          target_entry_id?: string | null
+          target_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_relations_source_entry_id_fkey"
+            columns: ["source_entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_relations_source_sense_id_fkey"
+            columns: ["source_sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_relations_target_entry_id_fkey"
+            columns: ["target_entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_reports: {
+        Row: {
+          created_at: string
+          entry_id: string
+          id: string
+          message: string | null
+          report_type: string
+          resolved_at: string | null
+          sense_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          id?: string
+          message?: string | null
+          report_type: string
+          resolved_at?: string | null
+          sense_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          id?: string
+          message?: string | null
+          report_type?: string
+          resolved_at?: string | null
+          sense_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_reports_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_reports_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lex_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      lex_sense_levels: {
+        Row: {
+          created_at: string
+          id: string
+          level: string
+          level_system: string
+          sense_id: string
+          source_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level: string
+          level_system: string
+          sense_id: string
+          source_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: string
+          level_system?: string
+          sense_id?: string
+          source_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_sense_levels_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lex_sense_levels_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lex_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_senses: {
+        Row: {
+          content_origin: string
+          created_at: string
+          definition: string
+          definition_lang: string
+          entry_id: string
+          id: string
+          level: string | null
+          level_system: string
+          part_of_speech: string
+          review_status: string
+          sense_order: number
+          updated_at: string
+        }
+        Insert: {
+          content_origin?: string
+          created_at?: string
+          definition: string
+          definition_lang?: string
+          entry_id: string
+          id?: string
+          level?: string | null
+          level_system?: string
+          part_of_speech: string
+          review_status?: string
+          sense_order?: number
+          updated_at?: string
+        }
+        Update: {
+          content_origin?: string
+          created_at?: string
+          definition?: string
+          definition_lang?: string
+          entry_id?: string
+          id?: string
+          level?: string | null
+          level_system?: string
+          part_of_speech?: string
+          review_status?: string
+          sense_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_senses_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lex_sources: {
+        Row: {
+          attribution_text: string | null
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          license_name: string | null
+          license_url: string | null
+          license_verified: boolean
+          name: string
+          requires_share_alike: boolean | null
+          source_url: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          attribution_text?: string | null
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          license_name?: string | null
+          license_url?: string | null
+          license_verified?: boolean
+          name: string
+          requires_share_alike?: boolean | null
+          source_url?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          attribution_text?: string | null
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          license_name?: string | null
+          license_url?: string | null
+          license_verified?: boolean
+          name?: string
+          requires_share_alike?: boolean | null
+          source_url?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      lex_topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      lex_translations: {
+        Row: {
+          content_origin: string
+          created_at: string
+          id: string
+          language_code: string
+          note: string | null
+          review_status: string
+          sense_id: string
+          translated_text: string
+          updated_at: string
+        }
+        Insert: {
+          content_origin?: string
+          created_at?: string
+          id?: string
+          language_code?: string
+          note?: string | null
+          review_status?: string
+          sense_id: string
+          translated_text: string
+          updated_at?: string
+        }
+        Update: {
+          content_origin?: string
+          created_at?: string
+          id?: string
+          language_code?: string
+          note?: string | null
+          review_status?: string
+          sense_id?: string
+          translated_text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lex_translations_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       media_cues: {
         Row: {
@@ -1006,6 +2454,7 @@ export type Database = {
           level: string
           media_type: string
           provider: string
+          review_status: string
           source_url: string
           speaker: string | null
           title: string
@@ -1022,6 +2471,7 @@ export type Database = {
           level: string
           media_type: string
           provider: string
+          review_status?: string
           source_url: string
           speaker?: string | null
           title: string
@@ -1038,6 +2488,7 @@ export type Database = {
           level?: string
           media_type?: string
           provider?: string
+          review_status?: string
           source_url?: string
           speaker?: string | null
           title?: string
@@ -1287,6 +2738,7 @@ export type Database = {
           level: string
           license: string
           reading_time_minutes: number
+          review_status: string
           source_note: string | null
           source_url: string | null
           title: string
@@ -1304,6 +2756,7 @@ export type Database = {
           level: string
           license: string
           reading_time_minutes?: number
+          review_status?: string
           source_note?: string | null
           source_url?: string | null
           title: string
@@ -1321,6 +2774,7 @@ export type Database = {
           level?: string
           license?: string
           reading_time_minutes?: number
+          review_status?: string
           source_note?: string | null
           source_url?: string | null
           title?: string
@@ -1365,6 +2819,217 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "reading_items"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_plan_items: {
+        Row: {
+          category: string | null
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          description: string
+          estimated_minutes: number
+          id: string
+          item_type: string
+          link: string | null
+          plan_id: string
+          skill: Database["public"]["Enums"]["ielts_skill"] | null
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          description: string
+          estimated_minutes?: number
+          id?: string
+          item_type: string
+          link?: string | null
+          plan_id: string
+          skill?: Database["public"]["Enums"]["ielts_skill"] | null
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          description?: string
+          estimated_minutes?: number
+          id?: string
+          item_type?: string
+          link?: string | null
+          plan_id?: string
+          skill?: Database["public"]["Enums"]["ielts_skill"] | null
+          sort_order?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_plan_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "study_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_plans: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          diagnostic_id: string | null
+          duration_days: number
+          focus: Json
+          id: string
+          start_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          diagnostic_id?: string | null
+          duration_days: number
+          focus?: Json
+          id?: string
+          start_date?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          diagnostic_id?: string | null
+          duration_days?: number
+          focus?: Json
+          id?: string
+          start_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_plans_diagnostic_id_fkey"
+            columns: ["diagnostic_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      teacher_feedback: {
+        Row: {
+          ai_band: number | null
+          attempt_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          override_band: number | null
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          ai_band?: number | null
+          attempt_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          override_band?: number | null
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          ai_band?: number | null
+          attempt_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          override_band?: number | null
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_feedback_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "exam_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teacher_feedback_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1568,6 +3233,7 @@ export type Database = {
           is_published: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status: string
           sort_order: number
           title: string
           updated_at: string
@@ -1581,6 +3247,7 @@ export type Database = {
           is_published?: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level: string
+          review_status?: string
           sort_order?: number
           title: string
           updated_at?: string
@@ -1594,11 +3261,72 @@ export type Database = {
           is_published?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level?: string
+          review_status?: string
           sort_order?: number
           title?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      user_bans: {
+        Row: {
+          banned_by: string | null
+          banned_until: string | null
+          created_at: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          banned_by?: string | null
+          banned_until?: string | null
+          created_at?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          banned_by?: string | null
+          banned_until?: string | null
+          created_at?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "daily_user_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "user_xp_totals"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "weekly_user_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_grammar_progress: {
         Row: {
@@ -2215,6 +3943,66 @@ export type Database = {
           },
         ]
       }
+      user_sense_progress: {
+        Row: {
+          correct_count: number
+          created_at: string
+          easiness_factor: number
+          id: string
+          incorrect_count: number
+          interval_days: number
+          last_reviewed_at: string | null
+          next_review_at: string
+          repetition_count: number
+          sense_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          correct_count?: number
+          created_at?: string
+          easiness_factor?: number
+          id?: string
+          incorrect_count?: number
+          interval_days?: number
+          last_reviewed_at?: string | null
+          next_review_at?: string
+          repetition_count?: number
+          sense_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          correct_count?: number
+          created_at?: string
+          easiness_factor?: number
+          id?: string
+          incorrect_count?: number
+          interval_days?: number
+          last_reviewed_at?: string | null
+          next_review_at?: string
+          repetition_count?: number
+          sense_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sense_progress_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_sense_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_word_progress: {
         Row: {
           correct_count: number
@@ -2353,6 +4141,7 @@ export type Database = {
           is_system: boolean
           language: Database["public"]["Enums"]["learning_language"]
           level_id: number | null
+          review_status: string
           title: string
           updated_at: string
           user_id: string | null
@@ -2366,6 +4155,7 @@ export type Database = {
           is_system?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level_id?: number | null
+          review_status?: string
           title: string
           updated_at?: string
           user_id?: string | null
@@ -2379,6 +4169,7 @@ export type Database = {
           is_system?: boolean
           language?: Database["public"]["Enums"]["learning_language"]
           level_id?: number | null
+          review_status?: string
           title?: string
           updated_at?: string
           user_id?: string | null
@@ -2436,6 +4227,8 @@ export type Database = {
           example_translation: string | null
           examples: Json | null
           id: string
+          lex_entry_id: string | null
+          lex_sense_id: string | null
           meaning_vi: string
           part_of_speech: string | null
           phonetic: string | null
@@ -2450,6 +4243,8 @@ export type Database = {
           example_translation?: string | null
           examples?: Json | null
           id?: string
+          lex_entry_id?: string | null
+          lex_sense_id?: string | null
           meaning_vi: string
           part_of_speech?: string | null
           phonetic?: string | null
@@ -2464,6 +4259,8 @@ export type Database = {
           example_translation?: string | null
           examples?: Json | null
           id?: string
+          lex_entry_id?: string | null
+          lex_sense_id?: string | null
           meaning_vi?: string
           part_of_speech?: string | null
           phonetic?: string | null
@@ -2472,6 +4269,20 @@ export type Database = {
           word?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "vocab_words_lex_entry_id_fkey"
+            columns: ["lex_entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vocab_words_lex_sense_id_fkey"
+            columns: ["lex_sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vocab_words_set_id_fkey"
             columns: ["set_id"]
@@ -2587,6 +4398,18 @@ export type Database = {
           title: string | null
           updated_at: string | null
           vote_count: number | null
+        }
+        Relationships: []
+      }
+      lex_coverage_stats: {
+        Row: {
+          entries: number | null
+          entry_type: string | null
+          language: Database["public"]["Enums"]["learning_language"] | null
+          level: string | null
+          level_system: string | null
+          senses: number | null
+          status: string | null
         }
         Relationships: []
       }
@@ -2746,36 +4569,257 @@ export type Database = {
       }
     }
     Functions: {
+      admin_ban_user: {
+        Args: { p_days?: number; p_reason: string; p_user: string }
+        Returns: undefined
+      }
+      admin_list_audit: {
+        Args: {
+          p_action?: string
+          p_actor?: string
+          p_entity?: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
+      }
+      admin_list_users: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_role?: string
+          p_search?: string
+          p_status?: string
+        }
+        Returns: Json
+      }
+      admin_platform_stats: { Args: { p_days?: number }; Returns: Json }
+      admin_review_counts: { Args: never; Returns: Json }
+      admin_set_user_role: {
+        Args: { p_role: string; p_user: string }
+        Returns: undefined
+      }
+      admin_unban_user: { Args: { p_user: string }; Returns: undefined }
+      assignment_status_for: {
+        Args: { p_assignment: string; p_student: string }
+        Returns: Json
+      }
       award_xp: {
         Args: { p_ref_id?: string; p_source: string; p_user_id?: string }
         Returns: Json
       }
       claim_daily_checkin: { Args: never; Returns: Json }
       complete_stage: { Args: { p_stage_id: string }; Returns: Json }
-      submit_exam_attempt: {
+      content_table_for: { Args: { p_type: string }; Returns: string }
+      create_assignment: {
         Args: {
-          p_answers: Json
-          p_audio_path?: string | null
-          p_duration_seconds: number
-          p_essay?: string | null
-          p_mode: Database['public']['Enums']['exam_mode']
+          p_class: string
+          p_due_at?: string
+          p_instructions?: string
+          p_student_ids?: string[]
           p_test_id: string
+          p_title: string
+        }
+        Returns: string
+      }
+      create_class: {
+        Args: { p_description?: string; p_name: string }
+        Returns: string
+      }
+      create_study_plan: {
+        Args: { p_diagnostic_id?: string; p_duration: number }
+        Returns: string
+      }
+      current_app_role: { Args: never; Returns: string }
+      delete_assignment: { Args: { p_assignment: string }; Returns: undefined }
+      generate_join_code: { Args: never; Returns: string }
+      get_class_detail: { Args: { p_class: string }; Returns: Json }
+      get_diagnostic_questions: {
+        Args: { p_per_skill?: number; p_skills: string[] }
+        Returns: Json
+      }
+      get_my_classes: { Args: never; Returns: Json }
+      get_my_progress: { Args: { p_since?: string }; Returns: Json }
+      get_my_today_stats: { Args: never; Returns: Json }
+      get_student_progress: { Args: { p_student: string }; Returns: Json }
+      get_teacher_overview: { Args: never; Returns: Json }
+      get_user_streak: { Args: { p_user_id: string }; Returns: number }
+      ielts_band_from_raw: {
+        Args: { p_raw: number; p_skill: string; p_total: number }
+        Returns: number
+      }
+      invite_to_class: {
+        Args: { p_class: string; p_emails: string[] }
+        Returns: Json
+      }
+      is_admin: { Args: never; Returns: boolean }
+      is_class_member: { Args: { p_class: string }; Returns: boolean }
+      is_class_teacher: { Args: { p_class: string }; Returns: boolean }
+      is_teacher: { Args: never; Returns: boolean }
+      join_class: { Args: { p_code: string }; Returns: Json }
+      leave_class: { Args: { p_class: string }; Returns: undefined }
+      lex_entry_is_published: { Args: { p_entry_id: string }; Returns: boolean }
+      lex_level_is_valid: {
+        Args: { p_level: string; p_system: string }
+        Returns: boolean
+      }
+      lex_sense_is_public: { Args: { p_sense_id: string }; Returns: boolean }
+      lex_vocab_level: {
+        Args: { p_level: string; p_system: string }
+        Returns: number
+      }
+      list_assignable_tests: { Args: never; Returns: Json }
+      list_staff: { Args: never; Returns: Json }
+      log_admin_action: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_entity_ids: string[]
+          p_entity_type: string
+          p_summary: string
+        }
+        Returns: undefined
+      }
+      my_email: { Args: never; Returns: string }
+      progress_for_user: {
+        Args: { p_since?: string; p_uid: string }
+        Returns: Json
+      }
+      question_category_label: {
+        Args: {
+          p_tag: string
+          p_type: Database["public"]["Enums"]["question_type"]
+        }
+        Returns: string
+      }
+      regenerate_join_code: { Args: { p_class: string }; Returns: string }
+      remove_class_member: {
+        Args: { p_class: string; p_student: string }
+        Returns: undefined
+      }
+      respond_invite: {
+        Args: { p_accept: boolean; p_invite: string }
+        Returns: undefined
+      }
+      review_lex_sense: {
+        Args: { p_rating: number; p_sense_id: string }
+        Returns: Json
+      }
+      review_word: {
+        Args: { p_rating: number; p_word_id: string }
+        Returns: Json
+      }
+      revoke_invite: { Args: { p_invite: string }; Returns: undefined }
+      role_label_vi: { Args: { p_role: string }; Returns: string }
+      admin_lex_stats: {
+        Args: Record<string, never>
+        Returns: {
+          total_entries: number
+          entries_by_status: { published: number; draft: number; review: number; rejected: number }
+          total_senses: number
+          senses_by_review: { approved: number; pending: number; rejected: number }
+          senses_by_level: { A1: number; A2: number; B1: number; B2: number; C1: number; C2: number; unassigned: number }
+        }
+      }
+      admin_set_sense_review: {
+        Args: { p_sense_id: string; p_status: string }
+        Returns: Json
+      }
+      admin_set_translation_review: {
+        Args: { p_translation_id: string; p_status: string; p_translated_text?: string }
+        Returns: Json
+      }
+      admin_set_example_review: {
+        Args: { p_example_id: string; p_status: string; p_sentence_vi?: string }
+        Returns: Json
+      }
+      admin_set_entry_status: {
+        Args: { p_entry_id: string; p_status: string }
+        Returns: Json
+      }
+      admin_batch_set_entry_status: {
+        Args: { p_entry_ids: string[]; p_status: string }
+        Returns: { updated: number; skipped: Json }
+      }
+      lex_word_of_the_day: {
+        Args: {
+          p_date?: string
+          p_language?: Database["public"]["Enums"]["learning_language"]
+        }
+        Returns: {
+          definition: string
+          example_sentence: string
+          example_translation: string
+          ipa: string
+          lemma: string
+          level: string
+          meaning_vi: string
+          part_of_speech: string
+        }[]
+      }
+      lex_featured_words: {
+        Args: {
+          p_language?: Database["public"]["Enums"]["learning_language"]
+          p_level?: string
+          p_limit?: number
+        }
+        Returns: {
+          definition: string
+          lemma: string
+          level: string
+          meaning_vi: string
+          part_of_speech: string
+        }[]
+      }
+      search_lex_entries: {
+        Args: {
+          p_language?: Database["public"]["Enums"]["learning_language"]
+          p_limit?: number
+          p_query: string
+        }
+        Returns: {
+          entry_id: string
+          entry_type: string
+          lemma: string
+          match_rank: number
+          score: number
+        }[]
+      }
+      set_review_status: {
+        Args: {
+          p_ids: string[]
+          p_note?: string
+          p_status: string
+          p_type: string
         }
         Returns: Json
       }
-      get_my_today_stats: {
-        Args: never
-        Returns: {
-          completed_lessons: number
-          learning_time_minutes: number
-          new_words_learned: number
-          xp_gained_today: number
-        }[]
+      set_study_item_done: {
+        Args: { p_done: boolean; p_item_id: string }
+        Returns: string
       }
-      get_user_streak: { Args: { p_user_id: string }; Returns: number }
-      is_admin: { Args: never; Returns: boolean }
-      review_word: {
-        Args: { p_rating: number; p_word_id: string }
+      set_user_role: {
+        Args: { p_email: string; p_role: string }
+        Returns: Json
+      }
+      study_focus_copy: {
+        Args: { p_category: string; p_skill: string }
+        Returns: Json
+      }
+      study_support_copy: { Args: { p_skill: string }; Returns: Json }
+      submit_diagnostic: {
+        Args: { p_answers: Json; p_self_ratings?: Json; p_skills: string[] }
+        Returns: Json
+      }
+      submit_exam_attempt: {
+        Args: {
+          p_answers: Json
+          p_audio_path?: string
+          p_duration_seconds: number
+          p_essay?: string
+          p_mode: Database["public"]["Enums"]["exam_mode"]
+          p_test_id: string
+        }
         Returns: Json
       }
       submit_grammar_attempt: {
@@ -2795,7 +4839,21 @@ export type Database = {
         }
         Returns: Json
       }
+      teaches_student: { Args: { p_student: string }; Returns: boolean }
       toggle_feature_vote: { Args: { p_request_id: string }; Returns: Json }
+      update_class: {
+        Args: {
+          p_archived: boolean
+          p_class: string
+          p_description: string
+          p_name: string
+        }
+        Returns: undefined
+      }
+      upsert_teacher_feedback: {
+        Args: { p_attempt: string; p_comment: string; p_override_band: number }
+        Returns: Json
+      }
     }
     Enums: {
       difficulty_level: "Dß╗à" | "Trung b├¼nh" | "Kh├│"

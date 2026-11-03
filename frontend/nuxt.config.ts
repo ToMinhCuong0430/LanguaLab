@@ -3,9 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   runtimeConfig: {
-    public: {
-      useMock: process.env.NUXT_PUBLIC_USE_MOCK ?? 'false',
-    },
+    public: {},
   },
 
   modules: [

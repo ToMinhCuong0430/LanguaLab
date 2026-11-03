@@ -222,7 +222,7 @@ const executeImport = async () => {
     // Ghi nhật ký vào bảng content_import_logs
     if (user.value) {
       await client.from('content_import_logs').insert({
-        admin_id: user.value.id,
+        admin_id: user.value.sub,
         content_type: selectedType.value,
         file_name: fileName.value || 'direct_input',
         rows_total: totalRows,

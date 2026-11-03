@@ -2,6 +2,7 @@
 import { Award, ArrowRight, Lock, Headphones, BookOpen, PenTool, Mic } from '@lucide/vue'
 import PageBanner from '~/components/common/PageBanner.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
+import DevelopmentBadge from '~/components/common/DevelopmentBadge.vue'
 import { BRAND_NAME } from '~/constants/brand'
 import { learnStatusBadge } from '~/constants/badges'
 
@@ -214,7 +215,8 @@ const skillPreviews = [
                 {{ exam.fullName }}
               </span>
             </div>
-            <BaseBadge v-bind="learnStatusBadge('coming_soon')" size="sm" />
+            <DevelopmentBadge v-if="exam.id === 'hsk' || exam.id === 'jlpt'" size="xs" />
+            <BaseBadge v-else v-bind="learnStatusBadge('coming_soon')" size="sm" />
           </div>
         </div>
       </div>

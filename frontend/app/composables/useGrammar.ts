@@ -837,14 +837,6 @@ export const useGrammar = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  const isUseMock = computed(() => {
-    return (
-      config.public.useMock === true ||
-      config.public.useMock === 'true' ||
-      process.env.NUXT_PUBLIC_USE_MOCK === 'true'
-    )
-  })
-
   const isLoading = ref(false)
   const errorMessage = ref<string | null>(null)
   const dbSections = ref<GrammarLevelSection[]>([])
@@ -868,13 +860,11 @@ export const useGrammar = (targetLang?: Ref<LearningLanguage>) => {
 
   // Tải dữ liệu từ Supabase
   const fetchGrammarData = async () => {
-    if (isUseMock.value) return
-
     isLoading.value = true
     errorMessage.value = null
 
     try {
-      const uid = authUser.value?.id
+      const uid = authUser.value?.sub
 
       // 1. Tải các điểm ngữ pháp kèm bài tập
       const { data: pointsData, error: pointsErr } = await client
@@ -965,9 +955,9 @@ export const useGrammar = (targetLang?: Ref<LearningLanguage>) => {
     fetchGrammarData()
   })
 
-  // Danh sách cấp độ theo ngôn ngữ
+  // Danh sách cấp độ theo ngôn ngữ (lấy từ Supabase)
   const levelSections = computed<GrammarLevelSection[]>(() => {
-    if (!isUseMock.value && dbSections.value.length > 0) {
+    if (dbSections.value.length > 0) {
       return dbSections.value
     }
     const raw = MOCK_GRAMMAR_LEVELS[currentLang.value] || MOCK_GRAMMAR_LEVELS.en
@@ -986,9 +976,9 @@ export const useGrammar = (targetLang?: Ref<LearningLanguage>) => {
     answers: Record<string, string>,
     durationSeconds: number = 0
   ) => {
-    const uid = authUser.value?.id
+    const uid = authUser.value?.sub
 
-    if (!isUseMock.value && uid) {
+    if (uid) {
       try {
         const { data, error } = await client.rpc('submit_grammar_attempt', {
           p_point_id: pointId,

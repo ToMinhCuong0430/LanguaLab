@@ -24,6 +24,7 @@ import { useDictionary, type DuolingoNode } from '~/composables/useDictionary'
 import LanguageSelector from '~/components/common/LanguageSelector.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
+import { levelBadge } from '~/constants/badges'
 
 useHead({
   title: `Từ điển chuyên sâu & Lộ trình học từ - ${BRAND_NAME}`,
@@ -33,9 +34,12 @@ const { currentLang, currentLanguageOption } = useLanguage()
 const {
   searchQuery,
   searchSuggestions,
+  searchSuggestionsWithLevel,
   searchHistory,
   updateSuggestions,
   clearHistory,
+  wordOfTheDay,
+  featuredWords,
   duoRoadmap,
   hearts,
   streak,
@@ -81,40 +85,9 @@ const goToWord = (word: string) => {
   navigateTo(`/tu-dien/${encodeURIComponent(word.trim().toLowerCase())}`)
 }
 
-// Từ của hôm nay
-const wordOfTheDay = computed(() => {
-  if (currentLang.value === 'zh') {
-    return {
-      term: '融洽',
-      pinyin: 'róng qià',
-      pos: 'tính từ',
-      shortMeaning: 'Hài hoà, êm ấm, quan hệ khăng khít không có bất đồng.',
-      example: '同事之间的关系非常融洽。',
-      exampleVi: 'Mối quan hệ giữa các đồng nghiệp vô cùng hài hoà.',
-    }
-  } else if (currentLang.value === 'ja') {
-    return {
-      term: '妥協',
-      pinyin: 'だきょう (dakyō)',
-      pos: 'danh từ / suru',
-      shortMeaning: 'Thỏa hiệp, nhượng bộ lẫn nhau để đạt được đồng thuận.',
-      example: '双方が歩み寄り、妥協点を見出した。',
-      exampleVi: 'Hai bên cùng nhượng bộ và tìm ra điểm thoả hiệp.',
-    }
-  }
-  return {
-    term: 'pragmatic',
-    pinyin: '/præɡˈmæt.ɪk/',
-    pos: 'adjective',
-    shortMeaning: 'Thực tế, thực dụng, giải quyết vấn đề dựa trên hiệu quả thực tiễn thay vì lý thuyết suông.',
-    example: 'We need to adopt a pragmatic approach to solve this engineering bottleneck.',
-    exampleVi: 'Chúng ta cần áp dụng cách tiếp cận thực tế để giải quyết nút thắt kỹ thuật này.',
-  }
-})
-
 // Web Speech API
 const speakWord = (text: string) => {
-  if (!import.meta.client || !window.speechSynthesis) return
+  if (!import.meta.client || !window.speechSynthesis || !text) return
   const utterance = new SpeechSynthesisUtterance(text)
   if (currentLang.value === 'en') utterance.lang = 'en-US'
   else if (currentLang.value === 'zh') utterance.lang = 'zh-CN'
@@ -122,31 +95,6 @@ const speakWord = (text: string) => {
   window.speechSynthesis.cancel()
   window.speechSynthesis.speak(utterance)
 }
-
-// Danh sách từ gợi ý có sẵn kèm nghĩa preview
-const sampleWordsWithMeaning = computed(() => {
-  if (currentLang.value === 'zh') {
-    return [
-      { word: '融洽', pos: 'tính từ', meaning: 'Hài hoà, êm ấm, không xích mích' },
-      { word: '坚韧', pos: 'tính từ', meaning: 'Kiên cường, bền bỉ trước khó khăn' },
-      { word: '无所不在', pos: 'thành ngữ', meaning: 'Có mặt ở khắp mọi nơi' },
-      { word: '缓解', pos: 'động từ', meaning: 'Làm dịu bớt, giảm nhẹ căng thẳng' },
-    ]
-  } else if (currentLang.value === 'ja') {
-    return [
-      { word: '妥協', pos: 'danh từ', meaning: 'Thỏa hiệp, nhượng bộ đôi bên' },
-      { word: '回復力', pos: 'danh từ', meaning: 'Khả năng phục hồi, kiên cường' },
-      { word: '偏在', pos: 'danh từ', meaning: 'Có mặt ở mọi lúc mọi nơi' },
-      { word: '緩和', pos: 'động từ', meaning: 'Xoa dịu, giảm thiểu xung đột' },
-    ]
-  }
-  return [
-    { word: 'pragmatic', pos: 'adj', meaning: 'Thực tế, chú trọng hiệu quả thực tiễn' },
-    { word: 'resilient', pos: 'adj', meaning: 'Kiên cường, mau hồi phục sau nghịch cảnh' },
-    { word: 'ubiquitous', pos: 'adj', meaning: 'Phổ biến, xuất hiện ở khắp mọi nơi' },
-    { word: 'mitigate', pos: 'verb', meaning: 'Giảm nhẹ, xoa dịu hậu quả tiêu cực' },
-  ]
-})
 
 // Duolingo Quiz Modal
 const activeLessonNode = ref<DuolingoNode | null>(null)
@@ -255,7 +203,7 @@ const getNodeIcon = (iconName: string) => {
             <input
               type="text"
               :value="searchQuery"
-              placeholder="Gõ từ cần tra (ví dụ: pragmatic, resilient, ubiquitous, 融洽)..."
+              placeholder="Gõ từ cần tra (ví dụ: run, abandon, happy)..."
               class="w-full pl-14 pr-12 py-4 sm:py-5 text-lg sm:text-xl font-black rounded-brut border-[3px] border-line bg-surface text-ink shadow-brut focus:border-focus outline-none"
               @input="onSearchInput"
             >
@@ -285,13 +233,18 @@ const getNodeIcon = (iconName: string) => {
           </div>
           <div class="divide-y-2 divide-line/20">
             <button
-              v-for="word in searchSuggestions"
-              :key="word"
+              v-for="item in (searchSuggestionsWithLevel.length > 0 ? searchSuggestionsWithLevel : searchSuggestions.map(w => ({ word: w })))"
+              :key="item.word"
               type="button"
               class="w-full text-left px-4 py-3 hover:bg-warn/25 font-black text-base text-ink transition-colors flex items-center justify-between cursor-pointer"
-              @click="goToWord(word)"
+              @click="goToWord(item.word)"
             >
-              <span class="font-display">{{ word }}</span>
+              <div class="flex items-center gap-2">
+                <span class="font-display">{{ item.word }}</span>
+                <BaseBadge v-if="item.level" v-bind="levelBadge(item.level)" size="sm">
+                  {{ item.level }}
+                </BaseBadge>
+              </div>
               <ArrowRight class="w-4 h-4 text-ink-soft" />
             </button>
           </div>
@@ -332,8 +285,9 @@ const getNodeIcon = (iconName: string) => {
 
     <!-- TAB 1: TRA CỨU TỪ ĐIỂN -->
     <div v-if="activeTab === 'search'" class="space-y-6">
-      <!-- "TỪ CỦA HÔM NAY" DẠNG THẺ LỚN (TỪ, PHIÊN ÂM, NGHĨA NGẮN, NÚT NGHE, NÚT LƯU) -->
+      <!-- "TỪ CỦA HÔM NAY" (CHỈ HIỂN THỊ KHI CÓ DỮ LIỆU THẬT TỪ DATABASE) -->
       <div
+        v-if="wordOfTheDay"
         id="word-of-the-day-card"
         class="rounded-brut-lg border-[3px] border-line bg-c-violet-soft p-6 sm:p-7 shadow-brut flex flex-col md:flex-row md:items-center justify-between gap-6"
       >
@@ -342,17 +296,20 @@ const getNodeIcon = (iconName: string) => {
             <span class="rounded-brut border-2 border-line bg-c-violet text-ink px-2.5 py-0.5 text-xs font-black uppercase shadow-brut-sm">
               Từ của hôm nay
             </span>
-            <span class="rounded border border-line bg-surface px-2 py-0.5 text-xs font-bold text-ink">
+            <span v-if="wordOfTheDay.pos" class="rounded border border-line bg-surface px-2 py-0.5 text-xs font-bold text-ink">
               {{ wordOfTheDay.pos }}
             </span>
+            <BaseBadge v-if="wordOfTheDay.level" v-bind="levelBadge(wordOfTheDay.level)" size="sm">
+              {{ wordOfTheDay.level }}
+            </BaseBadge>
           </div>
 
-          <div class="flex items-baseline gap-3">
+          <div class="flex items-baseline gap-3 flex-wrap">
             <h2 class="text-3xl sm:text-4xl font-black text-ink font-display">
               {{ wordOfTheDay.term }}
             </h2>
-            <span class="text-sm sm:text-base font-mono text-c-violet-ink font-bold">
-              {{ wordOfTheDay.pinyin }}
+            <span v-if="wordOfTheDay.phonetic" class="text-sm sm:text-base font-mono text-c-violet-ink font-bold">
+              {{ wordOfTheDay.phonetic }}
             </span>
           </div>
 
@@ -360,8 +317,8 @@ const getNodeIcon = (iconName: string) => {
             {{ wordOfTheDay.shortMeaning }}
           </p>
 
-          <p class="text-xs sm:text-sm text-ink-soft italic pt-1">
-            "{{ wordOfTheDay.example }}" &rarr; {{ wordOfTheDay.exampleVi }}
+          <p v-if="wordOfTheDay.example" class="text-xs sm:text-sm text-ink-soft italic pt-1">
+            "{{ wordOfTheDay.example }}" <span v-if="wordOfTheDay.exampleVi">&rarr; {{ wordOfTheDay.exampleVi }}</span>
           </p>
         </div>
 

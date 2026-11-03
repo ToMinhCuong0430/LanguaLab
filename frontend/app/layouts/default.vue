@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import AppNavbar from '~/components/layout/AppNavbar.vue'
 import AppFooter from '~/components/layout/AppFooter.vue'
+import WhatsNewModal from '~/components/common/WhatsNewModal.vue'
 import { useFeatureColor } from '~/composables/useFeatureColor'
+import { useWhatsNew } from '~/composables/useWhatsNew'
 
 useFeatureColor()
+
+const { checkAndShowOnMount } = useWhatsNew()
+
+onMounted(() => {
+  checkAndShowOnMount()
+})
 </script>
 
 <template>
@@ -13,5 +21,8 @@ useFeatureColor()
       <slot />
     </main>
     <AppFooter />
+    <ClientOnly>
+      <WhatsNewModal />
+    </ClientOnly>
   </div>
 </template>

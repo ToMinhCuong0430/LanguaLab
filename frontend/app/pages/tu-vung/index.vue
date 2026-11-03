@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import {
+  Search,
+  BookmarkPlus,
+  ExternalLink,
   Volume2,
   Mic,
   Square,
@@ -35,6 +38,7 @@ const { currentLang, currentLanguageOption } = useLanguage()
 const {
   activeTab,
   curatedSets,
+  vocabLevels,
   mySets,
   selectedSetId,
   activeSet,
@@ -48,6 +52,15 @@ const {
   removeWordFromMySet,
   rateWordSrs,
   uploadPronunciation,
+  lexWords,
+  isLexLoading,
+  isLexLoadingMore,
+  totalLexWords,
+  hasMoreLexWords,
+  fetchLexWordsByLevel,
+  loadMoreLexWords,
+  studyLexLevelSet,
+  saveLexWordToMySet,
 } = useVocab(currentLang)
 
 const guideSteps: GuideStep[] = [
@@ -134,6 +147,44 @@ const speakWord = (text?: string) => {
   window.speechSynthesis.cancel()
   window.speechSynthesis.speak(utterance)
 }
+
+
+// ==========================================
+// KHO TỪ VỰNG THEO CẤP ĐỘ CEFR (A1 - C2)
+// ==========================================
+const selectedLexLevel = ref('A1')
+const lexSearchQuery = ref('')
+const savedWordIds = ref<Record<string, boolean>>({})
+
+const onLevelChange = (lvl: string) => {
+  selectedLexLevel.value = lvl
+  fetchLexWordsByLevel(lvl, lexSearchQuery.value)
+}
+
+const onLexSearch = () => {
+  fetchLexWordsByLevel(selectedLexLevel.value, lexSearchQuery.value)
+}
+
+const handleSaveLexWord = async (wordItem: any) => {
+  const res = await saveLexWordToMySet(null, wordItem)
+  if (res) {
+    savedWordIds.value[wordItem.id] = true
+    setTimeout(() => {
+      savedWordIds.value[wordItem.id] = false
+    }, 2500)
+  }
+}
+
+const handleStudyCurrentLevel = () => {
+  if (lexWords.value.length === 0) return
+  studyLexLevelSet(selectedLexLevel.value, lexWords.value)
+}
+
+onMounted(() => {
+  if (activeTab.value === 'levels') {
+    fetchLexWordsByLevel(selectedLexLevel.value)
+  }
+})
 
 // ==========================================
 // THU ÂM NGƯỜI HỌC (MediaRecorder API)
@@ -334,11 +385,17 @@ const handleAddWord = () => {
         :model-value="activeTab"
         :items="[
           { id: 'curated', label: `Bộ đề xuất (${curatedSets.length} bộ)`, icon: Layers },
+          { id: 'levels', label: 'Kho 7 cấp độ từ vựng (A1 - C2)', icon: BookOpen },
           { id: 'my_sets', label: `Bộ của tôi (${mySets.length} bộ)`, icon: FolderPlus },
         ]"
         tone="warning"
         size="md"
-        @change="(id) => { activeTab = id as any; selectedSetId = id === 'curated' ? (curatedSets[0]?.id || '') : (mySets[0]?.id || '') }"
+        @change="(id) => {
+          activeTab = id as any
+          if (id === 'curated') selectedSetId = curatedSets[0]?.id || ''
+          else if (id === 'my_sets') selectedSetId = mySets[0]?.id || ''
+          else if (id === 'levels' && lexWords.length === 0) fetchLexWordsByLevel(selectedLexLevel)
+        }"
       />
 
       <!-- Danh sách bộ từ (Bộ đề xuất) - Thẻ to, có preview 3 từ đầu, vòng tiến độ -->
@@ -404,6 +461,188 @@ const handleAddWord = () => {
               {{ set.id === activeSet?.id ? 'Đang chọn học ★' : 'Bấm để học' }}
             </span>
           </div>
+        </div>
+      </div>
+
+      
+      <!-- TAB KHO 7 CẤP ĐỘ TỪ VỰNG TỪ DATABASE (CEFR A1-C2) -->
+      <div v-else-if="activeTab === 'levels'" class="space-y-6">
+        <!-- 7 Nút chọn Cấp độ (Neo-brutalism Pills) -->
+        <div class="p-4 bg-surface rounded-brut border-2 border-line shadow-brut-sm space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-xs font-black uppercase text-ink-soft tracking-wider">
+              Chọn cấp độ độ khó (Thang 1 - 7 chuẩn Langua):
+            </span>
+            <NuxtLink
+              to="/nguon-du-lieu"
+              class="text-xs font-mono font-bold text-ink-soft hover:text-accent underline transition-colors"
+            >
+              Nguồn dữ liệu mở: Wiktionary CC BY-SA & CEFR-J
+            </NuxtLink>
+          </div>
+
+          <!-- Danh sách 7 cấp độ tải từ DB vocab_levels -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+            <button
+              v-for="lvl in (vocabLevels.length > 0 ? vocabLevels : [
+                { level_number: 1, code: 'A1', title: 'Cốt lõi' },
+                { level_number: 2, code: 'A2', title: 'Sơ cấp' },
+                { level_number: 3, code: 'B1', title: 'Trung cấp' },
+                { level_number: 4, code: 'B2', title: 'Trung cao' },
+                { level_number: 5, code: 'C1', title: 'Cao cấp' },
+                { level_number: 6, code: 'C2', title: 'Tinh thông' },
+                { level_number: 7, code: 'C2+', title: 'Chuyên sâu & Hiếm gặp' }
+              ])"
+              :key="lvl.level_number"
+              type="button"
+              class="p-2.5 rounded-brut border-2 text-left transition-all cursor-pointer flex flex-col justify-between"
+              :class="[
+                (selectedLexLevel === (lvl.code?.replace('+', '') || 'A1') || (selectedLexLevel === 'A1' && lvl.level_number === 1))
+                  ? 'border-line bg-warn text-on-tone font-black shadow-brut-sm -translate-y-0.5'
+                  : 'border-line bg-surface hover:bg-surface-2 text-ink',
+              ]"
+              @click="onLevelChange(lvl.code?.replace('+', '') || 'A1')"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold uppercase opacity-80">Cấp {{ lvl.level_number }}</span>
+                <span class="text-xs font-mono font-black">{{ lvl.code || `L${lvl.level_number}` }}</span>
+              </div>
+              <p class="text-xs font-bold truncate mt-1">{{ lvl.title }}</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Thanh tìm kiếm & Hành động học tập của cấp độ -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="relative flex-1 max-w-md">
+            <input
+              v-model="lexSearchQuery"
+              type="text"
+              :placeholder="`Tìm từ vựng trong Cấp ${selectedLexLevel}...`"
+              class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm font-bold rounded-brut border-2 border-line bg-surface text-ink shadow-brut-sm outline-none"
+              @keyup.enter="onLexSearch"
+            >
+            <Search class="w-4 h-4 absolute left-3 top-2.5 sm:top-3 text-ink-soft stroke-[2.5]" />
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono font-bold text-ink-soft">
+              {{ totalLexWords > 0 ? `${totalLexWords.toLocaleString()} từ vựng Cấp ${selectedLexLevel} (${lexWords.length} đang hiện)` : `${lexWords.length} từ vựng hiển thị` }}
+            </span>
+            <button
+              v-if="lexWords.length > 0"
+              type="button"
+              class="px-3.5 py-2 min-h-[44px] rounded-brut border-2 border-line bg-accent text-on-tone font-black text-xs shadow-brut-sm cursor-pointer hover:bg-accent/90 transition-transform active:translate-y-0.5 flex items-center gap-1.5"
+              @click="handleStudyCurrentLevel"
+            >
+              <Play class="w-3.5 h-3.5 stroke-[3] fill-current" />
+              <span>Luyện Flashcard với cấp này</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Trạng thái đang tải Skeleton -->
+        <div v-if="isLexLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-for="i in 6" :key="i" class="p-4 bg-surface border-2 border-line rounded-brut shadow-brut-sm space-y-3">
+            <BaseSkeleton class="h-6 w-1/2 rounded-brut" />
+            <BaseSkeleton class="h-4 w-full rounded-brut" />
+            <BaseSkeleton class="h-4 w-3/4 rounded-brut" />
+          </div>
+        </div>
+
+        <!-- Trạng thái trống -->
+        <BaseEmptyState
+          v-else-if="lexWords.length === 0"
+          :title="`Chưa có từ vựng Cấp ${selectedLexLevel}`"
+          description="Kho từ vựng của cấp độ này đang tiếp tục được đồng bộ và cập nhật từ Wiktionary và CEFR Profiles."
+          tone="warning"
+        />
+
+        <!-- Danh sách thẻ từ vựng Neo-brutalism -->
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            v-for="w in lexWords"
+            :key="w.id"
+            class="p-4 rounded-brut-lg border-2 border-line bg-surface hover:bg-surface-2 shadow-brut-sm hover:shadow-brut transition-all flex flex-col justify-between space-y-3"
+          >
+            <div class="space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-lg font-black text-ink font-display tracking-tight">{{ w.term }}</h3>
+                    <button
+                      type="button"
+                      class="p-1 rounded-brut border border-line bg-surface hover:bg-surface-2 text-ink cursor-pointer"
+                      title="Nghe phát âm"
+                      @click="speakWord(w.term)"
+                    >
+                      <Volume2 class="w-3.5 h-3.5 text-accent stroke-[2.5]" />
+                    </button>
+                  </div>
+                  <span v-if="w.phonetic" class="text-xs font-mono font-bold text-ink-soft">{{ w.phonetic }}</span>
+                </div>
+
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <span class="px-2 py-0.5 rounded-brut border border-line bg-surface-2 text-[10px] font-black uppercase text-ink-soft flex items-center gap-1">
+                    <span>{{ w.partOfSpeech }}</span>
+                    <span v-if="w.senseOrder" class="opacity-75">#{{ w.senseOrder }}</span>
+                  </span>
+                  <BaseBadge v-if="w.level" v-bind="levelBadge(w.level)" size="sm">
+                    {{ w.level }}
+                  </BaseBadge>
+                </div>
+              </div>
+
+              <!-- Nghĩa tiếng Việt -->
+              <div v-if="w.viMeaning" class="p-2 bg-warn-soft/50 rounded-brut border border-line/60 text-xs font-bold text-ink">
+                🇻🇳 {{ w.viMeaning }}
+              </div>
+
+              <!-- Định nghĩa tiếng Anh -->
+              <p class="text-xs text-ink-soft font-medium line-clamp-2">
+                {{ w.definition }}
+              </p>
+
+              <!-- Ví dụ câu nếu có -->
+              <div v-if="w.exampleTarget" class="text-[11px] bg-surface-2/70 p-2 rounded-brut border border-line/40 space-y-0.5">
+                <p class="font-bold text-ink italic">"{{ w.exampleTarget }}"</p>
+                <p v-if="w.exampleMeaning" class="text-ink-soft">{{ w.exampleMeaning }}</p>
+              </div>
+            </div>
+
+            <!-- Hành động: Lưu vào bộ của tôi & Tra từ điển -->
+            <div class="pt-2 border-t border-line/40 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                class="px-2.5 py-1.5 min-h-[36px] rounded-brut border border-line bg-warn/20 hover:bg-warn text-ink font-bold text-xs cursor-pointer flex items-center gap-1 transition-colors"
+                @click="handleSaveLexWord(w)"
+              >
+                <BookmarkPlus class="w-3.5 h-3.5" />
+                <span>{{ savedWordIds[w.id] ? 'Đã lưu ✓' : 'Lưu bộ từ' }}</span>
+              </button>
+
+              <NuxtLink
+                :to="`/tu-dien/${encodeURIComponent(w.term.toLowerCase())}`"
+                class="px-2.5 py-1.5 min-h-[36px] text-xs font-bold text-accent hover:underline inline-flex items-center gap-1"
+              >
+                <span>Tra chi tiết</span>
+                <ExternalLink class="w-3 h-3" />
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút tải thêm từ vựng cho cấp độ này -->
+        <div v-if="hasMoreLexWords" class="pt-2 text-center">
+          <button
+            type="button"
+            class="min-h-[44px] px-6 py-2.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-display font-black text-xs shadow-brut cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
+            :disabled="isLexLoadingMore"
+            @click="loadMoreLexWords"
+          >
+            <RefreshCw v-if="isLexLoadingMore" class="w-4 h-4 animate-spin text-accent" />
+            <span>{{ isLexLoadingMore ? 'Đang tải thêm từ vựng...' : `Tải thêm từ vựng Cấp ${selectedLexLevel} (còn ${(totalLexWords - lexWords.length).toLocaleString()} từ)` }}</span>
+          </button>
         </div>
       </div>
 
@@ -874,13 +1113,20 @@ const handleAddWord = () => {
             v-model="newSetLevel"
             class="w-full px-3 py-2 text-xs font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
           >
-            <option value="A1">A1</option>
-            <option value="A2">A2</option>
-            <option value="B1">B1</option>
-            <option value="B2">B2</option>
-            <option value="C1">C1</option>
-            <option value="HSK 3">HSK 3</option>
-            <option value="N3">JLPT N3</option>
+            <template v-if="vocabLevels && vocabLevels.length > 0">
+              <option v-for="lvl in vocabLevels" :key="lvl.id" :value="lvl.title">
+                Cấp {{ lvl.level_number }}: {{ lvl.title }} ({{ lvl.code }})
+              </option>
+            </template>
+            <template v-else>
+              <option value="Cốt lõi A1">Cấp 1: Cốt lõi A1 (L1)</option>
+              <option value="Sơ cấp A2">Cấp 2: Sơ cấp A2 (L2)</option>
+              <option value="Trung cấp B1">Cấp 3: Trung cấp B1 (L3)</option>
+              <option value="Trung cao B2">Cấp 4: Trung cao B2 (L4)</option>
+              <option value="Cao cấp C1">Cấp 5: Cao cấp C1 (L5)</option>
+              <option value="Tinh thông C2">Cấp 6: Tinh thông C2 (L6)</option>
+              <option value="Chuyên sâu & Hiếm gặp">Cấp 7: Chuyên sâu & Hiếm gặp (C2+)</option>
+            </template>
           </select>
         </div>
 

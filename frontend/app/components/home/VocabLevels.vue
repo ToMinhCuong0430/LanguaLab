@@ -23,7 +23,7 @@ const levelColors: Record<number, { bg: string; soft: string; ink: string }> = {
           Từ vựng 7 cấp độ
         </h2>
         <BaseBadge tone="neutral" size="sm">
-          Chuẩn CEFR & Học thuật
+          Thang độ khó 7 cấp (1 - 7)
         </BaseBadge>
       </div>
       <NuxtLink
@@ -87,9 +87,12 @@ const levelColors: Record<number, { bg: string; soft: string; ink: string }> = {
             </div>
           </div>
 
-          <h3 class="font-display text-xs font-black text-ink line-clamp-1 mt-1">
+          <h3 class="font-display text-xs font-black text-ink line-clamp-1 mt-1" :title="lvl.description || lvl.title">
             {{ lvl.title }}
           </h3>
+          <p v-if="lvl.description" class="text-[10px] text-ink-soft line-clamp-1 mt-0.5" :title="lvl.description">
+            {{ lvl.description }}
+          </p>
 
           <p class="text-[11px] font-medium text-ink-soft mt-0.5">
             <strong class="text-ink">{{ lvl.learned }}</strong> / {{ lvl.total }} từ

@@ -11,6 +11,10 @@ import {
   FileSpreadsheet,
   LogOut,
   ShieldAlert,
+  Users,
+  BarChart3,
+  ScrollText,
+  BookA,
 } from '@lucide/vue'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -25,13 +29,17 @@ const route = useRoute()
 
 const navItems = [
   { title: 'Tổng quan & Lịch sử', path: '/admin', icon: LayoutDashboard },
+  { title: 'Thống kê nền tảng', path: '/admin/thong-ke', icon: BarChart3 },
+  { title: 'Người dùng', path: '/admin/nguoi-dung', icon: Users },
+  { title: 'Nhật ký hoạt động', path: '/admin/nhat-ky', icon: ScrollText },
   { title: 'Nhập dữ liệu (Import)', path: '/admin/import', icon: FileSpreadsheet },
-  { title: 'Từ vựng (Vocab)', path: '/admin/vocab', icon: BookOpen },
+  { title: 'Kho từ vựng (Lexicon)', path: '/admin/lexicon', icon: BookA },
+  { title: 'Bộ từ vựng (Vocab Sets)', path: '/admin/vocab', icon: BookOpen },
   { title: 'Gõ câu (Typing)', path: '/admin/typing', icon: Keyboard },
   { title: 'Ngữ pháp (Grammar)', path: '/admin/grammar', icon: BookOpen },
   { title: 'Kho đọc & Dịch', path: '/admin/reading', icon: BookMarked },
   { title: 'Video & Podcast', path: '/admin/media', icon: Play },
-  { title: 'Từ điển (Dictionary)', path: '/admin/dictionary', icon: Search },
+  { title: 'Từ điển cũ (Legacy)', path: '/admin/dictionary', icon: Search },
   { title: 'Luyện thi IELTS', path: '/admin/ielts', icon: Trophy },
 ]
 

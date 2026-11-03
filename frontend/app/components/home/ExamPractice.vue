@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Award, ArrowRight, Lock, Headphones, BookOpen, PenTool, Mic } from '@lucide/vue'
 import { learnStatusBadge } from '~/constants/badges'
+import DevelopmentBadge from '~/components/common/DevelopmentBadge.vue'
 
 const { examOptions } = useHomeData()
 
@@ -116,7 +117,8 @@ const ieltsSkills = [
               {{ exam.statusBadge }}
             </span>
           </div>
-          <BaseBadge v-bind="learnStatusBadge('coming_soon')" size="sm" />
+          <DevelopmentBadge v-if="exam.id === 'hsk' || exam.id === 'jlpt'" size="xs" />
+          <BaseBadge v-else v-bind="learnStatusBadge('coming_soon')" size="sm" />
         </div>
       </div>
     </div>

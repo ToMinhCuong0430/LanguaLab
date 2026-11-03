@@ -12,6 +12,7 @@ import {
   Moon,
   Sun,
   Laptop,
+  Clock,
   CheckCircle2,
   AlertTriangle,
   RotateCcw,
@@ -23,7 +24,13 @@ import { translateSupabaseError } from '~/utils/supabaseErrors'
 
 const route = useRoute()
 const router = useRouter()
-const colorMode = useColorMode()
+const { mode: themeMode, setMode: setThemeMode } = useTheme()
+const themeOptions = [
+  { value: 'light', label: 'Sáng', icon: Sun },
+  { value: 'dark', label: 'Tối', icon: Moon },
+  { value: 'system', label: 'Hệ thống', icon: Laptop },
+  { value: 'auto', label: 'Theo giờ', icon: Clock },
+] as const
 const client = useSupabaseClient<Database>()
 const { user, profile, fetchProfile, signOut } = useAuth()
 const { todayStats, user: homeUser } = useHomeData()
@@ -69,8 +76,9 @@ watch(
       profileForm.full_name = p.full_name || ''
       profileForm.avatar_text = p.avatar_text || ''
       profileForm.avatar_url = p.avatar_url || ''
-      profileForm.learning_lang = (p.learning_lang as any) || 'en'
-      profileForm.target_exam = (p.target_exam as any) || 'ielts'
+      // Nếu hồ sơ trong DB đang lưu zh/ja/hsk/jlpt, form hiển thị en và ielts
+      profileForm.learning_lang = p.learning_lang === 'en' ? 'en' : 'en'
+      profileForm.target_exam = (p.target_exam && ['ielts', 'toeic', 'toefl'].includes(p.target_exam)) ? p.target_exam as any : 'ielts'
       profileForm.current_band = p.current_band !== null ? Number(p.current_band) : 5.5
       profileForm.target_band = p.target_band !== null ? Number(p.target_band) : 7.0
       profileForm.target_exam_date = p.target_exam_date || ''
@@ -127,7 +135,7 @@ const saveProfile = async () => {
         target_exam_date: profileForm.target_exam_date || null,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', user.value.id)
+      .eq('id', user.value.sub)
 
     if (error) {
       profileMessage.value = { type: 'err', text: translateSupabaseError(error) }
@@ -177,7 +185,7 @@ const handleAvatarChange = async (e: Event) => {
 
   try {
     const ext = file.name.split('.').pop() || 'png'
-    const filePath = `${user.value.id}/avatar.${ext}`
+    const filePath = `${user.value.sub}/avatar.${ext}`
 
     const { error: uploadError } = await client.storage
       .from('avatars')
@@ -196,7 +204,7 @@ const handleAvatarChange = async (e: Event) => {
     await client
       .from('profiles')
       .update({ avatar_url: publicUrl })
-      .eq('id', user.value.id)
+      .eq('id', user.value.sub)
 
     profileForm.avatar_url = publicUrl
     await fetchProfile()
@@ -218,7 +226,7 @@ const removeAvatar = async () => {
     await client
       .from('profiles')
       .update({ avatar_url: null })
-      .eq('id', user.value.id)
+      .eq('id', user.value.sub)
 
     profileForm.avatar_url = ''
     await fetchProfile()
@@ -492,8 +500,8 @@ const handleDeleteAccount = async () => {
                   class="w-full p-2.5 text-xs rounded-brut border-2 border-line bg-surface text-ink font-bold focus:outline-none cursor-pointer"
                 >
                   <option value="en">Tiếng Anh (English)</option>
-                  <option value="zh">Tiếng Trung (中文)</option>
-                  <option value="ja">Tiếng Nhật (日本語)</option>
+                  <option value="zh" disabled>Tiếng Trung (中文) - (đang phát triển)</option>
+                  <option value="ja" disabled>Tiếng Nhật (日本語) - (đang phát triển)</option>
                 </select>
               </div>
 
@@ -507,8 +515,8 @@ const handleDeleteAccount = async () => {
                   <option value="ielts">IELTS Academic / General</option>
                   <option value="toeic">TOEIC 4 Kỹ năng</option>
                   <option value="toefl">TOEFL iBT</option>
-                  <option value="hsk">HSK (Tiếng Trung)</option>
-                  <option value="jlpt">JLPT (Tiếng Nhật)</option>
+                  <option value="hsk" disabled>HSK (Tiếng Trung) - (đang phát triển)</option>
+                  <option value="jlpt" disabled>JLPT (Tiếng Nhật) - (đang phát triển)</option>
                 </select>
               </div>
             </div>
@@ -568,40 +576,26 @@ const handleDeleteAccount = async () => {
       <!-- Cài đặt giao diện & Hướng dẫn -->
       <BaseCard title="Tuỳ chọn ứng dụng">
         <div class="space-y-5">
-          <!-- Chế độ màu (Sáng / Tối / Hệ thống) -->
+          <!-- Chế độ màu (Sáng / Tối / Hệ thống / Theo giờ) -->
           <div>
             <label class="block text-xs font-black text-ink mb-2">Chế độ hiển thị (Theme):</label>
-            <div class="grid grid-cols-3 gap-3 max-w-md">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
               <button
+                v-for="opt in themeOptions"
+                :key="opt.value"
                 type="button"
                 class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
-                :class="colorMode.preference === 'light' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
-                @click="colorMode.preference = 'light'"
+                :class="themeMode === opt.value ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
+                :aria-pressed="themeMode === opt.value"
+                @click="setThemeMode(opt.value)"
               >
-                <Sun class="h-4 w-4" />
-                <span>Sáng</span>
-              </button>
-
-              <button
-                type="button"
-                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
-                :class="colorMode.preference === 'dark' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
-                @click="colorMode.preference = 'dark'"
-              >
-                <Moon class="h-4 w-4" />
-                <span>Tối</span>
-              </button>
-
-              <button
-                type="button"
-                class="flex items-center justify-center gap-2 p-2.5 min-h-[44px] rounded-brut border-2 font-display text-xs font-bold cursor-pointer transition-all"
-                :class="colorMode.preference === 'system' ? 'border-line bg-surface-2 shadow-brut-sm text-ink' : 'border-line/40 bg-surface text-ink-soft'"
-                @click="colorMode.preference = 'system'"
-              >
-                <Laptop class="h-4 w-4" />
-                <span>Hệ thống</span>
+                <component :is="opt.icon" class="h-4 w-4" />
+                <span>{{ opt.label }}</span>
               </button>
             </div>
+            <p class="mt-2 text-xs text-ink-soft">
+              "Theo giờ" tự chuyển sang chế độ tối từ 18:00 đến 5:00 sáng theo giờ trên máy bạn.
+            </p>
           </div>
 
           <!-- Bật lại hướng dẫn lần đầu -->
