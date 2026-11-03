@@ -238,7 +238,7 @@ export const useDictionary = (targetLang?: Ref<LearningLanguage>) => {
   const authUser = useSupabaseUser()
   const config = useRuntimeConfig()
 
-  // Chọn Provider: Đọc trực tiếp từ bảng dictionary_entries của Supabase
+  // Chọn Provider: Đọc trực tiếp từ kho từ vựng trung tâm canonical lex_* của Supabase
   const provider: DictionaryProvider = new SupabaseDictionaryProvider(client)
 
   // State tra từ

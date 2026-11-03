@@ -1,7 +1,9 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed } from 'vue'
 import { ArrowRight, ArrowUpRight, Zap } from '@lucide/vue'
 import HeroScene from '~/components/illustration/HeroScene.vue'
+import AnimeSparkle from '~/components/illustration/AnimeSparkle.vue'
+import AnimeFx from '~/components/illustration/AnimeFx.vue'
 import { BRAND_NAME } from '~/constants/brand'
 
 const route = useRoute()
@@ -126,6 +128,9 @@ const examButtonInfo = computed(() => {
     }"
     aria-label="Lời chào và mục tiêu học tập hàng ngày"
   >
+    <!-- Anime sparkle + FX (pure SVG/CSS, no AI image) -->
+    <AnimeSparkle :color="periodConfig.hillColor" class="z-10" />
+    <AnimeFx :color="periodConfig.hillColor" :color2="periodConfig.textColor" class="z-10" />
     <!-- DẢI ĐỒI LƯỢN SÓNG PHẲNG DƯỚI ĐÁY (Không viền đen, cao tối đa 90px, z-0) -->
     <div class="hero-hills-bg pointer-events-none absolute inset-x-0 bottom-0 z-0 h-20 sm:h-24 overflow-hidden">
       <svg

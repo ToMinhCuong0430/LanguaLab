@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -3943,6 +3943,66 @@ export type Database = {
           },
         ]
       }
+      user_sense_progress: {
+        Row: {
+          correct_count: number
+          created_at: string
+          easiness_factor: number
+          id: string
+          incorrect_count: number
+          interval_days: number
+          last_reviewed_at: string | null
+          next_review_at: string
+          repetition_count: number
+          sense_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          correct_count?: number
+          created_at?: string
+          easiness_factor?: number
+          id?: string
+          incorrect_count?: number
+          interval_days?: number
+          last_reviewed_at?: string | null
+          next_review_at?: string
+          repetition_count?: number
+          sense_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          correct_count?: number
+          created_at?: string
+          easiness_factor?: number
+          id?: string
+          incorrect_count?: number
+          interval_days?: number
+          last_reviewed_at?: string | null
+          next_review_at?: string
+          repetition_count?: number
+          sense_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sense_progress_sense_id_fkey"
+            columns: ["sense_id"]
+            isOneToOne: false
+            referencedRelation: "lex_senses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_sense_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_word_progress: {
         Row: {
           correct_count: number
@@ -4167,6 +4227,7 @@ export type Database = {
           example_translation: string | null
           examples: Json | null
           id: string
+          lex_entry_id: string | null
           lex_sense_id: string | null
           meaning_vi: string
           part_of_speech: string | null
@@ -4182,6 +4243,7 @@ export type Database = {
           example_translation?: string | null
           examples?: Json | null
           id?: string
+          lex_entry_id?: string | null
           lex_sense_id?: string | null
           meaning_vi: string
           part_of_speech?: string | null
@@ -4197,6 +4259,7 @@ export type Database = {
           example_translation?: string | null
           examples?: Json | null
           id?: string
+          lex_entry_id?: string | null
           lex_sense_id?: string | null
           meaning_vi?: string
           part_of_speech?: string | null
@@ -4206,6 +4269,13 @@ export type Database = {
           word?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "vocab_words_lex_entry_id_fkey"
+            columns: ["lex_entry_id"]
+            isOneToOne: false
+            referencedRelation: "lex_entries"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vocab_words_lex_sense_id_fkey"
             columns: ["lex_sense_id"]
@@ -4631,12 +4701,46 @@ export type Database = {
         Args: { p_accept: boolean; p_invite: string }
         Returns: undefined
       }
+      review_lex_sense: {
+        Args: { p_rating: number; p_sense_id: string }
+        Returns: Json
+      }
       review_word: {
         Args: { p_rating: number; p_word_id: string }
         Returns: Json
       }
       revoke_invite: { Args: { p_invite: string }; Returns: undefined }
       role_label_vi: { Args: { p_role: string }; Returns: string }
+      admin_lex_stats: {
+        Args: Record<string, never>
+        Returns: {
+          total_entries: number
+          entries_by_status: { published: number; draft: number; review: number; rejected: number }
+          total_senses: number
+          senses_by_review: { approved: number; pending: number; rejected: number }
+          senses_by_level: { A1: number; A2: number; B1: number; B2: number; C1: number; C2: number; unassigned: number }
+        }
+      }
+      admin_set_sense_review: {
+        Args: { p_sense_id: string; p_status: string }
+        Returns: Json
+      }
+      admin_set_translation_review: {
+        Args: { p_translation_id: string; p_status: string; p_translated_text?: string }
+        Returns: Json
+      }
+      admin_set_example_review: {
+        Args: { p_example_id: string; p_status: string; p_sentence_vi?: string }
+        Returns: Json
+      }
+      admin_set_entry_status: {
+        Args: { p_entry_id: string; p_status: string }
+        Returns: Json
+      }
+      admin_batch_set_entry_status: {
+        Args: { p_entry_ids: string[]; p_status: string }
+        Returns: { updated: number; skipped: Json }
+      }
       lex_word_of_the_day: {
         Args: {
           p_date?: string

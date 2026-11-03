@@ -1,3 +1,13 @@
+export type LexEntryStatus = 'draft' | 'review' | 'published' | 'rejected'
+export type LexSenseReviewStatus = 'pending' | 'approved' | 'rejected'
+
+export interface LexAdminStats {
+  total_entries: number
+  entries_by_status: { published: number; draft: number; review: number; rejected: number }
+  total_senses: number
+  senses_by_review: { approved: number; pending: number; rejected: number }
+  senses_by_level: { A1: number; A2: number; B1: number; B2: number; C1: number; C2: number; unassigned: number }
+}
 import type { Database } from '~/types/database.types'
 import type { AppRole } from '~/composables/useClasses'
 
@@ -154,7 +164,41 @@ export const useAdmin = () => {
 
   const platformStats = (days = 30) => rpc<PlatformStats>('admin_platform_stats', { p_days: days }, 'Không tải được thống kê.')
 
-  return { listUsers, setRole, banUser, unbanUser, setReviewStatus, reviewCounts, reviewHistory, listAudit, platformStats }
+    // Quản trị kho từ vựng Wiktionary (Lexicon)
+  const lexStats = () => rpc<LexAdminStats>('admin_lex_stats', {}, 'Không tải được thống kê kho từ vựng.')
+
+  const setSenseReview = (senseId: string, status: LexSenseReviewStatus) =>
+    rpc<any>('admin_set_sense_review', { p_sense_id: senseId, p_status: status }, 'Không cập nhật được trạng thái duyệt nghĩa.')
+
+  const setTranslationReview = (translationId: string, status: LexSenseReviewStatus, text?: string) =>
+    rpc<any>('admin_set_translation_review', { p_translation_id: translationId, p_status: status, p_translated_text: text || null }, 'Không cập nhật được bản dịch.')
+
+  const setExampleReview = (exampleId: string, status: LexSenseReviewStatus, sentenceVi?: string) =>
+    rpc<any>('admin_set_example_review', { p_example_id: exampleId, p_status: status, p_sentence_vi: sentenceVi || null }, 'Không cập nhật được câu ví dụ.')
+
+  const setEntryStatus = (entryId: string, status: LexEntryStatus) =>
+    rpc<any>('admin_set_entry_status', { p_entry_id: entryId, p_status: status }, 'Không cập nhật được trạng thái mục từ.')
+
+  const batchSetEntryStatus = (entryIds: string[], status: LexEntryStatus) =>
+    rpc<{ updated: number; skipped: any[] }>('admin_batch_set_entry_status', { p_entry_ids: entryIds, p_status: status }, 'Không cập nhật được hàng loạt.')
+
+  return {
+    listUsers,
+    setRole,
+    banUser,
+    unbanUser,
+    setReviewStatus,
+    reviewCounts,
+    reviewHistory,
+    listAudit,
+    platformStats,
+    lexStats,
+    setSenseReview,
+    setTranslationReview,
+    setExampleReview,
+    setEntryStatus,
+    batchSetEntryStatus,
+  }
 }
 
 export const formatDateTime = (iso: string | null | undefined) => {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AppNavbar from '~/components/layout/AppNavbar.vue'
-import AppFooter from '~/components/layout/AppFooter.vue'
 import WhatsNewModal from '~/components/common/WhatsNewModal.vue'
 import { useFeatureColor } from '~/composables/useFeatureColor'
 import { useWhatsNew } from '~/composables/useWhatsNew'
@@ -8,6 +7,7 @@ import { useWhatsNew } from '~/composables/useWhatsNew'
 useFeatureColor()
 
 const { checkAndShowOnMount } = useWhatsNew()
+const { sidebarWidth } = useSidebar()
 
 onMounted(() => {
   checkAndShowOnMount()
@@ -15,14 +15,36 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-bg text-ink pb-12 sm:pb-0">
+  <div class="layout-root">
     <AppNavbar />
-    <main class="flex-1">
+
+    <main
+      class="layout-main"
+      :style="{ '--sidebar-w': sidebarWidth }"
+    >
       <slot />
     </main>
-    <AppFooter />
+
     <ClientOnly>
       <WhatsNewModal />
     </ClientOnly>
   </div>
 </template>
+
+<style scoped>
+.layout-root {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.layout-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  margin-left: var(--sidebar-w, 64px);
+  transition: margin-left 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow-x: hidden;
+}
+</style>

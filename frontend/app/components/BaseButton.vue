@@ -87,7 +87,8 @@ const attrs = computed(() =>
   box-shadow: var(--shadow);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, background-color 0.15s ease;
+  will-change: transform, box-shadow;
   white-space: nowrap;
 }
 

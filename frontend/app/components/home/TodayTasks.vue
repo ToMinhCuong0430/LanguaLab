@@ -34,21 +34,21 @@ const { todayTasks } = useHomeData()
             <span class="text-xs font-bold uppercase tracking-wider">
               {{ task.category }}
             </span>
-            <span class="flex items-center gap-1 text-xs font-black">
-              <Zap class="h-3.5 w-3.5 fill-current" :stroke-width="2.5" />
+            <span class="flex items-center gap-1 text-xs font-black hover-wiggle cursor-default">
+              <Zap class="h-3.5 w-3.5 fill-current icon-wiggle text-warn" :stroke-width="2.5" />
               +{{ task.xpReward }} XP
             </span>
           </div>
         </template>
 
         <div class="space-y-3">
-          <h3 class="font-display text-base font-bold line-clamp-2 leading-snug">
+          <h3 class="font-display text-base font-bold line-clamp-2 leading-snug group-hover:text-primary transition-colors">
             {{ task.title }}
           </h3>
 
-          <div class="flex items-center gap-1.5 text-xs font-bold">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-ink-soft">
             <Clock class="h-3.5 w-3.5" :stroke-width="2.5" />
-            <span>Thời lượng ước tính: {{ task.estMinutes }} phút</span>
+            <span>Thời lượng: {{ task.estMinutes }} phút</span>
           </div>
         </div>
 
@@ -58,10 +58,11 @@ const { todayTasks } = useHomeData()
             variant="secondary"
             size="sm"
             block
+            class="border-2x focus-ring group/btn"
           >
             <span>Bắt đầu</span>
             <template #right>
-              <ArrowUpRight class="h-4 w-4" :stroke-width="2.5" />
+              <ArrowUpRight class="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" :stroke-width="2.5" />
             </template>
           </BaseButton>
         </template>

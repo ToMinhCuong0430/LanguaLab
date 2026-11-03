@@ -1,4 +1,5 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 export default {
   darkMode: 'class',
@@ -73,4 +74,39 @@ export default {
       },
     },
   },
-} satisfies Config
+  plugins: [
+    plugin(function({ addUtilities, theme }) {
+      const newUtilities = {
+        '.border-2x': {
+          borderWidth: `calc(${theme('borderWidth.DEFAULT')} * 2)`,
+        },
+        '.focus-ring': {
+          outline: 'none',
+          boxShadow: `0 0 0 2px ${theme('colors.accent')}, 0 0 0 4px ${theme('colors.accent-ink')}`,
+        },
+        '.text-acc-grad': {
+          backgroundImage: `linear-gradient(to right, ${theme('colors.accent')}, ${theme('colors.accent-ink')})`,
+          '-webkit-background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+        },
+        '.bg-neo-grid': {
+          backgroundImage: "url('/assets/bg/neo-brutal/grid-light.svg')",
+          backgroundSize: 'cover',
+        },
+        '.bg-neo-grid-dark': {
+          backgroundImage: "url('/assets/bg/neo-brutal/grid-dark.svg')",
+          backgroundSize: 'cover',
+        },
+        '.bg-neo-diagonal': {
+          backgroundImage: "url('/assets/bg/neo-brutal/diagonal-light.svg')",
+          backgroundSize: 'cover',
+        },
+        '.bg-neo-diagonal-dark': {
+          backgroundImage: "url('/assets/bg/neo-brutal/diagonal-dark.svg')",
+          backgroundSize: 'cover',
+        },
+      };
+      addUtilities(newUtilities, { variants: ['responsive', 'hover', 'focus'] });
+    }),
+  ],
+} satisfies Config;

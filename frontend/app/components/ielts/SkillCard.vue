@@ -44,19 +44,19 @@ const progressPct = computed(() => Math.round((props.overview.completedTests / p
 </script>
 
 <template>
-  <div class="flex flex-col justify-between rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut transition-all hover:-translate-y-1 hover:shadow-brut-lg">
+  <div class="group flex flex-col justify-between rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut transition-all duration-200 hover:-translate-y-1.5 hover:shadow-brut-lg hover-bounce">
     <div class="space-y-4">
       <!-- Header thẻ: Icon + Tên kỹ năng + Badge -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-brut border-2 border-line shadow-brut-sm"
+            class="flex h-12 w-12 items-center justify-center rounded-brut border-2 border-line shadow-brut-sm transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-3"
             :class="toneStyles.badge"
           >
-            <component :is="getSkillIcon(overview.skill)" class="h-6 w-6" :stroke-width="2.5" />
+            <component :is="getSkillIcon(overview.skill)" class="h-6 w-6 icon-bounce" :stroke-width="2.5" />
           </div>
           <div>
-            <h3 class="font-display text-lg font-black text-ink">
+            <h3 class="font-display text-lg font-black text-ink group-hover:text-primary transition-colors">
               {{ overview.name }}
             </h3>
             <span class="text-xs font-bold uppercase tracking-wider text-ink-soft">
@@ -112,7 +112,7 @@ const progressPct = computed(() => Math.round((props.overview.completedTests / p
       >
         <span>Luyện tập {{ overview.englishName }}</span>
         <template #right>
-          <ArrowRight class="h-4 w-4" :stroke-width="2.5" />
+          <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" :stroke-width="2.5" />
         </template>
       </BaseButton>
     </div>

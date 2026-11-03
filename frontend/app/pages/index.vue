@@ -14,6 +14,7 @@ import XpLeaderboard from '~/components/home/XpLeaderboard.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import BaseSkeleton from '~/components/BaseSkeleton.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import AnimeSparkle from '~/components/illustration/AnimeSparkle.vue'
 import { AlertCircle, RotateCcw } from '@lucide/vue'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -70,7 +71,10 @@ const homeTourSteps: GuideStep[] = [
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-8" data-feature="home">
+  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-8 relative overflow-hidden" data-feature="home">
+    <!-- Anime sparkle decoration -->
+    <AnimeSparkle color="#FFD23F" color2="#FF70A6" color3="#2F5BFF" class="opacity-50 pointer-events-none" />
+
     <!-- 1. Thanh trên cùng của trang: Ô tìm kiếm, điểm danh, streak, XP, thông báo -->
     <HomeTopBar />
 

@@ -230,18 +230,18 @@ onUnmounted(() => {
       <div class="flex items-center gap-1.5">
         <!-- Khối hiển thị số ngày streak -->
         <div
-          class="flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm"
+          class="group flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm hover-bounce cursor-default"
           title="Chuỗi ngày học liên tục"
         >
-          <Flame class="h-4 w-4 text-bad fill-bad animate-pulse" :stroke-width="2.5" />
-          <span>{{ user.streakDays }} ngày</span>
+          <Flame class="h-4 w-4 text-bad fill-bad animate-pulse icon-bounce" :stroke-width="2.5" />
+          <span class="group-hover:text-bad transition-colors">{{ user.streakDays }} ngày</span>
         </div>
 
         <!-- Nút điểm danh hôm nay -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press"
-          :class="user.checkedInToday ? 'bg-ok text-on-tone' : 'bg-warn text-on-tone'"
+          class="relative inline-flex items-center gap-1.5 rounded-brut border-2 border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press hover-scale"
+          :class="user.checkedInToday ? 'bg-ok text-on-tone' : 'bg-warn text-on-tone animate-pulse'"
           :disabled="user.checkedInToday"
           @click="toggleCheckIn"
         >
@@ -252,26 +252,26 @@ onUnmounted(() => {
 
       <!-- Khối hiển thị XP -->
       <div
-        class="flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 min-h-[44px] px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm"
+        class="group flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 min-h-[44px] px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm hover-wiggle cursor-default"
         title="Tổng điểm kinh nghiệm tích luỹ"
       >
-        <Zap class="h-4 w-4 text-warn fill-warn" :stroke-width="2.5" />
-        <span>{{ user.xp }} XP</span>
+        <Zap class="h-4 w-4 text-warn fill-warn icon-wiggle" :stroke-width="2.5" />
+        <span class="group-hover:text-accent transition-colors">{{ user.xp }} XP</span>
       </div>
 
       <!-- Chuông thông báo -->
       <div ref="notificationRef" class="relative">
         <button
           type="button"
-          class="relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press"
+          class="group relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press hover-wiggle"
           :aria-expanded="isNotificationOpen"
           aria-label="Thông báo học tập"
           @click="toggleNotification"
         >
-          <Bell class="h-4 w-4 text-ink" :stroke-width="2.5" />
+          <Bell class="h-4 w-4 text-ink icon-wiggle" :stroke-width="2.5" />
           <span
             v-if="unreadNotificationsCount > 0"
-            class="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full border border-line bg-bad px-1 text-[10px] font-black text-white"
+            class="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full border border-line bg-bad px-1 text-[10px] font-black text-white animate-bounce"
           >
             {{ unreadNotificationsCount }}
           </span>

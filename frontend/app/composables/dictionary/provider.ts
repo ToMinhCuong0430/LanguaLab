@@ -283,10 +283,10 @@ export class MockDictionaryProvider implements DictionaryProvider {
 }
 
 /**
- * Provider đọc từ kho từ vựng trung tâm (lex_entries, lex_senses, ...)
- * và fallback về bảng dictionary_entries nếu mục từ chưa có trong kho mới.
- * Dữ liệu tự biên soạn hoặc nguồn giấy phép mở (Wiktionary CC BY-SA, CEFR-J),
+ * Provider đọc trực tiếp và độc quyền từ kho từ vựng trung tâm canonical (lex_entries, lex_senses, ...).
+ * Dữ liệu tự biên soạn hoặc nguồn giấy phép mở (Wiktionary CC BY-SA, CEFR-J, Octanove C1/C2),
  * tuyệt đối KHÔNG cào dữ liệu bản quyền Oxford.
+ * Bảng legacy dictionary_entries đã được decommission hoàn toàn.
  */
 export class SupabaseDictionaryProvider implements DictionaryProvider {
   readonly providerName = 'Từ điển LanguaLab (Kho từ vựng trung tâm)'
@@ -537,30 +537,8 @@ export class SupabaseDictionaryProvider implements DictionaryProvider {
         }
       }
 
-      // 2. Dự phòng: Nếu chưa có trong kho lex_*, tìm trong bảng legacy dictionary_entries
-      const { data: legacyData, error: legacyErr } = await this.client
-        .from('dictionary_entries')
-        .select('*')
-        .eq('language', lang)
-        .ilike('headword', cleanWord)
-        .maybeSingle()
-
-      if (legacyErr || !legacyData) return null
-
-      const raw = legacyData.data as any
-      return {
-        word: legacyData.headword,
-        lang: legacyData.language as LearningLanguage,
-        phonetic: raw.phonetic || '',
-        audioUrl: raw.audioUrl,
-        frequency: raw.frequency || 'Academic',
-        etymology: raw.etymology,
-        senses: Array.isArray(raw.senses) ? raw.senses : [],
-        collocations: Array.isArray(raw.collocations) ? raw.collocations : [],
-        synonyms: Array.isArray(raw.synonyms) ? raw.synonyms : [],
-        antonyms: Array.isArray(raw.antonyms) ? raw.antonyms : [],
-        sourceProvider: legacyData.source || 'LanguaLab Open License',
-      }
+      // Không tìm thấy trong kho canonical lex_*
+      return null
     } catch {
       return null
     }
@@ -577,20 +555,8 @@ export class SupabaseDictionaryProvider implements DictionaryProvider {
         p_limit: 8,
       })
 
-      if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
+      if (!rpcErr && Array.isArray(rpcData)) {
         return rpcData.map((d: any) => d.lemma)
-      }
-
-      // 2. Dự phòng: Gợi ý từ bảng dictionary_entries
-      const { data: legacyData, error: legacyErr } = await this.client
-        .from('dictionary_entries')
-        .select('headword')
-        .eq('language', lang)
-        .ilike('headword', `${q}%`)
-        .limit(8)
-
-      if (!legacyErr && legacyData) {
-        return legacyData.map((d: any) => d.headword)
       }
       return []
     } catch {
@@ -602,7 +568,7 @@ export class SupabaseDictionaryProvider implements DictionaryProvider {
     const q = query.trim().toLowerCase()
     if (!q) return []
     try {
-      // 1. Thử gợi ý bằng RPC search_lex_entries từ kho từ vựng trung tâm
+      // 1. Gợi ý bằng RPC search_lex_entries từ kho từ vựng trung tâm
       const { data: rpcData, error: rpcErr } = await this.client.rpc('search_lex_entries', {
         p_query: q,
         p_language: lang,
@@ -649,17 +615,6 @@ export class SupabaseDictionaryProvider implements DictionaryProvider {
         }))
       }
 
-      // 2. Dự phòng: Gợi ý từ bảng dictionary_entries
-      const { data: legacyData, error: legacyErr } = await this.client
-        .from('dictionary_entries')
-        .select('headword')
-        .eq('language', lang)
-        .ilike('headword', `${q}%`)
-        .limit(8)
-
-      if (!legacyErr && legacyData) {
-        return legacyData.map((d: any) => ({ word: d.headword }))
-      }
       return []
     } catch {
       return []

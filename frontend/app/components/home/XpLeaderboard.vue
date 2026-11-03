@@ -25,8 +25,8 @@ const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
       <template #header>
         <div class="flex items-center justify-between w-full">
           <div class="flex items-center gap-2">
-            <div class="p-1.5 rounded-brut border-2 border-line bg-warn text-on-tone shadow-brut-sm">
-              <Trophy class="h-4 w-4" :stroke-width="2.5" />
+            <div class="p-1.5 rounded-brut border-2 border-line bg-warn text-on-tone shadow-brut-sm hover-wiggle cursor-default">
+              <Trophy class="h-4 w-4 icon-wiggle" :stroke-width="2.5" />
             </div>
             <span class="font-display font-black text-base text-ink">
               Bảng vàng rèn luyện tuần
@@ -42,9 +42,9 @@ const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
         <!-- TOP 3 PODIUM (BỤC VINH QUANG PHẲNG) -->
         <div class="grid grid-cols-3 gap-2 pt-4 pb-2 border-b-2 border-line items-end text-center">
           <!-- Hạng 2 (Bạc) -->
-          <div v-if="top3[1]" class="flex flex-col items-center">
+          <div v-if="top3[1]" class="group flex flex-col items-center hover-lift transition-all cursor-default">
             <div class="relative mb-2">
-              <div class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-surface-2 text-ink font-display text-xs font-black shadow-brut-sm">
+              <div class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-surface-2 text-ink font-display text-xs font-black shadow-brut-sm group-hover:scale-105 transition-transform">
                 {{ top3[1].avatarChar }}
               </div>
               <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border border-line bg-surface-2 px-1.5 text-[10px] font-black shadow-sm">
@@ -64,10 +64,10 @@ const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
           </div>
 
           <!-- Hạng 1 (Vàng - cao nhất) -->
-          <div v-if="top3[0]" class="flex flex-col items-center -mt-3">
-            <Crown class="h-5 w-5 text-warn fill-warn mb-1" :stroke-width="2.5" />
+          <div v-if="top3[0]" class="group flex flex-col items-center -mt-3 hover-lift transition-all cursor-default">
+            <Crown class="h-5 w-5 text-warn fill-warn mb-1 animate-bounce" :stroke-width="2.5" />
             <div class="relative mb-2">
-              <div class="flex h-14 w-14 items-center justify-center rounded-brut border-2 border-line bg-warn text-on-tone font-display text-sm font-black shadow-brut">
+              <div class="flex h-14 w-14 items-center justify-center rounded-brut border-2 border-line bg-warn text-on-tone font-display text-sm font-black shadow-brut group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200">
                 {{ top3[0].avatarChar }}
               </div>
               <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border-2 border-line bg-warn px-2 text-[11px] font-black text-on-tone shadow-sm">
@@ -114,7 +114,7 @@ const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
           <div
             v-for="(userItem, idx) in remainingUsers"
             :key="userItem.id"
-            class="flex items-center justify-between rounded-brut border-2 p-2 sm:p-2.5 transition-all"
+            class="flex items-center justify-between rounded-brut border-2 p-2 sm:p-2.5 transition-all duration-150 hover:translate-x-1 hover:shadow-brut-sm cursor-default"
             :class="[
               userItem.isCurrentUser
                 ? 'border-line bg-warn text-on-tone shadow-brut ring-2 ring-line font-black'

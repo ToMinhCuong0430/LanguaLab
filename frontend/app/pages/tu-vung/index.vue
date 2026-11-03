@@ -54,7 +54,11 @@ const {
   uploadPronunciation,
   lexWords,
   isLexLoading,
+  isLexLoadingMore,
+  totalLexWords,
+  hasMoreLexWords,
   fetchLexWordsByLevel,
+  loadMoreLexWords,
   studyLexLevelSet,
   saveLexWordToMySet,
 } = useVocab(currentLang)
@@ -523,7 +527,7 @@ const handleAddWord = () => {
 
           <div class="flex items-center gap-2">
             <span class="text-xs font-mono font-bold text-ink-soft">
-              {{ lexWords.length }} từ vựng hiển thị
+              {{ totalLexWords > 0 ? `${totalLexWords.toLocaleString()} từ vựng Cấp ${selectedLexLevel} (${lexWords.length} đang hiện)` : `${lexWords.length} từ vựng hiển thị` }}
             </span>
             <button
               v-if="lexWords.length > 0"
@@ -579,8 +583,9 @@ const handleAddWord = () => {
                 </div>
 
                 <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                  <span class="px-2 py-0.5 rounded-brut border border-line bg-surface-2 text-[10px] font-black uppercase text-ink-soft">
-                    {{ w.partOfSpeech }}
+                  <span class="px-2 py-0.5 rounded-brut border border-line bg-surface-2 text-[10px] font-black uppercase text-ink-soft flex items-center gap-1">
+                    <span>{{ w.partOfSpeech }}</span>
+                    <span v-if="w.senseOrder" class="opacity-75">#{{ w.senseOrder }}</span>
                   </span>
                   <BaseBadge v-if="w.level" v-bind="levelBadge(w.level)" size="sm">
                     {{ w.level }}
@@ -625,6 +630,19 @@ const handleAddWord = () => {
               </NuxtLink>
             </div>
           </div>
+        </div>
+
+        <!-- Nút tải thêm từ vựng cho cấp độ này -->
+        <div v-if="hasMoreLexWords" class="pt-2 text-center">
+          <button
+            type="button"
+            class="min-h-[44px] px-6 py-2.5 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-display font-black text-xs shadow-brut cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
+            :disabled="isLexLoadingMore"
+            @click="loadMoreLexWords"
+          >
+            <RefreshCw v-if="isLexLoadingMore" class="w-4 h-4 animate-spin text-accent" />
+            <span>{{ isLexLoadingMore ? 'Đang tải thêm từ vựng...' : `Tải thêm từ vựng Cấp ${selectedLexLevel} (còn ${(totalLexWords - lexWords.length).toLocaleString()} từ)` }}</span>
+          </button>
         </div>
       </div>
 

@@ -6,12 +6,15 @@ export interface VocabWord {
   id: string
   term: string
   phonetic: string
+  reading?: string
   partOfSpeech: string
   meaning: string
   exampleTarget: string
   exampleMeaning: string
   srsState?: 'again' | 'hard' | 'good' | 'easy' | 'new'
   lastReviewed?: string
+  lexEntryId?: string
+  lexSenseId?: string
 }
 
 export interface LexSenseItem {
@@ -27,6 +30,7 @@ export interface LexSenseItem {
   viMeaning?: string
   exampleTarget?: string
   exampleMeaning?: string
+  senseOrder?: number
 }
 
 export interface VocabSet {
@@ -609,11 +613,14 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
             id: w.id,
             term: w.word,
             phonetic: w.phonetic || w.reading || '',
+            reading: w.reading || undefined,
             partOfSpeech: w.part_of_speech || 'noun',
             meaning: w.meaning_vi,
             exampleTarget: w.example_sentence || '',
             exampleMeaning: w.example_translation || '',
             srsState: 'new',
+            lexEntryId: w.lex_entry_id || undefined,
+            lexSenseId: w.lex_sense_id || undefined,
           })),
         }))
       }
@@ -642,11 +649,14 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
               id: w.id,
               term: w.word,
               phonetic: w.phonetic || w.reading || '',
+              reading: w.reading || undefined,
               partOfSpeech: w.part_of_speech || 'noun',
               meaning: w.meaning_vi,
               exampleTarget: w.example_sentence || '',
               exampleMeaning: w.example_translation || '',
               srsState: 'new',
+              lexEntryId: w.lex_entry_id || undefined,
+              lexSenseId: w.lex_sense_id || undefined,
             })),
           }))
         }
@@ -825,7 +835,9 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
             meaning_vi: word.meaning,
             example_sentence: word.exampleTarget,
             example_translation: word.exampleMeaning,
-          })
+            lex_entry_id: word.lexEntryId || null,
+            lex_sense_id: word.lexSenseId || null,
+          } as any)
           .select()
           .single()
 
@@ -833,12 +845,15 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
           const newWord: VocabWord = {
             id: data.id,
             term: data.word,
-            phonetic: data.phonetic || '',
+            phonetic: data.phonetic || data.reading || '',
+            reading: data.reading || undefined,
             partOfSpeech: data.part_of_speech || 'noun',
             meaning: data.meaning_vi,
             exampleTarget: data.example_sentence || '',
             exampleMeaning: data.example_translation || '',
             srsState: 'new',
+            lexEntryId: (data as any).lex_entry_id || undefined,
+            lexSenseId: (data as any).lex_sense_id || undefined,
           }
           const targetSet = dbMySets.value.find(s => s.id === setId)
           if (targetSet) targetSet.words.push(newWord)
@@ -888,7 +903,9 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     sourceType: 'video' | 'reading' | 'dictionary' | 'typing' | 'grammar' | 'manual',
     sourceRef?: string,
     targetSetId?: string,
-    contextSentence?: string
+    contextSentence?: string,
+    lexEntryId?: string,
+    lexSenseId?: string
   ) => {
     const uid = authUser.value?.sub
     if (!uid) return { success: false, error: 'Chưa đăng nhập' }
@@ -903,7 +920,9 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
           source_ref: sourceRef || null,
           target_set_id: targetSetId || null,
           context_sentence: contextSentence || null,
-        },
+          lex_entry_id: lexEntryId || null,
+          lex_sense_id: lexSenseId || null,
+        } as any,
         { onConflict: 'user_id, word, source_type, source_ref' }
       ).select().single()
 
@@ -997,6 +1016,36 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     }
   }
 
+  // RPC: Ôn luyện từng nghĩa Canonical Lexicon lặp lại ngắt quãng SM-2 (review_lex_sense)
+  const rateLexSenseSrs = async (senseId: string, rating: 'again' | 'hard' | 'good' | 'easy') => {
+    const ratingMap: Record<string, number> = {
+      again: 1,
+      hard: 2,
+      good: 3,
+      easy: 4,
+    }
+
+    if (!authUser.value?.sub) {
+      return { success: false, error: 'Vui lòng đăng nhập để lưu kết quả ôn tập' }
+    }
+
+    try {
+      const { data, error } = await (client.rpc as any)('review_lex_sense', {
+        p_sense_id: senseId,
+        p_rating: ratingMap[rating] || 3,
+      })
+
+      if (error) {
+        if (handleAuthExpired(error)) return { success: false }
+        return { success: false, error: translateSupabaseError(error) }
+      }
+
+      return { success: true, data }
+    } catch (err: any) {
+      return { success: false, error: translateSupabaseError(err) }
+    }
+  }
+
   // Lấy bộ từ đang chọn để học
   const selectedSetId = ref<string>('')
 
@@ -1018,9 +1067,31 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
   // Kho từ vựng trung tâm theo cấp độ
   const lexWords = ref<LexSenseItem[]>([])
   const isLexLoading = ref(false)
+  const isLexLoadingMore = ref(false)
+  const totalLexWords = ref(0)
+  const currentLexPage = ref(1)
+  const hasMoreLexWords = ref(false)
+  const currentLexLevel = ref('A1')
+  const currentLexSearch = ref('')
+  const LEX_PAGE_SIZE = 24
 
-  const fetchLexWordsByLevel = async (level: string = 'A1', search: string = '', limit: number = 40) => {
-    isLexLoading.value = true
+  const fetchLexWordsByLevel = async (
+    level: string = 'A1',
+    search: string = '',
+    page: number = 1,
+    pageSize: number = LEX_PAGE_SIZE,
+    append: boolean = false
+  ) => {
+    if (append) {
+      isLexLoadingMore.value = true
+    } else {
+      isLexLoading.value = true
+    }
+
+    currentLexLevel.value = level
+    currentLexSearch.value = search
+    currentLexPage.value = page
+
     try {
       let query = client
         .from('lex_senses')
@@ -1051,24 +1122,32 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
             sentence,
             sentence_vi
           )
-        `)
+        `, { count: 'exact' })
         .eq('level', level)
         .eq('lex_entries.language', currentLang.value)
         .eq('lex_entries.status', 'published')
-        .order('sense_order', { ascending: true })
-        .limit(limit)
+        .eq('review_status', 'approved')
 
       if (search && search.trim()) {
         query = query.ilike('lex_entries.lemma', `%${search.trim().toLowerCase()}%`)
       }
 
-      const { data, error } = await query
+      query = query.order('sense_order', { ascending: true })
+
+      const from = (page - 1) * pageSize
+      const to = from + pageSize - 1
+      query = query.range(from, to)
+
+      const { data, count, error } = await query
 
       if (error) {
         console.warn('Lỗi khi tải từ theo cấp độ từ kho lex_senses:', error.message)
-        lexWords.value = []
+        if (!append) lexWords.value = []
         return []
       }
+
+      totalLexWords.value = count || 0
+      hasMoreLexWords.value = page * pageSize < (count || 0)
 
       if (data) {
         const mapped: LexSenseItem[] = data.map((row: any) => {
@@ -1080,6 +1159,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
           return {
             id: row.id,
             entryId: row.entry_id,
+            senseOrder: row.sense_order,
             term: row.lex_entries?.lemma || '',
             phonetic: pron?.transcription || '',
             audioUrl: pronList.find((p: any) => p.audio_url)?.audio_url,
@@ -1092,7 +1172,12 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
             exampleMeaning: ex?.sentence_vi || '',
           }
         })
-        lexWords.value = mapped
+
+        if (append) {
+          lexWords.value = [...lexWords.value, ...mapped]
+        } else {
+          lexWords.value = mapped
+        }
         return mapped
       }
       return []
@@ -1101,7 +1186,19 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
       return []
     } finally {
       isLexLoading.value = false
+      isLexLoadingMore.value = false
     }
+  }
+
+  const loadMoreLexWords = async () => {
+    if (isLexLoadingMore.value || !hasMoreLexWords.value) return
+    await fetchLexWordsByLevel(
+      currentLexLevel.value,
+      currentLexSearch.value,
+      currentLexPage.value + 1,
+      LEX_PAGE_SIZE,
+      true
+    )
   }
 
   const studyLexLevelSet = (levelTitle: string, words: LexSenseItem[]) => {
@@ -1154,6 +1251,8 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
       exampleTarget: item.exampleTarget || '',
       exampleMeaning: item.exampleMeaning || '',
       srsState: 'new',
+      lexEntryId: item.entryId,
+      lexSenseId: item.id,
     })
   }
 
@@ -1175,6 +1274,7 @@ export const useVocab = (targetLang?: Ref<LearningLanguage>) => {
     saveWordToDatabase,
     uploadPronunciation,
     rateWordSrs,
+    rateLexSenseSrs,
     lexWords,
     isLexLoading,
     fetchLexWordsByLevel,

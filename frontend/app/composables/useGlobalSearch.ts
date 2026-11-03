@@ -85,11 +85,12 @@ export function useGlobalSearch() {
           .or(`title.ilike.${safeQuery},vietnamese_title.ilike.${safeQuery}`)
           .limit(5),
 
-        // 5. Dictionary entries
+        // 5. Canonical Lexicon entries (đã xuất bản)
         client
-          .from('dictionary_entries')
-          .select('id, headword, language')
-          .ilike('headword', safeQuery)
+          .from('lex_entries')
+          .select('id, lemma, language')
+          .eq('status', 'published')
+          .ilike('lemma', safeQuery)
           .limit(5),
 
         // 6. Typing topics (đã xuất bản)
@@ -162,13 +163,13 @@ export function useGlobalSearch() {
         }
       }
 
-      // 5. Map Dictionary
+      // 5. Map Dictionary (Canonical Lexicon)
       if (dictRes.status === 'fulfilled' && dictRes.value.data) {
-        const items: GlobalSearchResultItem[] = dictRes.value.data.map(d => ({
+        const items: GlobalSearchResultItem[] = dictRes.value.data.map((d: any) => ({
           id: d.id,
-          title: d.headword,
-          subtitle: `Ngôn ngữ: ${d.language.toUpperCase()}`,
-          path: `/tu-dien/${encodeURIComponent(d.headword)}`,
+          title: d.lemma || d.headword,
+          subtitle: `Ngôn ngữ: ${(d.language || 'en').toUpperCase()}`,
+          path: `/tu-dien/${encodeURIComponent(d.lemma || d.headword)}`,
           group: 'dictionary',
           groupLabel: GROUP_METAS.dictionary.label,
         }))

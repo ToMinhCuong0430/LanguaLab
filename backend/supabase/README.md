@@ -42,7 +42,8 @@ backend/supabase/
     ├── 20261030000017_admin_and_content_reviews.sql # Quản trị viên, duyệt nội dung kiểm duyệt, cấm user & nhật ký kiểm toán
     ├── 20261031000018_create_lexicon_core.sql      # Kho từ vựng trung tâm (Lexicon): bảng lex_*, RLS, tìm kiếm và kiểm soát xuất bản
     ├── 20261031000019_vocab_level_difficulty_scale.sql # Chuẩn hóa 7 cấp độ từ vựng thành thang độ khó 1-7, sửa cấp 7 thành 'Chuyên sâu & Hiếm gặp', bảng ánh xạ lex_level_map
-    └── 20261101000020_lex_dictionary_helpers.sql   # Các hàm RPC tra cứu từ điển: từ của hôm nay theo ngày (lex_word_of_the_day) và danh sách từ nổi bật theo cấp độ (lex_featured_words)
+    ├── 20261101000020_lex_dictionary_helpers.sql   # Các hàm RPC tra cứu từ điển: từ của hôm nay theo ngày (lex_word_of_the_day) và danh sách từ nổi bật theo cấp độ (lex_featured_words)
+    └── 20261102000021_lex_admin_management.sql     # Các hàm RPC thống kê và duyệt nội dung kho từ vựng (admin_lex_stats, admin_set_sense_review, admin_set_translation_review, admin_set_entry_status...) và chỉ mục tối ưu hóa POS
 ```
 
 ---

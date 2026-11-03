@@ -57,7 +57,8 @@ withDefaults(
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  will-change: transform, box-shadow;
 }
 
 .base-card--surface {
@@ -114,8 +115,13 @@ withDefaults(
 }
 
 .base-card--interactive:hover {
-  transform: translate(2px, 2px);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(-4px);
+  box-shadow: 6px 10px 0 var(--line);
+}
+
+.base-card--interactive:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--line);
 }
 
 .base-card__header {

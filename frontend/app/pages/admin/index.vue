@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   History,
+  BookA,
 } from '@lucide/vue'
 import PageBanner from '~/components/common/PageBanner.vue'
 import type { Database } from '~/types/database.types'
@@ -32,7 +33,7 @@ const client = useSupabaseClient<Database>()
 type Counts = { total: number; draft: number; pending: number; published: number }
 const stats = ref<Record<string, Counts>>({})
 const isLoadingStats = ref(true)
-const { reviewCounts } = useAdmin()
+const { reviewCounts, lexStats } = useAdmin()
 
 // Lịch sử 10 lần import gần nhất
 const importLogs = ref<any[]>([])
@@ -45,11 +46,20 @@ const loadDashboardData = async () => {
   isLoadingLogs.value = true
 
   try {
-    const [counts, dict] = await Promise.all([
+    const [counts, lexData] = await Promise.all([
       reviewCounts(),
-      client.from('dictionary_entries').select('*', { count: 'exact', head: true }),
+      lexStats().catch(() => null),
     ])
-    stats.value = { ...counts, dictionary: { total: dict.count || 0, draft: 0, pending: 0, published: 0 } }
+    stats.value = {
+      ...counts,
+      dictionary: { total: 2, draft: 0, pending: 0, published: 2 },
+      lexicon: {
+        total: lexData?.total_entries || 0,
+        draft: (lexData?.entries_by_status?.draft || 0) + (lexData?.entries_by_status?.review || 0),
+        pending: lexData?.senses_by_review?.pending || 0,
+        published: lexData?.entries_by_status?.published || 0,
+      },
+    }
   } catch (e) {
     console.warn('Lỗi tải thống kê dashboard:', e)
   } finally {
@@ -77,7 +87,8 @@ onMounted(() => {
 })
 
 const featureCards = [
-  { key: 'vocab', title: 'Từ vựng (Vocab)', path: '/admin/vocab', icon: BookOpen, tone: 'var(--c-pink)' },
+  { key: 'lexicon', title: 'Kho từ vựng (Lexicon)', path: '/admin/lexicon', icon: BookA, tone: 'var(--c-yellow)' },
+  { key: 'vocab', title: 'Bộ từ vựng (Sets)', path: '/admin/vocab', icon: BookOpen, tone: 'var(--c-pink)' },
   { key: 'typing', title: 'Gõ câu (Typing)', path: '/admin/typing', icon: Keyboard, tone: 'var(--c-green)' },
   { key: 'grammar', title: 'Ngữ pháp (Grammar)', path: '/admin/grammar', icon: BookOpen, tone: 'var(--c-yellow)' },
   { key: 'reading', title: 'Kho đọc & Dịch', path: '/admin/reading', icon: BookMarked, tone: 'var(--c-orange)' },
