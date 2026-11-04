@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Volume2, Mic, Square, Play, RotateCw, Trophy } f
 import { useLanguage } from '~/composables/useLanguage'
 import { useVocab, type VocabWord, type VocabSet } from '~/composables/useVocab'
 import type { LessonPhase } from '~/layouts/lesson.vue'
+import { useLessonProgress, resumeIndexFromQuery } from '~/composables/useLessonProgress'
 import { BRAND_NAME } from '~/constants/brand'
 
 // Phiên Flashcard / Ôn tập SRS một thẻ mỗi màn, dùng layout lesson
@@ -218,6 +219,44 @@ const removeCurrentWord = () => {
   if (currentIndex.value >= words.value.length) currentIndex.value = Math.max(0, words.value.length - 1)
   resetCard()
 }
+
+// ---- Bài học đang dở: lưu vị trí thẻ để trang chủ mở lại đúng chỗ ----
+const progressStore = useLessonProgress()
+
+// Mở từ nút "Tiếp tục" (?the=N, đếm từ 1): nhảy tới đúng thẻ khi bộ từ đã tải
+const hasResumed = ref(false)
+watch(words, (list) => {
+  if (hasResumed.value || !list.length) return
+  hasResumed.value = true
+  const idx = resumeIndexFromQuery(route.query.the, list.length)
+  if (idx > 0) {
+    currentIndex.value = idx
+    resetCard()
+  }
+}, { immediate: true })
+
+const reportSave = (res: { success: boolean; error?: string }) => {
+  if (!res.success) saveError.value = `Chưa lưu được vị trí bài học: ${res.error}`
+}
+
+// Mỗi lần sang thẻ khác thì ghi đè dòng tiến độ của Từ vựng (giữ chế độ SRS trong link)
+watch(currentIndex, (idx) => {
+  if (!set.value || isFinished.value || !words.value.length) return
+  const query = isSrs.value ? `?mode=srs&the=${idx + 1}` : `?the=${idx + 1}`
+  progressStore.save({
+    feature: 'tu-vung',
+    resourceId: set.value.id,
+    resourceTitle: `${isSrs.value ? 'Ôn tập SRS' : 'Flashcard'}: ${set.value.title}`,
+    currentIndex: idx,
+    totalCount: words.value.length,
+    link: `/tu-vung/the/${set.value.id}${query}`,
+  }).then(reportSave)
+})
+
+// Xem hết bộ thì xoá dòng tiến độ
+watch(isFinished, (done) => {
+  if (done && set.value) progressStore.clear('tu-vung', set.value.id).then(reportSave)
+})
 </script>
 
 <template>

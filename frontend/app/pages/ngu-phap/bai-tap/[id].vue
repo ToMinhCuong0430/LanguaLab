@@ -3,6 +3,7 @@ import { ArrowRight, Check, CheckCircle2, RotateCcw, Trophy, XCircle } from '@lu
 import { useLanguage } from '~/composables/useLanguage'
 import { useGrammar, type GrammarExercise, type GrammarPoint } from '~/composables/useGrammar'
 import { BRAND_NAME } from '~/constants/brand'
+import { useLessonProgress, resumeIndexFromQuery } from '~/composables/useLessonProgress'
 
 // Phiên bài tập ngữ pháp: một bài mỗi màn, Kiểm tra -> Tiếp tục. Dùng layout lesson.
 definePageMeta({ layout: false })
@@ -24,6 +25,8 @@ const currentIndex = ref(0)
 const isChecked = ref(false)
 const isFinished = ref(false)
 const results = ref<boolean[]>([])
+// Tiếp tục giữa chừng thì các bài trước không có câu trả lời trong phiên này, nên muốn hoàn thành phải làm lại từ đầu
+const resumedFrom = ref(0)
 
 // Câu trả lời theo từng bài
 const choiceAnswers = ref<Record<string, number>>({})
@@ -35,6 +38,7 @@ const exercise = computed(() => exercises.value[currentIndex.value])
 
 const resetAll = () => {
   currentIndex.value = 0
+  resumedFrom.value = 0
   isChecked.value = false
   isFinished.value = false
   results.value = []
@@ -133,6 +137,44 @@ const lessonProgress = computed(() => {
   return (currentIndex.value + (isChecked.value ? 1 : 0)) / total
 })
 
+// ---- Bài học đang dở: lưu vị trí bài tập để trang chủ mở lại đúng chỗ ----
+const progressStore = useLessonProgress()
+const saveError = ref<string | null>(null)
+
+// Mở từ nút "Tiếp tục" (?bai=N, đếm từ 1). Đăng ký sau watch(point, resetAll) nên chạy sau khi đã reset
+const hasResumed = ref(false)
+watch(exercises, (list) => {
+  if (hasResumed.value || !list.length) return
+  hasResumed.value = true
+  const idx = resumeIndexFromQuery(route.query.bai, list.length)
+  if (idx > 0) {
+    currentIndex.value = idx
+    resumedFrom.value = idx
+  }
+}, { immediate: true })
+
+const reportSave = (res: { success: boolean; error?: string }) => {
+  if (!res.success) saveError.value = `Chưa lưu được vị trí bài học: ${res.error}`
+}
+
+// Mỗi lần sang bài tiếp theo thì ghi đè dòng tiến độ của Ngữ pháp
+watch(currentIndex, (idx) => {
+  if (!point.value || isFinished.value || !exercises.value.length) return
+  progressStore.save({
+    feature: 'ngu-phap',
+    resourceId: point.value.id,
+    resourceTitle: point.value.title,
+    currentIndex: idx,
+    totalCount: exercises.value.length,
+    link: `/ngu-phap/bai-tap/${point.value.id}?bai=${idx + 1}`,
+  }).then(reportSave)
+})
+
+// Làm xong bài tập thì xoá dòng tiến độ
+watch(isFinished, (done) => {
+  if (done && point.value) progressStore.clear('ngu-phap', point.value.id).then(reportSave)
+})
+
 const TYPE_LABEL: Record<string, string> = {
   multiple_choice: 'Chọn đáp án đúng',
   fill_in_blank: 'Điền vào chỗ trống',
@@ -163,11 +205,14 @@ const TYPE_LABEL: Record<string, string> = {
           <Trophy class="h-8 w-8" :stroke-width="2.5" aria-hidden="true" />
         </div>
         <h1 id="grammar-finish-title" class="font-display text-2xl font-black text-ink">
-          Đúng {{ correctCount }} / {{ exercises.length }} bài
+          Đúng {{ correctCount }} / {{ exercises.length - resumedFrom }} bài
         </h1>
         <p class="text-sm text-ink-soft">
           <template v-if="correctCount === exercises.length">
             "{{ point.title }}" đã được đánh dấu hoàn thành. Bạn nhận +{{ point.xpReward }} XP.
+          </template>
+          <template v-else-if="resumedFrom > 0">
+            Bạn tiếp tục từ bài {{ resumedFrom + 1 }}, nên các bài trước không được tính lần này. Làm lại từ đầu để hoàn thành "{{ point.title }}" và nhận +{{ point.xpReward }} XP.
           </template>
           <template v-else>Làm đúng tất cả bài để hoàn thành "{{ point.title }}" và nhận +{{ point.xpReward }} XP.</template>
         </p>
@@ -311,6 +356,17 @@ const TYPE_LABEL: Record<string, string> = {
         <span>{{ currentIndex === exercises.length - 1 ? 'Xem kết quả' : 'Tiếp tục' }}</span>
         <template #right><ArrowRight class="h-5 w-5" :stroke-width="2.5" /></template>
       </BaseButton>
+    </template>
+    <template #toast>
+      <BaseToast
+        v-if="saveError"
+        :model-value="!!saveError"
+        tone="error"
+        title="Chưa lưu tiến độ"
+        :message="saveError"
+        :duration="0"
+        @close="saveError = null"
+      />
     </template>
   </NuxtLayout>
 </template>

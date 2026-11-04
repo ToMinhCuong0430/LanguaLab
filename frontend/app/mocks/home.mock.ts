@@ -58,15 +58,16 @@ export const mockNotifications: NotificationItem[] = [
   },
 ]
 
-// Bài đang dở dùng cho chế độ mock (dữ liệu thật hiện chưa lưu bài học dở)
+// Bài đang dở dùng cho chế độ mock (dữ liệu thật đọc từ bảng lesson_progress)
 export const mockContinueLesson: ContinueLesson = {
+  feature: 'go-cau',
   title: 'Giao tiếp nhà hàng & Gọi món chuẩn ngữ cảnh',
   category: 'Gõ câu phản xạ',
   progress: 65,
   completedSteps: 5,
   totalSteps: 8,
   unit: 'câu',
-  to: '/go-cau/nha-hang',
+  to: '/go-cau/nha-hang?cau=6',
 }
 
 export const mockTodayTasks: DailyTask[] = [

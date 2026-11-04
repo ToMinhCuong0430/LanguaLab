@@ -5,6 +5,9 @@ import TodayTasks from '~/components/home/TodayTasks.vue'
 import XpLeaderboard from '~/components/home/XpLeaderboard.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
+import type { LearningLanguage } from '~/composables/useLanguage'
+import { useTypingPractice } from '~/composables/useTypingPractice'
+import { buildPathUnits, firstPathTopic } from '~/utils/typingRoadmap'
 
 useHead({
   title: `${BRAND_NAME} - Trang chủ học tập & Luyện thi`,
@@ -18,7 +21,15 @@ useHead({
 
 // Trang học của người đã đăng nhập (pages/index.vue chọn component này khi có session).
 // Chỉ đưa ra một hành động học tiếp theo; các chức năng khác mở từ navbar
-const { user, continueLesson, todayTasks, leaderboardUsers, toggleCheckIn } = useHomeData()
+const { user, continueLesson, isLoadingContinue, todayTasks, leaderboardUsers, toggleCheckIn } = useHomeData()
+
+// Chưa có bài dở: nút "Bắt đầu bài học" mở chủ đề đầu tiên của lộ trình Gõ câu tiếng Anh
+const english = ref<LearningLanguage>('en')
+const { roadmapNodes: enNodes, topicsForCurrentLang: enTopics } = useTypingPractice(english)
+const startLink = computed(() => {
+  const topic = firstPathTopic(buildPathUnits(enNodes.value, enTopics.value))
+  return topic ? `/go-cau/${topic.slug}` : '/go-cau'
+})
 
 const homeTourSteps: GuideStep[] = [
   {
@@ -48,7 +59,7 @@ const homeTourSteps: GuideStep[] = [
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(480px,560px)_minmax(300px,1fr)] lg:gap-6 lg:items-start">
       <!-- Cột giữa: hành động học chính duy nhất -->
       <div id="home-continue-learning" class="order-2 lg:order-none lg:col-start-2 lg:row-start-1">
-        <ContinueLearningCard :lesson="continueLesson" />
+        <ContinueLearningCard :lesson="continueLesson" :loading="isLoadingContinue" :start-link="startLink" />
       </div>
 
       <!-- Cột phải. Dưới 1024px các khối tách ra lưới chung: streak/XP lên trên nút Tiếp tục, phần còn lại xuống dưới -->

@@ -11,7 +11,8 @@ import {
   ChevronRight,
 } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
-import { useTypingPractice, type RoadmapNode, type TypingTopic } from '~/composables/useTypingPractice'
+import { useTypingPractice, type TypingTopic } from '~/composables/useTypingPractice'
+import { buildPathUnits } from '~/utils/typingRoadmap'
 import LanguageSelector from '~/components/common/LanguageSelector.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
@@ -49,32 +50,9 @@ const getTopicIcon = (iconName: string) => {
   }
 }
 
-// Cấp độ chủ đề là một khoảng ("A2 - B1", "HSK 2 - 3", "N5 - N4"): tách thành các mốc để so với chặng
-const levelTokens = (level: string) => {
-  const parts = level.split(/\s*[-–]\s*/).map((p) => p.trim().toUpperCase()).filter(Boolean)
-  const prefix = parts[0]?.match(/^([A-Z]+)\s+\d/)?.[1]
-  return parts.map((p) => (prefix && /^\d+$/.test(p) ? `${prefix} ${p}` : p))
-}
-
-interface PathUnit {
-  node: RoadmapNode | null // null = chủ đề không khớp chặng nào
-  topics: TypingTopic[]
-}
-
 // Gộp chủ đề đời sống và công sở thành unit theo chặng thấp nhất mà khoảng cấp độ của chủ đề chạm tới.
 // Chủ đề vẫn mở được ở mọi chặng như trước; chỉ node chặng khoá không có link.
-const units = computed<PathUnit[]>(() => {
-  const list: PathUnit[] = roadmapNodes.value.map((node) => ({ node, topics: [] }))
-  const others: TypingTopic[] = []
-  for (const topic of [...lifeTopics.value, ...workTopics.value]) {
-    const tokens = levelTokens(topic.level || '')
-    const idx = roadmapNodes.value.findIndex((n) => tokens.includes(n.level.toUpperCase()))
-    if (idx >= 0) list[idx]!.topics.push(topic)
-    else others.push(topic)
-  }
-  if (others.length) list.push({ node: null, topics: others })
-  return list
-})
+const units = computed(() => buildPathUnits(roadmapNodes.value, [...lifeTopics.value, ...workTopics.value]))
 
 // "Học" mở chủ đề gần nhất tính từ chặng đang mở trở đi (chặng đang mở chưa có chủ đề thì lấy unit kế tiếp)
 const learnTopic = computed<TypingTopic | null>(() => {

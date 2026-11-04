@@ -1,4 +1,5 @@
 import type { Database } from '~/types/database.types'
+import { useLessonProgress, type LessonFeature, type LessonProgressRow } from '~/composables/useLessonProgress'
 import {
   mockUserSummary,
   mockNotifications,
@@ -32,6 +33,7 @@ export interface NotificationItem {
 }
 
 export interface ContinueLesson {
+  feature: LessonFeature
   title: string
   category: string
   progress: number
@@ -145,8 +147,10 @@ export const useHomeData = () => {
   const user = ref<UserSummary>(mockUserSummary)
   const notifications = ref<NotificationItem[]>(mockNotifications)
   const todayTasks = ref<DailyTask[]>(mockTodayTasks)
-  // Chưa có bảng lưu bài học dở: ngoài chế độ mock, trang chủ hiện nút "Bắt đầu bài học"
+  // Bài học đang dở đọc từ lesson_progress (dòng updated_at mới nhất). Bài mẫu chỉ dùng ở chế độ mock.
   const continueLesson = ref<ContinueLesson | null>(isUseMock.value ? mockContinueLesson : null)
+  const isLoadingContinue = ref(!isUseMock.value && !!authUser.value?.sub)
+  const lessonProgress = useLessonProgress()
   const examOptions = ref<ExamOption[]>(mockExamOptions)
   const targetBandRoadmap = ref<TargetBandRoadmap>(mockTargetBandRoadmap)
   const vocabLevels = ref<VocabLevelItem[]>(mockVocabLevels)
@@ -154,6 +158,24 @@ export const useHomeData = () => {
   const todayStats = ref<DailyStatsData>(mockTodayStats)
   const weeklyStories = ref<WeeklyStoryGroup[]>(mockWeeklyStories)
   const leaderboardUsers = ref<LeaderboardUserItem[]>(mockLeaderboardUsers)
+
+  const FEATURE_META: Record<LessonFeature, { category: string; unit: string }> = {
+    'go-cau': { category: 'Gõ câu', unit: 'câu' },
+    'tu-vung': { category: 'Từ vựng', unit: 'thẻ' },
+    'ngu-phap': { category: 'Bài tập ngữ pháp', unit: 'bài' },
+  }
+
+  // current_index là câu / thẻ / bài sẽ làm tiếp, nên số đã xong = current_index
+  const toContinueLesson = (row: LessonProgressRow): ContinueLesson => ({
+    feature: row.feature,
+    title: row.resource_title,
+    category: FEATURE_META[row.feature]?.category ?? row.feature,
+    progress: Math.round((row.current_index / Math.max(1, row.total_count)) * 100),
+    completedSteps: row.current_index,
+    totalSteps: row.total_count,
+    unit: FEATURE_META[row.feature]?.unit ?? 'mục',
+    to: row.link,
+  })
 
   // Hàm chuyển đổi timestamp thành timeAgo tiếng Việt
   const formatTimeAgo = (dateStr: string): string => {
@@ -178,6 +200,13 @@ export const useHomeData = () => {
       if (authUser.value?.sub) {
         const uid = authUser.value.sub
         const todayStr = new Date().toISOString().split('T')[0]
+
+        // Bài học đang dở: không có dòng nào thì nút trang chủ là "Bắt đầu bài học"
+        isLoadingContinue.value = true
+        lessonProgress.latest()
+          .then((row) => { continueLesson.value = row ? toContinueLesson(row) : null })
+          .catch(() => { continueLesson.value = null })
+          .finally(() => { isLoadingContinue.value = false })
 
         // Profile & XP & Thống kê tổng hợp đa kỹ năng
         const [profileRes, checkinRes, xpRes, notifRes, statsRes, dueRes, weeklyRes] = await Promise.all([
@@ -425,6 +454,7 @@ export const useHomeData = () => {
     greetingInfo,
     todayTasks,
     continueLesson,
+    isLoadingContinue,
     examOptions,
     targetBandRoadmap,
     vocabLevels,

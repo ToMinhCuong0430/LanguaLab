@@ -10,6 +10,7 @@ import {
 import { useLanguage } from '~/composables/useLanguage'
 import { useTypingPractice, type TypingSentence } from '~/composables/useTypingPractice'
 import type { LessonPhase } from '~/layouts/lesson.vue'
+import { useLessonProgress, resumeIndexFromQuery } from '~/composables/useLessonProgress'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -263,6 +264,41 @@ onMounted(() => {
 
 watch(currentIndex, () => {
   resetSentenceSession()
+})
+
+// ---- Bài học đang dở: lưu vị trí câu để trang chủ mở lại đúng chỗ ----
+const progressStore = useLessonProgress()
+
+// Mở từ nút "Tiếp tục" (?cau=N, đếm từ 1): nhảy tới đúng câu khi danh sách câu đã tải
+const hasResumed = ref(false)
+watch(sentences, (list) => {
+  if (hasResumed.value || !list.length) return
+  hasResumed.value = true
+  const idx = resumeIndexFromQuery(route.query.cau, list.length)
+  if (idx > 0) currentIndex.value = idx
+}, { immediate: true })
+
+const reportSave = (res: { success: boolean; error?: string }) => {
+  if (!res.success) saveError.value = `Chưa lưu được vị trí bài học: ${res.error}`
+}
+
+// Mỗi lần sang câu khác (tiếp / trước / bỏ qua) thì ghi đè dòng tiến độ của Gõ câu
+watch(currentIndex, (idx) => {
+  const topic = currentTopic.value
+  if (!topic || isTopicFinished.value || !sentences.value.length) return
+  progressStore.save({
+    feature: 'go-cau',
+    resourceId: topic.id,
+    resourceTitle: topic.title,
+    currentIndex: idx,
+    totalCount: sentences.value.length,
+    link: `/go-cau/${topic.slug}?cau=${idx + 1}`,
+  }).then(reportSave)
+})
+
+// Học xong chủ đề thì xoá dòng tiến độ để trang chủ không trỏ vào bài đã xong
+watch(isTopicFinished, (done) => {
+  if (done && currentTopic.value) progressStore.clear('go-cau', currentTopic.value.id).then(reportSave)
 })
 </script>
 
