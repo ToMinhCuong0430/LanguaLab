@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import HomeTopBar from '~/components/home/HomeTopBar.vue'
-import HomeHero from '~/components/home/HomeHero.vue'
 import ContinueLearningCard from '~/components/home/ContinueLearningCard.vue'
+import HomeStreakXp from '~/components/home/HomeStreakXp.vue'
 import TodayTasks from '~/components/home/TodayTasks.vue'
-import HomeFeatureGrid from '~/components/home/HomeFeatureGrid.vue'
-import VocabReview from '~/components/home/VocabReview.vue'
-import TodayStats from '~/components/home/TodayStats.vue'
-import TargetBandRoadmap from '~/components/home/TargetBandRoadmap.vue'
-import ExamPractice from '~/components/home/ExamPractice.vue'
-import VocabLevels from '~/components/home/VocabLevels.vue'
-import WeeklyStory from '~/components/home/WeeklyStory.vue'
 import XpLeaderboard from '~/components/home/XpLeaderboard.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
@@ -24,98 +16,54 @@ useHead({
   ],
 })
 
-// Cấu hình các bước hướng dẫn lần đầu cho Trang chủ
+// Trang chủ chỉ đưa ra một hành động học tiếp theo; các chức năng khác mở từ navbar
+const { user, continueLesson, todayTasks, leaderboardUsers, toggleCheckIn } = useHomeData()
+
 const homeTourSteps: GuideStep[] = [
   {
-    targetId: 'home-top-bar',
+    targetId: 'home-continue-action',
     badge: 'BƯỚC 1',
-    title: 'Điểm danh & Quản lý tiến độ',
-    description:
-      'Điểm danh mỗi ngày để duy trì chuỗi Streak rực lửa, nhận thưởng XP và cập nhật các thông báo học tập quan trọng.',
+    title: 'Một nút để học tiếp',
+    description: 'Bấm Tiếp tục để quay lại đúng bài bạn đang học dở. Chưa có bài nào thì nút sẽ mở Gõ câu.',
   },
   {
-    targetId: 'home-continue-learning',
+    targetId: 'home-streak',
     badge: 'BƯỚC 2',
-    title: 'Tiếp tục bài học đang dở',
-    description:
-      'Truy cập nhanh bài học bạn vừa thực hành gần nhất để không bị đứt đoạn mạch tư duy và phản xạ.',
+    title: 'Giữ chuỗi ngày học',
+    description: 'Điểm danh mỗi ngày để giữ streak và nhận thêm XP.',
   },
   {
-    targetId: 'home-feature-grid',
+    targetId: 'home-today-tasks',
     badge: 'BƯỚC 3',
-    title: '8 Chức năng học chuyên sâu',
-    description:
-      'Khám phá toàn bộ 8 phân hệ học tập từ Gõ câu, Video song ngữ, Ngữ pháp, Từ vựng, Đọc dịch đến Luyện thi IELTS.',
-  },
-  {
-    targetId: 'home-exam-practice',
-    badge: 'BƯỚC 4',
-    title: 'Thực chiến đề thi chuẩn',
-    description:
-      'Luyện đề thi thử IELTS 4 kỹ năng với giao diện bấm giờ thực tế, chấm điểm và giải thích đáp án chi tiết.',
-  },
-  {
-    targetId: 'home-xp-leaderboard',
-    badge: 'BƯỚC 5',
-    title: 'Đua top Bảng vàng tuần',
-    description:
-      `Tích lũy XP qua mỗi bài học để thăng hạng trong Top 10 Bảng vàng cộng đồng học tập ${BRAND_NAME}.`,
+    title: 'Nhiệm vụ hôm nay',
+    description: 'Ba bài ngắn gợi ý cho hôm nay. Các chức năng khác vẫn mở được từ thanh điều hướng.',
   },
 ]
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-8" data-feature="home">
-    <!-- 1. Thanh trên cùng của trang: Ô tìm kiếm, điểm danh, streak, XP, thông báo -->
-    <HomeTopBar />
-
-    <!-- 2. Hero banner chào theo buổi nền màu, minh hoạ phẳng độc lập -->
-    <HomeHero />
-
-    <!-- 3. Khối hàng đôi: "Tiếp tục học" có preview bài dở cạnh khối "Hôm nay học gì?" -->
-    <div id="home-continue-learning" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-      <div class="lg:col-span-5 h-full">
-        <ContinueLearningCard />
+  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6" data-feature="home">
+    <!-- Từ 1024px: [trống, navbar giữ nguyên ở trên] [hành động học chính] [streak, nhiệm vụ, top XP] -->
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(480px,560px)_minmax(300px,1fr)] lg:gap-6 lg:items-start">
+      <!-- Cột giữa: hành động học chính duy nhất -->
+      <div id="home-continue-learning" class="order-2 lg:order-none lg:col-start-2 lg:row-start-1">
+        <ContinueLearningCard :lesson="continueLesson" />
       </div>
-      <div class="lg:col-span-7 h-full">
-        <TodayTasks />
-      </div>
+
+      <!-- Cột phải. Dưới 1024px các khối tách ra lưới chung: streak/XP lên trên nút Tiếp tục, phần còn lại xuống dưới -->
+      <aside class="contents lg:col-start-3 lg:row-start-1 lg:flex lg:flex-col lg:gap-6" aria-label="Tiến độ hôm nay">
+        <div class="order-1 lg:order-none">
+          <HomeStreakXp :user="user" @check-in="toggleCheckIn" />
+        </div>
+        <div class="order-3 lg:order-none">
+          <TodayTasks :tasks="todayTasks" />
+        </div>
+        <div class="order-4 lg:order-none">
+          <XpLeaderboard :users="leaderboardUsers" />
+        </div>
+      </aside>
     </div>
 
-    <!-- 4. Lưới "Chức năng chính": 8 FeatureTile màu theo chức năng có preview số liệu -->
-    <HomeFeatureGrid />
-
-    <!-- 5. Hàng ôn từ vựng SRS + Thống kê hôm nay đặt cạnh nhau -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-      <div class="lg:col-span-6 h-full">
-        <VocabReview />
-      </div>
-      <div class="lg:col-span-6 h-full">
-        <TodayStats />
-      </div>
-    </div>
-
-    <!-- 6. Từ vựng 7 cấp độ (mỗi cấp một màu riêng có vòng tiến độ) -->
-    <VocabLevels />
-
-    <!-- 7. Lộ trình band + Chọn kỳ thi (IELTS to hơn, 4 kỳ thi còn lại nhỏ gọn) -->
-    <TargetBandRoadmap />
-    <ExamPractice />
-
-    <!-- 8. Tổng kết tuần dạng story và Bảng xếp hạng bục vinh quang -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <div class="lg:col-span-5 space-y-6">
-        <WeeklyStory />
-      </div>
-      <div class="lg:col-span-7 space-y-6">
-        <XpLeaderboard />
-      </div>
-    </div>
-
-    <!-- Hướng dẫn lần đầu (First Visit Tour) -->
-    <FirstVisitGuide
-      page-key="home"
-      :steps="homeTourSteps"
-    />
+    <FirstVisitGuide page-key="home" :steps="homeTourSteps" />
   </div>
 </template>

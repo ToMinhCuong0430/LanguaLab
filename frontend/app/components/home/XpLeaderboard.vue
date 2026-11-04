@@ -1,156 +1,56 @@
 <script setup lang="ts">
-import { Trophy, Crown, ArrowRight } from '@lucide/vue'
+import { ChevronDown, Trophy } from '@lucide/vue'
+import type { LeaderboardUserItem } from '~/composables/useHomeData'
 
-const { leaderboardUsers } = useHomeData()
+// 5 hạng đầu bảng XP tuần. Dưới 1024px thu gọn, dòng tóm tắt cho biết hạng của bạn.
+const props = defineProps<{
+  users: LeaderboardUserItem[]
+}>()
 
-const top3 = computed(() => leaderboardUsers.value.slice(0, 3))
-const remainingUsers = computed(() => leaderboardUsers.value.slice(3))
-
-// Avatar palette ngẫu nhiên đẹp mắt
-const avatarColors = [
-  'bg-c-blue text-white',
-  'bg-c-pink text-on-tone',
-  'bg-c-violet text-on-tone',
-  'bg-c-green text-on-tone',
-  'bg-c-orange text-on-tone',
-  'bg-c-cyan text-on-tone',
-]
-
-const getAvatarColor = (idx: number) => avatarColors[idx % avatarColors.length]
+const top5 = computed(() => props.users.slice(0, 5))
+const me = computed(() => props.users.find((u) => u.isCurrentUser) ?? null)
+const isOpen = ref(false)
 </script>
 
 <template>
-  <div id="home-xp-leaderboard" class="space-y-4">
-    <BaseCard tone="surface" class="h-full flex flex-col justify-between">
-      <template #header>
-        <div class="flex items-center justify-between w-full">
-          <div class="flex items-center gap-2">
-            <div class="p-1.5 rounded-brut border-2 border-line bg-warn text-on-tone shadow-brut-sm">
-              <Trophy class="h-4 w-4" :stroke-width="2.5" />
-            </div>
-            <span class="font-display font-black text-base text-ink">
-              Bảng vàng rèn luyện tuần
-            </span>
-          </div>
-          <BaseBadge tone="neutral" size="sm">
-            Top 10
-          </BaseBadge>
-        </div>
-      </template>
+  <section id="home-xp-leaderboard" class="rounded-brut-lg border-[3px] border-line bg-surface shadow-brut">
+    <h2 class="m-0">
+      <button
+        type="button"
+        class="flex w-full min-h-[52px] items-center justify-between gap-2 px-4 text-left cursor-pointer lg:cursor-default"
+        :aria-expanded="isOpen"
+        aria-controls="home-xp-leaderboard-list"
+        @click="isOpen = !isOpen"
+      >
+        <span class="flex items-center gap-2 font-display text-base font-black text-ink">
+          <Trophy class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" /> Top XP tuần
+        </span>
+        <span class="flex items-center gap-2 text-xs font-bold text-ink-soft">
+          <span v-if="me" class="tabular-nums">Bạn hạng {{ me.rank }}</span>
+          <ChevronDown class="h-4 w-4 transition-transform lg:hidden" :class="{ 'rotate-180': isOpen }" aria-hidden="true" />
+        </span>
+      </button>
+    </h2>
 
-      <div class="space-y-5">
-        <!-- TOP 3 PODIUM (BỤC VINH QUANG PHẲNG) -->
-        <div class="grid grid-cols-3 gap-2 pt-4 pb-2 border-b-2 border-line items-end text-center">
-          <!-- Hạng 2 (Bạc) -->
-          <div v-if="top3[1]" class="flex flex-col items-center">
-            <div class="relative mb-2">
-              <div class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-surface-2 text-ink font-display text-xs font-black shadow-brut-sm">
-                {{ top3[1].avatarChar }}
-              </div>
-              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border border-line bg-surface-2 px-1.5 text-[10px] font-black shadow-sm">
-                #2
-              </span>
-            </div>
-            <span class="font-display text-xs font-black text-ink line-clamp-1 max-w-[80px]">
-              {{ top3[1].name }}
-            </span>
-            <span class="font-mono text-[11px] font-bold text-ink-soft">
-              {{ top3[1].weeklyXp }} XP
-            </span>
-            <!-- Bục Bạc phẳng -->
-            <div class="mt-2 w-full h-12 rounded-t-brut border-2 border-line bg-surface-2 flex items-center justify-center font-display font-black text-xs">
-              2
-            </div>
-          </div>
-
-          <!-- Hạng 1 (Vàng - cao nhất) -->
-          <div v-if="top3[0]" class="flex flex-col items-center -mt-3">
-            <Crown class="h-5 w-5 text-warn fill-warn mb-1" :stroke-width="2.5" />
-            <div class="relative mb-2">
-              <div class="flex h-14 w-14 items-center justify-center rounded-brut border-2 border-line bg-warn text-on-tone font-display text-sm font-black shadow-brut">
-                {{ top3[0].avatarChar }}
-              </div>
-              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border-2 border-line bg-warn px-2 text-[11px] font-black text-on-tone shadow-sm">
-                #1
-              </span>
-            </div>
-            <span class="font-display text-xs font-black text-ink line-clamp-1 max-w-[90px]">
-              {{ top3[0].name }}
-            </span>
-            <span class="font-mono text-xs font-black text-ink">
-              {{ top3[0].weeklyXp }} XP
-            </span>
-            <!-- Bục Vàng phẳng -->
-            <div class="mt-2 w-full h-18 rounded-t-brut border-2 border-line bg-warn flex items-center justify-center font-display font-black text-sm text-on-tone">
-              1
-            </div>
-          </div>
-
-          <!-- Hạng 3 (Đồng) -->
-          <div v-if="top3[2]" class="flex flex-col items-center">
-            <div class="relative mb-2">
-              <div class="flex h-11 w-11 items-center justify-center rounded-brut border-2 border-line bg-c-orange text-on-tone font-display text-xs font-black shadow-brut-sm">
-                {{ top3[2].avatarChar }}
-              </div>
-              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-brut border border-line bg-c-orange px-1.5 text-[10px] font-black text-on-tone shadow-sm">
-                #3
-              </span>
-            </div>
-            <span class="font-display text-xs font-black text-ink line-clamp-1 max-w-[80px]">
-              {{ top3[2].name }}
-            </span>
-            <span class="font-mono text-[11px] font-bold text-ink-soft">
-              {{ top3[2].weeklyXp }} XP
-            </span>
-            <!-- Bục Đồng phẳng -->
-            <div class="mt-2 w-full h-9 rounded-t-brut border-2 border-line bg-c-orange flex items-center justify-center font-display font-black text-xs text-on-tone">
-              3
-            </div>
-          </div>
-        </div>
-
-        <!-- DANH SÁCH TỪ HẠNG 4 TRỞ XUỐNG -->
-        <div class="space-y-2 max-h-[300px] overflow-y-auto pr-1" tabindex="0" role="region" aria-label="Bảng xếp hạng tuần">
-          <div
-            v-for="(userItem, idx) in remainingUsers"
-            :key="userItem.id"
-            class="flex items-center justify-between rounded-brut border-2 p-2 sm:p-2.5 transition-all"
-            :class="[
-              userItem.isCurrentUser
-                ? 'border-line bg-warn text-on-tone shadow-brut ring-2 ring-line font-black'
-                : 'border-line/40 bg-surface hover:bg-surface-2 text-ink',
-            ]"
-          >
-            <!-- Cột trái: Hạng + Avatar + Tên -->
-            <div class="flex items-center gap-2.5">
-              <span class="flex h-6 w-6 items-center justify-center rounded-brut border border-line bg-surface font-mono text-xs font-bold text-ink">
-                {{ userItem.rank }}
-              </span>
-
-              <div
-                class="flex h-7 w-7 items-center justify-center rounded-brut border border-line font-display text-xs font-black"
-                :class="getAvatarColor(idx)"
-              >
-                {{ userItem.avatarChar }}
-              </div>
-
-              <div>
-                <span class="font-display text-xs font-bold leading-none line-clamp-1">
-                  {{ userItem.name }}
-                </span>
-                <span v-if="userItem.isCurrentUser" class="text-[10px] font-black uppercase text-on-tone/70 block">
-                  (Bạn)
-                </span>
-              </div>
-            </div>
-
-            <!-- Cột phải: XP -->
-            <span class="font-mono text-xs font-black">
-              {{ userItem.weeklyXp }} XP
-            </span>
-          </div>
-        </div>
-      </div>
-    </BaseCard>
-  </div>
+    <ol
+      id="home-xp-leaderboard-list"
+      class="border-t-2 border-line px-2 py-2 lg:block"
+      :class="isOpen ? 'block' : 'hidden'"
+    >
+      <li
+        v-for="u in top5"
+        :key="u.id"
+        class="flex min-h-[44px] items-center gap-3 rounded-brut px-2"
+        :class="u.isCurrentUser ? 'bg-warn text-on-tone font-black' : 'text-ink'"
+      >
+        <span class="w-5 text-right font-mono text-xs font-bold tabular-nums">{{ u.rank }}</span>
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-brut border-2 border-line bg-surface-2 font-display text-[10px] font-black text-ink">
+          {{ u.avatarChar }}
+        </span>
+        <span class="min-w-0 flex-1 truncate font-display text-sm font-bold">{{ u.name }}</span>
+        <span class="font-mono text-xs font-black tabular-nums">{{ u.xp }} XP</span>
+      </li>
+      <li v-if="top5.length === 0" class="px-2 py-3 text-xs text-ink-soft">Chưa có ai nhận XP trong tuần này.</li>
+    </ol>
+  </section>
 </template>

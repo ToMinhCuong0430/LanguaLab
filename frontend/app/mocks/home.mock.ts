@@ -2,6 +2,7 @@
 
 import type {
   UserSummary,
+  ContinueLesson,
   NotificationItem,
   DailyTask,
   ExamOption,
@@ -56,6 +57,17 @@ export const mockNotifications: NotificationItem[] = [
     category: 'award',
   },
 ]
+
+// Bài đang dở dùng cho chế độ mock (dữ liệu thật hiện chưa lưu bài học dở)
+export const mockContinueLesson: ContinueLesson = {
+  title: 'Giao tiếp nhà hàng & Gọi món chuẩn ngữ cảnh',
+  category: 'Gõ câu phản xạ',
+  progress: 65,
+  completedSteps: 5,
+  totalSteps: 8,
+  unit: 'câu',
+  to: '/go-cau/nha-hang',
+}
 
 export const mockTodayTasks: DailyTask[] = [
   {

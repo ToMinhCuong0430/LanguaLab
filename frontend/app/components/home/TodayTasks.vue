@@ -1,71 +1,56 @@
 <script setup lang="ts">
-import { Clock, Zap, ArrowUpRight, CheckCircle2 } from '@lucide/vue'
+import { ChevronDown, ChevronRight, Clock, Zap } from '@lucide/vue'
+import type { DailyTask } from '~/composables/useHomeData'
 
-const { todayTasks } = useHomeData()
+// Tối đa 3 nhiệm vụ hôm nay. Dưới 1024px thu gọn, chỉ hiện dòng tóm tắt cho tới khi mở.
+const props = defineProps<{
+  tasks: DailyTask[]
+}>()
+
+const shown = computed(() => props.tasks.slice(0, 3))
+const totalXp = computed(() => shown.value.reduce((sum, t) => sum + t.xpReward, 0))
+const isOpen = ref(false)
 </script>
 
 <template>
-  <section id="home-today-tasks" class="space-y-4">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <h2 class="text-xl sm:text-2xl font-black text-ink">
-          Hôm nay học gì?
-        </h2>
-        <span class="rounded border-2 border-line bg-warn px-2 py-0.5 text-xs font-black text-on-tone">
-          {{ todayTasks.length }} nhiệm vụ
-        </span>
-      </div>
-      <span class="text-xs font-bold text-ink-soft hidden sm:inline">
-        Hoàn thành để nhận tối đa +130 XP
-      </span>
-    </div>
-
-    <!-- Lưới 4 thẻ nhiệm vụ gợi ý -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <BaseCard
-        v-for="task in todayTasks"
-        :key="task.id"
-        :tone="task.tone"
-        interactive
-        class="flex flex-col justify-between"
+  <section id="home-today-tasks" class="rounded-brut-lg border-[3px] border-line bg-surface shadow-brut">
+    <h2 class="m-0">
+      <button
+        type="button"
+        class="flex w-full min-h-[52px] items-center justify-between gap-2 px-4 text-left cursor-pointer lg:cursor-default"
+        :aria-expanded="isOpen"
+        aria-controls="home-today-tasks-list"
+        @click="isOpen = !isOpen"
       >
-        <template #header>
-          <div class="flex items-center justify-between w-full">
-            <span class="text-xs font-bold uppercase tracking-wider">
-              {{ task.category }}
-            </span>
-            <span class="flex items-center gap-1 text-xs font-black">
-              <Zap class="h-3.5 w-3.5 fill-current" :stroke-width="2.5" />
-              +{{ task.xpReward }} XP
-            </span>
+        <span class="font-display text-base font-black text-ink">Nhiệm vụ hôm nay</span>
+        <span class="flex items-center gap-2 text-xs font-bold text-ink-soft">
+          <span class="tabular-nums">{{ shown.length }} nhiệm vụ, +{{ totalXp }} XP</span>
+          <ChevronDown class="h-4 w-4 transition-transform lg:hidden" :class="{ 'rotate-180': isOpen }" aria-hidden="true" />
+        </span>
+      </button>
+    </h2>
+
+    <ul
+      id="home-today-tasks-list"
+      class="border-t-2 border-line px-2 py-2 lg:block"
+      :class="isOpen ? 'block' : 'hidden'"
+    >
+      <li v-for="task in shown" :key="task.id">
+        <NuxtLink
+          :to="task.path"
+          class="group flex min-h-[56px] items-center gap-3 rounded-brut px-2 py-2 hover:bg-surface-2"
+        >
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-bold text-ink-soft">{{ task.category }}</p>
+            <p class="truncate font-display text-sm font-bold text-ink group-hover:underline">{{ task.title }}</p>
+            <p class="flex items-center gap-3 text-[11px] font-bold text-ink-soft">
+              <span class="inline-flex items-center gap-1"><Clock class="h-3 w-3" aria-hidden="true" />{{ task.estMinutes }} phút</span>
+              <span class="inline-flex items-center gap-1"><Zap class="h-3 w-3 fill-current" aria-hidden="true" />+{{ task.xpReward }} XP</span>
+            </p>
           </div>
-        </template>
-
-        <div class="space-y-3">
-          <h3 class="font-display text-base font-bold line-clamp-2 leading-snug">
-            {{ task.title }}
-          </h3>
-
-          <div class="flex items-center gap-1.5 text-xs font-bold">
-            <Clock class="h-3.5 w-3.5" :stroke-width="2.5" />
-            <span>Thời lượng ước tính: {{ task.estMinutes }} phút</span>
-          </div>
-        </div>
-
-        <template #footer>
-          <BaseButton
-            :to="task.path"
-            variant="secondary"
-            size="sm"
-            block
-          >
-            <span>Bắt đầu</span>
-            <template #right>
-              <ArrowUpRight class="h-4 w-4" :stroke-width="2.5" />
-            </template>
-          </BaseButton>
-        </template>
-      </BaseCard>
-    </div>
+          <ChevronRight class="h-4 w-4 shrink-0 text-ink-soft" aria-hidden="true" />
+        </NuxtLink>
+      </li>
+    </ul>
   </section>
 </template>

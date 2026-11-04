@@ -3,6 +3,7 @@ import {
   mockUserSummary,
   mockNotifications,
   mockTodayTasks,
+  mockContinueLesson,
   mockExamOptions,
   mockTargetBandRoadmap,
   mockVocabLevels,
@@ -28,6 +29,16 @@ export interface NotificationItem {
   timeAgo: string
   isRead: boolean
   category: 'system' | 'streak' | 'lesson' | 'award'
+}
+
+export interface ContinueLesson {
+  title: string
+  category: string
+  progress: number
+  completedSteps: number
+  totalSteps: number
+  unit: string
+  to: string
 }
 
 export interface DailyTask {
@@ -134,6 +145,8 @@ export const useHomeData = () => {
   const user = ref<UserSummary>(mockUserSummary)
   const notifications = ref<NotificationItem[]>(mockNotifications)
   const todayTasks = ref<DailyTask[]>(mockTodayTasks)
+  // Chưa có bảng lưu bài học dở: ngoài chế độ mock, trang chủ hiện nút "Bắt đầu bài học"
+  const continueLesson = ref<ContinueLesson | null>(isUseMock.value ? mockContinueLesson : null)
   const examOptions = ref<ExamOption[]>(mockExamOptions)
   const targetBandRoadmap = ref<TargetBandRoadmap>(mockTargetBandRoadmap)
   const vocabLevels = ref<VocabLevelItem[]>(mockVocabLevels)
@@ -411,6 +424,7 @@ export const useHomeData = () => {
     unreadNotificationsCount,
     greetingInfo,
     todayTasks,
+    continueLesson,
     examOptions,
     targetBandRoadmap,
     vocabLevels,
