@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import {
   Volume2,
-  Mic,
-  Square,
-  Play,
-  RotateCw,
   Plus,
   Trash2,
   Edit3,
@@ -16,7 +12,6 @@ import {
   ArrowRight,
   ArrowLeft,
   X,
-  AlertCircle,
   FileQuestion,
 } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
@@ -45,9 +40,6 @@ const {
   updateMySet,
   deleteMySet,
   addWordToMySet,
-  removeWordFromMySet,
-  rateWordSrs,
-  uploadPronunciation,
 } = useVocab(currentLang)
 
 const guideSteps: GuideStep[] = [
@@ -59,15 +51,9 @@ const guideSteps: GuideStep[] = [
   },
   {
     title: 'Chế độ Flashcard & Ôn tập SRS',
-    description: 'Lật thẻ xem nghĩa, đánh giá lặp lại ngắt quãng (SRS) hoặc làm trắc nghiệm nhanh 4 lựa chọn để khắc sâu từ mới.',
+    description: 'Mở phiên Flashcard hoặc Ôn tập SRS (lật thẻ, chấm mức nhớ, luyện phát âm) hoặc làm trắc nghiệm nhanh 4 lựa chọn ngay tại đây.',
     targetId: 'vocab-mode-selector',
     badge: 'Bước 2',
-  },
-  {
-    title: 'Ghi âm & So sánh phát âm bằng tai',
-    description: 'Bấm nút mic để ghi âm giọng đọc của bạn, sau đó nghe lại song song với phát âm chuẩn bản xứ để tự điều chỉnh âm sắc.',
-    targetId: 'pronunciation-recorder-box',
-    badge: 'Bước 3',
   },
   {
     title: 'Quản lý & Thêm từ thủ công',
@@ -88,11 +74,6 @@ const currentWord = computed<VocabWord | undefined>(() => {
   return activeSet.value?.words[currentWordIndex.value] || activeSet.value?.words[0]
 })
 
-// Chuyển thẻ
-const flipCard = () => {
-  isCardFlipped.value = !isCardFlipped.value
-}
-
 const nextWord = () => {
   isCardFlipped.value = false
   if (currentWordIndex.value < (activeSet.value?.words.length || 1) - 1) {
@@ -101,102 +82,6 @@ const nextWord = () => {
     currentWordIndex.value = 0
   }
 }
-
-const prevWord = () => {
-  isCardFlipped.value = false
-  if (currentWordIndex.value > 0) {
-    currentWordIndex.value -= 1
-  } else {
-    currentWordIndex.value = (activeSet.value?.words.length || 1) - 1
-  }
-}
-
-// Chấm điểm SRS và đồng bộ RPC SuperMemo SM-2
-const rateSrs = (grade: 'again' | 'hard' | 'good' | 'easy') => {
-  if (currentWord.value) {
-    currentWord.value.srsState = grade
-    rateWordSrs(currentWord.value.id, grade)
-  }
-  nextWord()
-}
-
-// Web Speech API
-const speakWord = (text?: string) => {
-  if (!import.meta.client || !window.speechSynthesis) return
-  const wordToSpeak = text || currentWord.value?.term
-  if (!wordToSpeak) return
-
-  const utterance = new SpeechSynthesisUtterance(wordToSpeak)
-  if (currentLang.value === 'en') utterance.lang = 'en-US'
-  else if (currentLang.value === 'zh') utterance.lang = 'zh-CN'
-  else if (currentLang.value === 'ja') utterance.lang = 'ja-JP'
-
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(utterance)
-}
-
-// ==========================================
-// THU ÂM NGƯỜI HỌC (MediaRecorder API)
-// ==========================================
-const isRecording = ref(false)
-const userAudioUrl = ref<string | null>(null)
-let mediaRecorder: MediaRecorder | null = null
-let audioChunks: Blob[] = []
-
-const startRecording = async () => {
-  if (!import.meta.client || !navigator.mediaDevices) return
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    audioChunks = []
-    mediaRecorder = new MediaRecorder(stream)
-
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        audioChunks.push(e.data)
-      }
-    }
-
-    mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
-      userAudioUrl.value = URL.createObjectURL(audioBlob)
-      stream.getTracks().forEach(track => track.stop())
-
-      // Tải lên Supabase Storage bucket 'pronunciation-recordings' và lấy Signed URL
-      if (currentWord.value) {
-        uploadPronunciation(audioBlob, currentWord.value.term, currentWord.value.id).then(res => {
-          if (res?.success && res.audioUrl) {
-            userAudioUrl.value = res.audioUrl
-          }
-        })
-      }
-    }
-
-    mediaRecorder.start()
-    isRecording.value = true
-  } catch (err) {
-    alert('Không thể truy cập microphone. Vui lòng cấp quyền micro trên trình duyệt của bạn.')
-  }
-}
-
-const stopRecording = () => {
-  if (mediaRecorder && isRecording.value) {
-    mediaRecorder.stop()
-    isRecording.value = false
-  }
-}
-
-const playUserAudio = () => {
-  if (userAudioUrl.value) {
-    const audio = new Audio(userAudioUrl.value)
-    audio.play()
-  }
-}
-
-// Reset thu âm khi chuyển từ
-watch(currentWordIndex, () => {
-  userAudioUrl.value = null
-  isRecording.value = false
-})
 
 // ==========================================
 // QUIZ TRẮC NGHIỆM NHANH (4 đáp án)
@@ -536,233 +421,43 @@ const handleAddWord = () => {
         </BaseButton>
       </div>
 
-      <!-- CHẾ ĐỘ 1 & 2: FLASHCARD VÀ SRS (TRÊN DESKTOP: FLASHCARD VÀ PHÁT ÂM ĐẶT CẠNH NHAU TRÊN 2 CỘT) -->
-      <div v-else-if="studyMode === 'flashcard' || studyMode === 'srs'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- Cột trái (7 cols): Flashcard to hơn, mặt trước màu pink, mặt sau màu surface -->
-        <div class="lg:col-span-7 space-y-4">
-          <!-- Thẻ lật Neo-brutalism -->
-          <div
-            tabindex="0"
-            role="button"
-            class="min-h-[24rem] p-6 sm:p-8 rounded-brut-lg border-[3px] border-line shadow-brut-lg cursor-pointer select-none transition-all duration-200 relative flex flex-col justify-between hover:-translate-y-1 hover:shadow-brut"
-            :class="[
-              isCardFlipped
-                ? 'bg-surface text-ink'
-                : 'bg-c-pink text-ink',
-            ]"
-            @click="flipCard"
-          >
-            <!-- Card Header -->
-            <div class="flex items-center justify-between border-b-2 border-line/40 pb-3">
-              <span class="text-xs font-mono font-black" :class="isCardFlipped ? 'text-ink-soft' : 'text-ink'">
-                Từ #{{ currentWordIndex + 1 }} / {{ activeSet?.words.length }}
-              </span>
-
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center p-2 rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink shadow-brut-sm cursor-pointer"
-                  title="Nghe phát âm chuẩn"
-                  aria-label="Nghe phát âm chuẩn từ vựng"
-                  @click.stop="speakWord()"
-                >
-                  <Volume2 class="w-4 h-4 text-ink" :stroke-width="2.5" />
-                </button>
-                <span class="text-xs font-bold" :class="isCardFlipped ? 'text-ink-soft' : 'text-ink'">
-                  {{ isCardFlipped ? 'Mặt sau (Nghĩa)' : 'Mặt trước (Bấm lật)' }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Mặt trước (Nền màu Pink, chữ ink tương phản cao) -->
-            <div v-if="!isCardFlipped" class="py-8 text-center space-y-4 flex-1 flex flex-col justify-center items-center">
-              <h2 class="text-4xl sm:text-6xl font-black text-ink font-display tracking-tight">
-                {{ currentWord.term }}
-              </h2>
-              <p class="text-lg sm:text-xl text-ink font-mono italic">
-                {{ currentWord.phonetic }}
+      <!-- CHẾ ĐỘ 1 & 2: FLASHCARD VÀ SRS mở thành phiên học riêng (layout lesson, một thẻ mỗi màn) -->
+      <div v-else-if="studyMode === 'flashcard' || studyMode === 'srs'" class="mx-auto max-w-2xl space-y-4">
+        <BaseCard tone="surface">
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-display text-lg font-black text-ink">
+                {{ studyMode === 'srs' ? 'Ôn tập SRS' : 'Flashcard' }}: {{ activeSet?.words.length }} từ
+              </h3>
+              <p class="text-sm text-ink-soft">
+                {{ studyMode === 'srs'
+                  ? 'Xem nghĩa từng thẻ rồi chọn mức độ nhớ để lên lịch ôn lại.'
+                  : 'Lật từng thẻ để xem nghĩa, ví dụ và luyện phát âm.' }}
               </p>
-              <div class="inline-block px-3 py-1 bg-surface rounded-brut border-2 border-line text-xs font-black text-ink shadow-[1px_1px_0_var(--line)]">
-                Từ loại: {{ currentWord.partOfSpeech }}
-              </div>
             </div>
-
-            <!-- Mặt sau (Nền Surface trắng) -->
-            <div v-else class="py-6 space-y-4 flex-1 flex flex-col justify-center animate-in fade-in zoom-in-95 duration-150 text-ink">
-              <div class="p-4 bg-c-pink-soft rounded-brut border-2 border-line">
-                <p class="text-xs font-black uppercase text-c-pink-ink">Định nghĩa & Nghĩa:</p>
-                <p class="text-2xl sm:text-3xl font-black text-ink mt-1">
-                  {{ currentWord.meaning }}
-                </p>
-              </div>
-
-              <div class="space-y-1 text-xs sm:text-sm">
-                <p class="font-bold text-ink">Ví dụ ngữ cảnh:</p>
-                <p class="p-3 bg-surface-2 rounded-brut border border-line text-ink font-medium italic">
-                  "{{ currentWord.exampleTarget }}"
-                </p>
-                <p class="text-xs text-ink-soft font-medium pl-1">
-                  Dịch: {{ currentWord.exampleMeaning }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Card Footer -->
-            <div class="flex items-center justify-between border-t-2 border-line/40 pt-3 text-xs font-bold" :class="isCardFlipped ? 'text-ink-soft' : 'text-ink'">
-              <div class="flex items-center gap-1">
-                <RotateCw class="w-3.5 h-3.5" />
-                <span>Bấm vào thẻ để xoay</span>
-              </div>
-
-              <button
-                v-if="activeSet?.isCustom"
-                type="button"
-                class="min-h-[44px] px-2 inline-flex items-center text-bad hover:underline font-bold text-xs"
-                aria-label="Xoá từ này khỏi bộ từ"
-                @click.stop="removeWordFromMySet(activeSet.id, currentWord.id)"
+            <ul class="flex flex-wrap gap-1.5" aria-label="Các từ trong bộ">
+              <li
+                v-for="w in activeSet?.words.slice(0, 12)"
+                :key="w.id"
+                class="rounded-brut border border-line bg-surface-2 px-2 py-1 text-xs font-bold text-ink"
               >
-                Xoá từ này
-              </button>
-            </div>
-          </div>
-
-          <!-- 4 NÚT ĐÁNH GIÁ LẶP LẠI NGẮT QUÃNG (SRS) CÓ 4 MÀU PHÂN BIỆT: CORAL, ORANGE, GREEN, BLUE -->
-          <div v-if="studyMode === 'srs'" class="space-y-2">
-            <p class="text-center text-xs font-black uppercase text-ink-soft">
-              Đánh giá mức độ ghi nhớ (SRS):
-            </p>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <!-- Quên (Coral / Red) -->
-              <button
-                type="button"
-                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-coral text-ink font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
-                @click="rateSrs('again')"
-              >
-                <span>Quên (Again)</span>
-                <span class="block text-[10px] font-normal opacity-90 mt-0.5">&lt; 1 phút</span>
-              </button>
-              <!-- Khó (Orange) -->
-              <button
-                type="button"
-                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-orange text-ink font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
-                @click="rateSrs('hard')"
-              >
-                <span>Khó (Hard)</span>
-                <span class="block text-[10px] font-normal opacity-90 mt-0.5">10 phút</span>
-              </button>
-              <!-- Tốt (Green) -->
-              <button
-                type="button"
-                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-green text-on-tone font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
-                @click="rateSrs('good')"
-              >
-                <span>Tốt (Good)</span>
-                <span class="block text-[10px] font-normal opacity-90 mt-0.5">1 ngày</span>
-              </button>
-              <!-- Dễ (Blue) -->
-              <button
-                type="button"
-                class="min-h-[44px] p-2.5 rounded-brut border-2 border-line bg-c-blue text-white font-black text-xs shadow-brut-sm cursor-pointer text-center hover:opacity-90"
-                @click="rateSrs('easy')"
-              >
-                <span>Dễ (Easy)</span>
-                <span class="block text-[10px] font-normal opacity-90 mt-0.5">4 ngày</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Điều hướng tới/lùi -->
-          <div class="flex items-center justify-between pt-1">
-            <BaseButton variant="secondary" size="sm" class="gap-1" @click="prevWord">
-              <ArrowLeft class="w-4 h-4" />
-              <span>Từ trước</span>
-            </BaseButton>
-
-            <span class="text-xs font-mono font-bold text-ink-soft">
-              {{ currentWordIndex + 1 }} / {{ activeSet?.words.length }}
-            </span>
-
-            <BaseButton variant="secondary" size="sm" class="gap-1" @click="nextWord">
-              <span>Từ sau</span>
-              <ArrowRight class="w-4 h-4" />
+                {{ w.term }}
+              </li>
+              <li v-if="(activeSet?.words.length || 0) > 12" class="px-1 py-1 text-xs font-bold text-ink-soft">
+                và {{ (activeSet?.words.length || 0) - 12 }} từ nữa
+              </li>
+            </ul>
+            <BaseButton
+              :to="{ path: `/tu-vung/the/${activeSet.id}`, query: studyMode === 'srs' ? { mode: 'srs' } : {} }"
+              variant="primary"
+              size="md"
+              block
+            >
+              <span>{{ studyMode === 'srs' ? 'Bắt đầu ôn tập' : 'Bắt đầu học flashcard' }}</span>
+              <template #right><ArrowRight class="h-4 w-4" :stroke-width="2.5" /></template>
             </BaseButton>
           </div>
-        </div>
-
-        <!-- Cột phải (5 cols): Khối luyện phát âm đối chiếu đặt cạnh Flashcard trên Desktop -->
-        <div class="lg:col-span-5 space-y-4">
-          <BaseCard id="pronunciation-recorder-box" tone="surface-2">
-            <template #header>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 font-black text-sm">
-                  <Mic class="w-4 h-4 text-accent" />
-                  <span>Luyện phát âm đối chiếu</span>
-                </div>
-                <span class="text-[11px] font-mono font-bold text-ink-soft">
-                  {{ currentWord.phonetic }}
-                </span>
-              </div>
-            </template>
-
-            <div class="space-y-4 py-2">
-              <div class="p-3 bg-surface rounded-brut border-2 border-line space-y-3">
-                <p class="text-xs font-bold text-ink-soft uppercase tracking-wider">Từ đang luyện:</p>
-                <div class="flex items-center justify-between">
-                  <span class="font-display text-2xl font-black text-ink">{{ currentWord.term }}</span>
-                  <button
-                    type="button"
-                    class="px-3.5 py-2 min-h-[44px] rounded-brut border-2 border-line bg-surface hover:bg-surface-2 text-ink font-black text-xs shadow-brut-sm cursor-pointer flex items-center gap-1.5"
-                    aria-label="Nghe phát âm chuẩn bản xứ"
-                    @click="speakWord()"
-                  >
-                    <Volume2 class="w-4 h-4 text-c-blue stroke-[2.5]" />
-                    <span>Nghe mẫu</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Ghi âm người học -->
-              <div class="space-y-2 p-3 bg-surface rounded-brut border-2 border-line">
-                <div class="flex flex-col gap-2">
-                  <button
-                    v-if="!isRecording"
-                    type="button"
-                    class="w-full min-h-[44px] py-2.5 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut cursor-pointer flex items-center justify-center gap-2"
-                    @click="startRecording"
-                  >
-                    <Mic class="w-4 h-4 stroke-[2.5]" />
-                    <span>Bắt đầu thu âm giọng bạn</span>
-                  </button>
-
-                  <button
-                    v-else
-                    type="button"
-                    class="w-full min-h-[44px] py-2.5 rounded-brut border-2 border-line bg-bad text-white font-black text-xs shadow-brut cursor-pointer flex items-center justify-center gap-2 animate-pulse"
-                    @click="stopRecording"
-                  >
-                    <Square class="w-4 h-4 fill-current" />
-                    <span>Dừng thu âm ngay</span>
-                  </button>
-
-                  <button
-                    v-if="userAudioUrl"
-                    type="button"
-                    class="w-full min-h-[44px] py-2 rounded-brut border-2 border-line bg-ok text-on-tone font-black text-xs shadow-brut-sm cursor-pointer flex items-center justify-center gap-1.5"
-                    @click="playUserAudio"
-                  >
-                    <Play class="w-4 h-4 fill-current" />
-                    <span>Nghe lại giọng bạn đã thu</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="p-3 bg-surface rounded-brut border border-line/60 flex items-start gap-2 text-xs text-ink-soft">
-                <AlertCircle class="w-4 h-4 text-warn flex-shrink-0 mt-0.5" />
-                <span>So sánh bằng tai: nghe luân phiên giữa mẫu bản xứ và giọng thu âm của bạn để tự chỉnh khẩu hình & ngữ điệu.</span>
-              </div>
-            </div>
-          </BaseCard>
-        </div>
+        </BaseCard>
       </div>
 
       <!-- CHẾ ĐỘ 3: TRẮC NGHIỆM NHANH (QUIZ) -->

@@ -7,14 +7,12 @@ import {
   X,
   BookOpen,
   HelpCircle,
-  Trophy,
   ArrowRight,
   ArrowLeft,
-  RotateCcw,
   CheckCircle2,
 } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
-import { useGrammar, type GrammarPoint, type GrammarExercise } from '~/composables/useGrammar'
+import { useGrammar, type GrammarPoint } from '~/composables/useGrammar'
 import PageBanner from '~/components/common/PageBanner.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { levelBadge, xpBadge } from '~/constants/badges'
@@ -23,7 +21,7 @@ const route = useRoute()
 const pointId = computed(() => (route.params.id as string) || 'en-a1-tobe')
 
 const { currentLang } = useLanguage()
-const { getGrammarPointById, markPointCompleted, completedPointIds, submitGrammarAttempt } = useGrammar(currentLang)
+const { getGrammarPointById, completedPointIds } = useGrammar(currentLang)
 
 const currentPoint = computed<GrammarPoint>(() => {
   return getGrammarPointById(pointId.value) || getGrammarPointById('en-a1-tobe')!
@@ -54,124 +52,11 @@ const guideSteps: GuideStep[] = [
   },
   {
     title: 'Bài tập 3 dạng: Chọn, Điền & Xếp câu',
-    description: 'Làm bài tập tương tác có chấm điểm tức thì và giải thích chi tiết. Hoàn thành để nhận +30 XP.',
+    description: 'Mở phiên bài tập: mỗi màn một bài, kiểm tra và xem giải thích ngay. Làm đúng tất cả để nhận XP.',
     targetId: 'lesson-exercises-card',
     badge: 'Bước 4',
   },
 ]
-
-// ==========================================
-// QUẢN LÝ BÀI TẬP THỰC HÀNH
-// ==========================================
-// State cho Multiple Choice
-const userChoiceAnswers = ref<Record<string, number>>({})
-
-// State cho Fill in Blank
-const userBlankAnswers = ref<Record<string, string>>({})
-
-// State cho Word Reorder
-const userWordOrders = ref<Record<string, string[]>>({})
-const availableWords = ref<Record<string, string[]>>({})
-
-// Khởi tạo các từ xáo trộn cho bài tập xếp câu
-watch(currentPoint, (pt) => {
-  if (pt?.exercises) {
-    userChoiceAnswers.value = {}
-    userBlankAnswers.value = {}
-    userWordOrders.value = {}
-    availableWords.value = {}
-    isSubmitted.value = false
-
-    pt.exercises.forEach((ex) => {
-      if (ex.type === 'word_reorder' && ex.scrambledWords) {
-        availableWords.value[ex.id] = [...ex.scrambledWords]
-        userWordOrders.value[ex.id] = []
-      }
-    })
-  }
-}, { immediate: true })
-
-// Thao tác bấm từ trong bài tập xếp câu
-const selectWordForOrder = (exId: string, word: string, wordIdx: number) => {
-  if (isSubmitted.value) return
-  if (!userWordOrders.value[exId]) userWordOrders.value[exId] = []
-  userWordOrders.value[exId].push(word)
-  availableWords.value[exId].splice(wordIdx, 1)
-}
-
-const deselectWordFromOrder = (exId: string, word: string, wordIdx: number) => {
-  if (isSubmitted.value) return
-  userWordOrders.value[exId].splice(wordIdx, 1)
-  availableWords.value[exId].push(word)
-}
-
-const resetWordOrder = (ex: GrammarExercise) => {
-  if (isSubmitted.value) return
-  if (ex.scrambledWords) {
-    availableWords.value[ex.id] = [...ex.scrambledWords]
-    userWordOrders.value[ex.id] = []
-  }
-}
-
-// Chấm điểm bài tập
-const isSubmitted = ref(false)
-const isAllCorrect = ref(false)
-const showCelebration = ref(false)
-
-const submitAllExercises = () => {
-  isSubmitted.value = true
-
-  let allOk = true
-  currentPoint.value.exercises.forEach((ex) => {
-    if (ex.type === 'multiple_choice') {
-      if (userChoiceAnswers.value[ex.id] !== ex.correctIndex) allOk = false
-    } else if (ex.type === 'fill_in_blank') {
-      const userVal = (userBlankAnswers.value[ex.id] || '').trim().toLowerCase()
-      const correctVal = (ex.correctAnswer || '').trim().toLowerCase()
-      if (userVal !== correctVal) allOk = false
-    } else if (ex.type === 'word_reorder') {
-      const userOrder = userWordOrders.value[ex.id] || []
-      const correctOrder = ex.correctOrder || []
-      if (userOrder.join(' ') !== correctOrder.join(' ')) allOk = false
-    }
-  })
-
-  isAllCorrect.value = allOk
-  if (allOk) {
-    markPointCompleted(currentPoint.value.id)
-    showCelebration.value = true
-
-    // Gửi bài làm lên server để RPC chấm điểm và tự động nhận thưởng XP
-    const answersMap: Record<string, string> = {}
-    currentPoint.value.exercises.forEach((ex) => {
-      if (ex.type === 'multiple_choice') {
-        const idx = userChoiceAnswers.value[ex.id]
-        if (idx !== undefined && ex.options?.[idx]) {
-          answersMap[ex.id] = ex.options[idx]
-        }
-      } else if (ex.type === 'fill_in_blank') {
-        answersMap[ex.id] = userBlankAnswers.value[ex.id] || ''
-      } else if (ex.type === 'word_reorder') {
-        answersMap[ex.id] = (userWordOrders.value[ex.id] || []).join(' ')
-      }
-    })
-    submitGrammarAttempt(currentPoint.value.id, answersMap)
-  }
-}
-
-const resetExercises = () => {
-  isSubmitted.value = false
-  isAllCorrect.value = false
-  showCelebration.value = false
-  userChoiceAnswers.value = {}
-  userBlankAnswers.value = {}
-  currentPoint.value.exercises.forEach((ex) => {
-    if (ex.type === 'word_reorder' && ex.scrambledWords) {
-      availableWords.value[ex.id] = [...ex.scrambledWords]
-      userWordOrders.value[ex.id] = []
-    }
-  })
-}
 
 // Web Speech API
 const speakText = (text: string) => {
@@ -232,30 +117,6 @@ const speakText = (text: string) => {
         </div>
       </template>
     </PageBanner>
-
-    <!-- BANNER CHÚC MỪNG HOÀN THÀNH CỘNG XP -->
-    <div
-      v-if="showCelebration"
-      class="p-5 rounded-brut border-[3px] border-line bg-ok/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in zoom-in-95 duration-200"
-    >
-      <div class="flex items-center gap-3">
-        <div class="p-3 bg-ok rounded-brut border-2 border-line text-on-tone shadow-brut-sm">
-          <Trophy class="w-6 h-6 stroke-[2.5]" />
-        </div>
-        <div>
-          <h3 class="font-black text-base sm:text-lg text-ink">Xuất sắc! Bạn đã làm đúng 100% bài tập</h3>
-          <p class="text-xs text-ink-soft font-bold">Điểm ngữ pháp "{{ currentPoint.title }}" đã được đánh dấu hoàn thành. Bạn nhận được +{{ currentPoint.xpReward }} XP!</p>
-        </div>
-      </div>
-
-      <NuxtLink
-        to="/ngu-phap"
-        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-brut border-2 border-line bg-warn text-on-tone font-black text-xs shadow-brut transition-transform active:translate-y-0.5"
-      >
-        <span>Tiếp tục chuyên đề khác</span>
-        <ArrowRight class="w-4 h-4 stroke-[3]" />
-      </NuxtLink>
-    </div>
 
     <!-- MAIN LESSON WORKSPACE (2 COLS) -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -400,151 +261,30 @@ const speakText = (text: string) => {
         </BaseCard>
       </div>
 
-      <!-- Cột phải: 3 Dạng Bài tập củng cố (1 col) -->
-      <div id="lesson-exercises-card" class="space-y-6">
+      <!-- Cột phải: mở phiên bài tập (layout lesson, một bài mỗi màn) -->
+      <div id="lesson-exercises-card" class="lg:sticky lg:top-24 lg:self-start">
         <BaseCard tone="surface">
           <template #header>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 font-black text-sm">
-                <HelpCircle class="w-4 h-4 text-accent" />
-                <span>Bài tập thực hành củng cố</span>
-              </div>
-              <BaseBadge tone="warn" size="sm">
-                {{ currentPoint.exercises.length }} câu
-              </BaseBadge>
+            <div class="flex items-center gap-2 font-black text-sm">
+              <HelpCircle class="w-4 h-4 text-accent" />
+              <span>Bài tập thực hành</span>
             </div>
           </template>
-
-          <div class="space-y-6 py-2">
-            <div
-              v-for="(ex, exIdx) in currentPoint.exercises"
-              :key="ex.id"
-              class="p-4 rounded-brut border-2 border-line bg-surface-2 space-y-3"
+          <div class="space-y-3">
+            <p class="text-sm text-ink">
+              {{ currentPoint.exercises.length }} bài: chọn đáp án, điền từ và xếp câu. Mỗi bài có giải thích ngay sau khi kiểm tra.
+            </p>
+            <p class="text-xs text-ink-soft">Làm đúng tất cả để hoàn thành bài học và nhận +{{ currentPoint.xpReward }} XP.</p>
+            <BaseButton
+              v-if="currentPoint.exercises.length"
+              :to="`/ngu-phap/bai-tap/${currentPoint.id}`"
+              variant="primary"
+              size="md"
+              block
             >
-              <!-- DẠNG 1: TRẮC NGHIỆM CHỌN ĐÁP ÁN -->
-              <div v-if="ex.type === 'multiple_choice'" class="space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold text-ink-soft">
-                  <span class="font-mono">#{{ exIdx + 1 }} • Trắc nghiệm</span>
-                </div>
-                <p class="text-xs font-bold text-ink-soft">{{ ex.prompt }}</p>
-                <p class="text-sm font-black text-ink font-mono">{{ ex.question }}</p>
-
-                <div class="space-y-1.5">
-                  <button
-                    v-for="(opt, optIdx) in ex.options"
-                    :key="optIdx"
-                    type="button"
-                    class="w-full text-left p-3 min-h-[44px] rounded-brut border-2 text-xs font-bold transition-all flex items-center justify-between cursor-pointer"
-                    :class="[
-                      userChoiceAnswers[ex.id] === optIdx
-                        ? 'border-line bg-warn text-on-tone font-black shadow-brut-sm'
-                        : 'border-line/40 bg-surface hover:bg-surface-2 text-ink',
-                      isSubmitted && optIdx === ex.correctIndex
-                        ? '!bg-ok !border-line !text-on-tone font-black'
-                        : '',
-                      isSubmitted && userChoiceAnswers[ex.id] === optIdx && optIdx !== ex.correctIndex
-                        ? '!bg-bad !border-line !text-on-tone'
-                        : '',
-                    ]"
-                    @click="userChoiceAnswers[ex.id] = optIdx"
-                  >
-                    <span>{{ opt }}</span>
-                    <Check
-                      v-if="isSubmitted && optIdx === ex.correctIndex"
-                      class="w-4 h-4 text-on-tone stroke-[3]"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <!-- DẠNG 2: ĐIỀN CHỖ TRỐNG -->
-              <div v-else-if="ex.type === 'fill_in_blank'" class="space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold text-ink-soft">
-                  <span class="font-mono">#{{ exIdx + 1 }} • Điền từ</span>
-                </div>
-                <p class="text-xs font-bold text-ink-soft">{{ ex.prompt }}</p>
-                <p class="text-sm font-black text-ink font-mono">{{ ex.question }}</p>
-
-                <input
-                  v-model="userBlankAnswers[ex.id]"
-                  type="text"
-                  :disabled="isSubmitted"
-                  :placeholder="ex.hint || 'Nhập từ thích hợp...'"
-                  class="w-full px-3 py-2 text-sm font-mono font-bold rounded-brut border-2 border-line bg-surface text-ink outline-none"
-                  :class="{
-                    '!border-ok !bg-ok/20': isSubmitted && (userBlankAnswers[ex.id] || '').trim().toLowerCase() === (ex.correctAnswer || '').trim().toLowerCase(),
-                    '!border-bad !bg-bad/20': isSubmitted && (userBlankAnswers[ex.id] || '').trim().toLowerCase() !== (ex.correctAnswer || '').trim().toLowerCase(),
-                  }"
-                >
-              </div>
-
-              <!-- DẠNG 3: SẮP XẾP TỪ THÀNH CÂU -->
-              <div v-else-if="ex.type === 'word_reorder'" class="space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold text-ink-soft">
-                  <span class="font-mono">#{{ exIdx + 1 }} • Xếp câu</span>
-                  <button
-                    v-if="!isSubmitted"
-                    type="button"
-                    class="text-[11px] font-bold text-accent hover:underline flex items-center gap-1 cursor-pointer"
-                    @click="resetWordOrder(ex)"
-                  >
-                    <RotateCcw class="w-3 h-3" />
-                    <span>Làm lại</span>
-                  </button>
-                </div>
-
-                <p class="text-xs font-bold text-ink-soft">{{ ex.prompt }}</p>
-
-                <!-- Vùng câu người học đang ghép -->
-                <div class="p-3 bg-surface rounded-brut border-2 border-line min-h-[3rem] flex flex-wrap gap-1.5 items-center">
-                  <span v-if="!userWordOrders[ex.id] || userWordOrders[ex.id].length === 0" class="text-xs text-ink-soft italic">
-                    Nhấp vào các từ bên dưới để ghép vào đây...
-                  </span>
-
-                  <button
-                    v-for="(w, wIdx) in userWordOrders[ex.id]"
-                    :key="wIdx"
-                    type="button"
-                    class="px-2 py-1 bg-warn text-on-tone rounded-brut border border-line text-xs font-black shadow-brut-sm cursor-pointer"
-                    @click="deselectWordFromOrder(ex.id, w, wIdx)"
-                  >
-                    {{ w }} &times;
-                  </button>
-                </div>
-
-                <!-- Danh sách từ xáo trộn để chọn -->
-                <div class="flex flex-wrap gap-1.5 pt-1">
-                  <button
-                    v-for="(w, wIdx) in availableWords[ex.id]"
-                    :key="wIdx"
-                    type="button"
-                    class="px-2.5 py-1 bg-surface-2 hover:bg-surface text-ink rounded-brut border border-line text-xs font-bold cursor-pointer"
-                    @click="selectWordForOrder(ex.id, w, wIdx)"
-                  >
-                    {{ w }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- Giải thích chi tiết sau khi nộp bài -->
-              <div v-if="isSubmitted" class="p-2.5 bg-surface rounded-brut border border-line text-xs space-y-1">
-                <p class="font-black text-accent">Đáp án & Giải thích:</p>
-                <p class="text-ink-soft font-medium">{{ ex.explanation }}</p>
-              </div>
-            </div>
-
-            <!-- Nút Nộp bài / Làm lại -->
-            <div class="flex items-center justify-between pt-2">
-              <BaseButton v-if="isSubmitted" variant="secondary" size="sm" @click="resetExercises">
-                <RotateCcw class="w-4 h-4 mr-1.5" />
-                <span>Làm lại bài tập</span>
-              </BaseButton>
-
-              <BaseButton v-else variant="primary" size="sm" class="w-full" @click="submitAllExercises">
-                <span>Chấm điểm bài tập</span>
-                <ArrowRight class="w-4 h-4 ml-1.5" />
-              </BaseButton>
-            </div>
+              <span>{{ completedPointIds.includes(currentPoint.id) ? 'Làm lại bài tập' : 'Làm bài tập' }}</span>
+              <template #right><ArrowRight class="h-4 w-4" :stroke-width="2.5" /></template>
+            </BaseButton>
           </div>
         </BaseCard>
       </div>
