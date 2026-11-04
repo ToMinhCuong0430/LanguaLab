@@ -2,6 +2,7 @@
 import { ArrowLeft, ArrowRight, Volume2, Mic, Square, Play, RotateCw, Trophy } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
 import { useVocab, type VocabWord, type VocabSet } from '~/composables/useVocab'
+import type { LessonPhase } from '~/layouts/lesson.vue'
 import { BRAND_NAME } from '~/constants/brand'
 
 // Phiên Flashcard / Ôn tập SRS một thẻ mỗi màn, dùng layout lesson
@@ -27,11 +28,73 @@ const isFinished = ref(false)
 const rated = ref<'again' | 'hard' | 'good' | 'easy' | null>(null)
 const currentWord = computed(() => words.value[currentIndex.value])
 
+// Chế độ Flashcard có chấm: chọn nghĩa đúng trong 4 lựa chọn -> Kiểm tra -> thẻ lật + banner ở khối đáy
+const phase = ref<LessonPhase>('answer')
+const options = ref<string[]>([])
+const selectedOption = ref<number | null>(null)
+// Kết quả theo từng từ, để quay lại thẻ trước và chọn lại không bị đếm hai lần
+const answers = ref<Record<string, boolean>>({})
+const correctCount = computed(() => Object.values(answers.value).filter(Boolean).length)
+
+const shuffle = <T,>(list: T[]) => {
+  const out = [...list]
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j]!, out[i]!]
+  }
+  return out
+}
+
+// Trộn đáp án một lần cho mỗi thẻ (không trộn lại mỗi lần render)
+const buildOptions = () => {
+  const word = currentWord.value
+  if (!word) {
+    options.value = []
+    return
+  }
+  const distractors = shuffle(
+    [...new Set(words.value.filter((w) => w.id !== word.id).map((w) => w.meaning))].filter((m) => m !== word.meaning),
+  ).slice(0, 3)
+  options.value = shuffle([word.meaning, ...distractors])
+}
+watch([currentWord, () => words.value.length], buildOptions, { immediate: true })
+
+const checkAnswer = () => {
+  if (selectedOption.value === null || !currentWord.value) return
+  const isRight = options.value[selectedOption.value] === currentWord.value.meaning
+  answers.value = { ...answers.value, [currentWord.value.id]: isRight }
+  phase.value = isRight ? 'correct' : 'wrong'
+  isFlipped.value = true
+}
+
+const checkFeedback = computed(() => {
+  if (!currentWord.value) return ''
+  return phase.value === 'correct'
+    ? `${currentWord.value.term} nghĩa là "${currentWord.value.meaning}".`
+    : `${currentWord.value.term} ${currentWord.value.phonetic}. Xem ví dụ trên thẻ rồi tiếp tục.`
+})
+
+// Lỗi mạng / lưu tiến độ (lưu mức nhớ SRS) hiển thị bằng BaseToast
+const saveError = ref<string | null>(null)
+
 const lessonProgress = computed(() => {
   if (!words.value.length) return 0
   if (isFinished.value) return 1
-  return currentIndex.value / words.value.length
+  const doneCurrent = isSrs.value ? (rated.value ? 1 : 0) : (phase.value !== 'answer' ? 1 : 0)
+  return (currentIndex.value + doneCurrent) / words.value.length
 })
+
+// Chỉ chế độ Flashcard có chấm đúng/sai; SRS và màn tổng kết dùng slot #action
+const layoutPhase = computed<LessonPhase | null>(() => {
+  if (isSrs.value || isFinished.value || !set.value || !words.value.length) return null
+  return phase.value
+})
+
+// Trong lúc chọn nghĩa, không cho lật thẻ để xem trước đáp án
+const canFlip = computed(() => isSrs.value || phase.value !== 'answer')
+const toggleFlip = () => {
+  if (canFlip.value) isFlipped.value = !isFlipped.value
+}
 
 const SRS_OPTIONS = [
   { grade: 'again', label: 'Quên', hint: '< 1 phút', cls: 'bg-c-coral text-ink' },
@@ -45,11 +108,19 @@ const rate = (grade: 'again' | 'hard' | 'good' | 'easy') => {
   rated.value = grade
   currentWord.value.srsState = grade
   rateWordSrs(currentWord.value.id, grade)
+    .then((res) => {
+      if (res && !res.success && res.error) saveError.value = `Chưa lưu được mức nhớ: ${res.error}`
+    })
+    .catch(() => {
+      saveError.value = 'Chưa lưu được mức nhớ do lỗi kết nối. Kiểm tra mạng rồi thử lại.'
+    })
 }
 
 const resetCard = () => {
   isFlipped.value = false
   rated.value = null
+  phase.value = 'answer'
+  selectedOption.value = null
   userAudioUrl.value = null
 }
 
@@ -71,7 +142,9 @@ const goPrev = () => {
 
 const restart = () => {
   currentIndex.value = 0
+  answers.value = {}
   isFinished.value = false
+  buildOptions()
   resetCard()
 }
 
@@ -154,6 +227,13 @@ const removeCurrentWord = () => {
     :total-segments="words.length || 1"
     close-to="/tu-vung"
     close-label="Đóng, về danh sách bộ từ"
+    :phase="layoutPhase"
+    :can-check="selectedOption !== null"
+    :feedback="checkFeedback"
+    :correct-answer="currentWord?.meaning"
+    :continue-label="currentIndex === words.length - 1 ? 'Xem kết quả' : 'Tiếp tục'"
+    @check="checkAnswer"
+    @continue="goNext"
   >
     <div class="space-y-5" data-feature="tu-vung">
       <BaseSkeleton v-if="isLoading && !set" height="22rem" rounded="lg" />
@@ -174,7 +254,8 @@ const removeCurrentWord = () => {
           <Trophy class="h-8 w-8" :stroke-width="2.5" aria-hidden="true" />
         </div>
         <h1 id="flash-finish-title" class="font-display text-2xl font-black text-ink">
-          {{ isSrs ? 'Đã ôn xong' : 'Đã xem hết' }} {{ words.length }} từ
+          <template v-if="isSrs">Đã ôn xong {{ words.length }} từ</template>
+          <template v-else>Đúng {{ correctCount }} / {{ words.length }} từ</template>
         </h1>
         <p class="text-sm text-ink-soft">Bộ "{{ set.title }}".</p>
         <button
@@ -194,14 +275,14 @@ const removeCurrentWord = () => {
         </div>
 
         <div
-          class="flex min-h-[20rem] flex-col rounded-brut-lg border-2 border-line p-5 cursor-pointer select-none"
-          :class="isFlipped ? 'bg-surface' : 'bg-c-pink'"
-          role="button"
-          tabindex="0"
-          :aria-label="isFlipped ? 'Mặt sau, bấm để xem lại mặt trước' : 'Mặt trước, bấm để lật thẻ'"
-          @click="isFlipped = !isFlipped"
-          @keydown.enter.prevent="isFlipped = !isFlipped"
-          @keydown.space.prevent="isFlipped = !isFlipped"
+          class="flex min-h-[20rem] flex-col rounded-brut-lg border-2 border-line p-5 select-none"
+          :class="[isFlipped ? 'bg-surface' : 'bg-c-pink', canFlip ? 'cursor-pointer' : 'cursor-default']"
+          :role="canFlip ? 'button' : undefined"
+          :tabindex="canFlip ? 0 : undefined"
+          :aria-label="canFlip ? (isFlipped ? 'Mặt sau, bấm để xem lại mặt trước' : 'Mặt trước, bấm để lật thẻ') : undefined"
+          @click="toggleFlip"
+          @keydown.enter.prevent="toggleFlip"
+          @keydown.space.prevent="toggleFlip"
         >
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-ink">{{ isFlipped ? 'Nghĩa' : 'Từ vựng' }}</span>
@@ -232,9 +313,35 @@ const removeCurrentWord = () => {
             </div>
           </div>
 
-          <p class="flex items-center gap-1 pt-2 text-[11px] font-bold text-ink-soft">
+          <p v-if="canFlip" class="flex items-center gap-1 pt-2 text-[11px] font-bold text-ink-soft">
             <RotateCw class="h-3 w-3" aria-hidden="true" /> Bấm vào thẻ để lật
           </p>
+        </div>
+
+        <!-- Flashcard có chấm: chọn nghĩa đúng rồi bấm Kiểm tra ở khối đáy -->
+        <div v-if="!isSrs" class="space-y-2" role="radiogroup" :aria-label="`Nghĩa của ${currentWord.term}`">
+          <p class="text-xs font-bold text-ink-soft">Chọn nghĩa đúng của "{{ currentWord.term }}"</p>
+          <button
+            v-for="(opt, oIdx) in options"
+            :key="opt"
+            type="button"
+            role="radio"
+            :aria-checked="selectedOption === oIdx"
+            :disabled="phase !== 'answer'"
+            class="flex w-full min-h-[52px] items-center rounded-brut border-2 px-4 text-left text-sm font-bold cursor-pointer disabled:cursor-default"
+            :class="[
+              phase !== 'answer' && opt === currentWord.meaning
+                ? 'border-line bg-ok text-on-tone'
+                : phase === 'wrong' && selectedOption === oIdx
+                  ? 'border-line bg-bad text-white'
+                  : selectedOption === oIdx
+                    ? 'border-line bg-warn text-on-tone'
+                    : 'border-line/50 bg-surface text-ink hover:bg-surface-2',
+            ]"
+            @click="selectedOption = oIdx"
+          >
+            {{ opt }}
+          </button>
         </div>
 
         <!-- Ôn tập SRS: chọn mức độ nhớ sau khi xem nghĩa -->
@@ -311,6 +418,7 @@ const removeCurrentWord = () => {
       </template>
     </div>
 
+    <!-- SRS và màn tổng kết dùng slot; Flashcard có chấm dùng phase của layout -->
     <template #action>
       <BaseButton v-if="!set || !words.length || isFinished" to="/tu-vung" variant="success" size="lg" block>
         <span>Về danh sách bộ từ</span>
@@ -319,6 +427,18 @@ const removeCurrentWord = () => {
         <span>{{ primaryAction.label }}</span>
         <template v-if="!primaryAction.disabled" #right><ArrowRight class="h-5 w-5" :stroke-width="2.5" /></template>
       </BaseButton>
+    </template>
+
+    <template #toast>
+      <BaseToast
+        v-if="saveError"
+        :model-value="!!saveError"
+        tone="error"
+        title="Chưa lưu tiến độ"
+        :message="saveError"
+        :duration="0"
+        @close="saveError = null"
+      />
     </template>
   </NuxtLayout>
 </template>

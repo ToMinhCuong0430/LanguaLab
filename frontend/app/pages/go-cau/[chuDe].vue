@@ -4,12 +4,12 @@ import {
   ArrowRight,
   ArrowLeft,
   Volume2,
-  CheckCircle2,
   BookOpen,
   Trophy,
 } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
 import { useTypingPractice, type TypingSentence } from '~/composables/useTypingPractice'
+import type { LessonPhase } from '~/layouts/lesson.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -59,8 +59,16 @@ const userInput = ref('')
 const isComposing = ref(false) // Quản lý IME cho Trung/Nhật
 const startTime = ref<number | null>(null)
 const endTime = ref<number | null>(null)
-const isSentenceDone = ref(false)
 const isTopicFinished = ref(false)
+
+// Chấm một câu: answer -> (Kiểm tra) -> correct / wrong -> (Tiếp tục) -> câu sau, cùng route
+const phase = ref<LessonPhase>('answer')
+const isSentenceDone = computed(() => phase.value !== 'answer')
+const canCheck = computed(() => !isComposing.value && userInput.value.trim().length > 0)
+const feedback = ref('')
+
+// Lỗi lưu tiến độ / lỗi mạng hiển thị bằng BaseToast (kết quả từng câu nằm ở khối đáy)
+const saveError = ref<string | null>(null)
 
 // Lịch sử kết quả từng câu
 interface SentenceResult {
@@ -85,7 +93,8 @@ const resetSentenceSession = () => {
   isComposing.value = false
   startTime.value = null
   endTime.value = null
-  isSentenceDone.value = false
+  phase.value = 'answer'
+  feedback.value = ''
   nextTick(() => {
     inputRef.value?.focus()
   })
@@ -99,41 +108,41 @@ const onInput = (e: Event) => {
   if (!startTime.value && val.length > 0) {
     startTime.value = Date.now()
   }
-
-  // Nếu đang gõ IME (chưa ấn Enter chọn từ chữ Hán/Hiragana) thì chờ compositionend
-  if (isComposing.value) return
-
-  checkMatch(val)
 }
 
 const onCompositionStart = () => {
   isComposing.value = true
 }
 
-const onCompositionEnd = (e: CompositionEvent) => {
+const onCompositionEnd = () => {
   isComposing.value = false
-  checkMatch(userInput.value)
 }
 
-const checkMatch = (val: string) => {
-  const target = currentSentence.value?.targetText.trim() || ''
-  if (val.trim() === target) {
-    endTime.value = Date.now()
-    isSentenceDone.value = true
+// Bấm Kiểm tra (hoặc Enter): so câu đã gõ với câu đích, bỏ qua khoảng trắng thừa
+const normalize = (text: string) => text.trim().replace(/\s+/g, ' ')
 
-    // Ghi nhận chỉ số câu này
-    const durationSec = Math.max(1, Math.round(((endTime.value || Date.now()) - (startTime.value || Date.now())) / 1000))
-    const words = target.split(/\s+/).length
-    const wpm = Math.round((words / durationSec) * 60)
-    
-    sessionResults.value.push({
-      sentenceId: currentSentence.value?.id || '',
-      wpm: Math.max(15, wpm),
-      accuracy: currentStats.value.accuracy,
-      errors: currentStats.value.errors,
-      durationSec,
-    })
-  }
+const checkSentence = () => {
+  if (!canCheck.value || phase.value !== 'answer' || !currentSentence.value) return
+  const target = normalize(currentSentence.value.targetText)
+  const isRight = normalize(userInput.value) === target
+  endTime.value = Date.now()
+
+  const durationSec = Math.max(1, Math.round((endTime.value - (startTime.value || endTime.value)) / 1000))
+  const words = target.split(' ').length
+  const wpm = Math.round((words / durationSec) * 60)
+  sessionResults.value = sessionResults.value.filter((r) => r.sentenceId !== currentSentence.value?.id)
+  sessionResults.value.push({
+    sentenceId: currentSentence.value.id,
+    wpm: Math.max(15, wpm),
+    accuracy: isRight ? 100 : currentStats.value.accuracy,
+    errors: isRight ? 0 : currentStats.value.errors,
+    durationSec,
+  })
+
+  phase.value = isRight ? 'correct' : 'wrong'
+  feedback.value = isRight
+    ? `${Math.max(15, wpm)} WPM. Câu tiếp theo đang chờ bạn.`
+    : 'So câu bạn gõ với đáp án, phần tô đỏ ở trên là chỗ khác nhau.'
 }
 
 // Tính WPM và Accuracy thời gian thực
@@ -188,7 +197,11 @@ const goToNextSentence = () => {
         overallStats.value.avgWpm,
         overallStats.value.avgAcc,
         Math.max(10, sentences.value.length * 15)
-      )
+      ).then((res) => {
+        if (res && !res.success) saveError.value = `Chưa lưu được kết quả chủ đề: ${res.error || 'lỗi kết nối'}. Kiểm tra mạng rồi luyện lại để ghi nhận XP.`
+      }).catch(() => {
+        saveError.value = 'Chưa lưu được kết quả chủ đề do lỗi kết nối. Kiểm tra mạng rồi luyện lại để ghi nhận XP.'
+      })
     }
   }
 }
@@ -204,6 +217,7 @@ const restartTopic = () => {
   currentIndex.value = 0
   sessionResults.value = []
   isTopicFinished.value = false
+  saveError.value = null
   resetSentenceSession()
 }
 
@@ -233,9 +247,10 @@ const speakSentence = () => {
 
 // Bắt phím Enter / Tab
 const onKeyDown = (e: KeyboardEvent) => {
-  if (isSentenceDone.value && e.key === 'Enter') {
+  if (e.key === 'Enter' && !isComposing.value) {
     e.preventDefault()
-    goToNextSentence()
+    if (phase.value === 'answer') checkSentence()
+    else goToNextSentence()
   } else if (e.key === 'Tab') {
     e.preventDefault()
     resetSentenceSession()
@@ -258,6 +273,13 @@ watch(currentIndex, () => {
     :total-segments="sentences.length"
     close-to="/go-cau"
     close-label="Đóng, về danh sách chủ đề"
+    :phase="isTopicFinished || !sentences.length ? null : phase"
+    :can-check="canCheck"
+    :feedback="feedback"
+    :correct-answer="currentSentence?.targetText"
+    :continue-label="currentIndex === sentences.length - 1 ? 'Xem tổng kết' : 'Tiếp tục'"
+    @check="checkSentence"
+    @continue="goToNextSentence"
   >
     <div class="space-y-5" data-feature="go-cau">
       <FirstVisitGuide page-key="go_cau_practice_guide" :steps="guideSteps" />
@@ -313,7 +335,7 @@ watch(currentIndex, () => {
 
         <!-- Câu tiếng Việt cần dịch và gõ lại -->
         <section id="practice-target-box" class="space-y-3" aria-labelledby="typing-source">
-          <p class="text-xs font-bold text-ink-soft">Câu {{ currentIndex + 1 }} / {{ sentences.length }}. Dịch và gõ lại câu sau:</p>
+          <p class="text-xs font-bold text-ink-soft">Câu {{ currentIndex + 1 }} / {{ sentences.length }}. Dịch và gõ lại câu sau, rồi bấm Kiểm tra:</p>
           <h1 id="typing-source" class="font-display text-2xl font-black leading-snug text-ink sm:text-3xl">
             {{ currentSentence?.sourceText }}
           </h1>
@@ -379,10 +401,19 @@ watch(currentIndex, () => {
           <div class="flex items-center justify-between">
             <button
               type="button"
-              class="inline-flex min-h-[44px] items-center gap-1 px-1 text-xs font-bold text-ink-soft hover:text-ink cursor-pointer"
+              class="inline-flex min-h-[44px] items-center gap-1 px-1 text-xs font-bold text-ink-soft hover:text-ink cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              :disabled="isSentenceDone"
               @click="resetSentenceSession"
             >
               <RotateCcw class="h-3.5 w-3.5" aria-hidden="true" /> Gõ lại (Tab)
+            </button>
+            <button
+              v-if="!isSentenceDone"
+              type="button"
+              class="inline-flex min-h-[44px] items-center px-1 text-xs font-bold text-ink-soft hover:text-ink cursor-pointer"
+              @click="goToNextSentence"
+            >
+              Bỏ qua câu
             </button>
             <button
               type="button"
@@ -395,14 +426,6 @@ watch(currentIndex, () => {
           </div>
         </div>
 
-        <p
-          v-if="isSentenceDone"
-          class="flex items-center gap-2 rounded-brut border-2 border-line bg-ok/20 p-3 text-sm font-bold text-ink"
-          role="status"
-        >
-          <CheckCircle2 class="h-5 w-5 shrink-0 text-ok" :stroke-width="2.5" aria-hidden="true" />
-          Chính xác. {{ currentStats.wpm }} WPM, {{ currentStats.accuracy }}% chính xác. Nhấn Enter để tiếp tục.
-        </p>
 
         <details v-if="currentSentence?.grammarNote" class="rounded-brut border-2 border-line bg-surface-2 p-3">
           <summary class="flex min-h-[32px] cursor-pointer items-center gap-2 text-sm font-bold text-ink">
@@ -413,18 +436,24 @@ watch(currentIndex, () => {
       </template>
     </div>
 
+    <!-- Chỉ dùng khi đã xong chủ đề; lúc làm từng câu, khối đáy do phase của layout điều khiển -->
     <template #action>
-      <BaseButton v-if="isTopicFinished" to="/go-cau" variant="success" size="lg" block>
+      <BaseButton to="/go-cau" variant="success" size="lg" block>
         <span>Chọn chủ đề khác</span>
         <template #right><ArrowRight class="h-5 w-5" :stroke-width="2.5" /></template>
       </BaseButton>
-      <BaseButton v-else-if="isSentenceDone" variant="success" size="lg" block @click="goToNextSentence">
-        <span>{{ currentIndex === sentences.length - 1 ? 'Xem tổng kết' : 'Tiếp tục' }}</span>
-        <template #right><ArrowRight class="h-5 w-5" :stroke-width="2.5" /></template>
-      </BaseButton>
-      <BaseButton v-else variant="secondary" size="lg" block @click="goToNextSentence">
-        <span>{{ currentIndex === sentences.length - 1 ? 'Bỏ qua và xem tổng kết' : 'Bỏ qua câu này' }}</span>
-      </BaseButton>
+    </template>
+
+    <template #toast>
+      <BaseToast
+        v-if="saveError"
+        :model-value="!!saveError"
+        tone="error"
+        title="Chưa lưu tiến độ"
+        :message="saveError"
+        :duration="0"
+        @close="saveError = null"
+      />
     </template>
   </NuxtLayout>
 </template>
