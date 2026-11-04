@@ -552,7 +552,7 @@ const getNodeIcon = (iconName: string) => {
           </div>
           <h4 class="text-2xl font-black text-ink font-display">Hoàn thành chặng học!</h4>
           <p class="text-xs text-ink-soft font-bold">Bạn nhận được +{{ activeLessonNode.xpReward }} XP vào tài khoản.</p>
-          <BaseButton variant="primary" size="md" block @click="activeLessonNode = null">
+          <BaseButton variant="success" size="md" block @click="activeLessonNode = null">
             Tiếp tục chặng tiếp
           </BaseButton>
         </div>
@@ -587,7 +587,7 @@ const getNodeIcon = (iconName: string) => {
           <div class="pt-2">
             <BaseButton
               v-if="!isAnswerChecked"
-              variant="primary"
+              variant="success"
               size="md"
               block
               :disabled="selectedOptionIdx === null"
@@ -603,7 +603,7 @@ const getNodeIcon = (iconName: string) => {
               >
                 {{ isAnswerCorrect ? 'Chính xác! Làm rất tốt.' : 'Sai rồi! Hãy xem lại giải thích.' }}
               </div>
-              <BaseButton variant="primary" size="md" block @click="nextQuestion">
+              <BaseButton variant="success" size="md" block @click="nextQuestion">
                 Tiếp tục
               </BaseButton>
             </div>

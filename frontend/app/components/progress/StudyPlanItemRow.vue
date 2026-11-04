@@ -49,7 +49,7 @@ const done = computed(() => Boolean(props.item.completed_at))
     <NuxtLink
       v-if="item.link"
       :to="item.link"
-      class="flex h-11 min-w-[44px] flex-shrink-0 items-center justify-center gap-1 rounded-brut border-2 border-line bg-surface-2 px-2.5 text-xs font-black text-ink hover:bg-surface"
+      class="flex h-11 min-w-[44px] flex-shrink-0 items-center justify-center gap-1 rounded-brut brut-control brut-press bg-success text-success-ink px-2.5 text-xs font-black"
       :aria-label="`Mở bài: ${item.title}`"
     >
       <span class="hidden sm:inline">Bắt đầu</span>

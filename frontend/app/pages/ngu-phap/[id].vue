@@ -278,7 +278,7 @@ const speakText = (text: string) => {
             <BaseButton
               v-if="currentPoint.exercises.length"
               :to="`/ngu-phap/bai-tap/${currentPoint.id}`"
-              variant="primary"
+              variant="success"
               size="md"
               block
             >

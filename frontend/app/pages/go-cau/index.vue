@@ -307,7 +307,7 @@ const getTopicIcon = (iconName: string) => {
 
               <NuxtLink
                 :to="`/go-cau/${topic.slug}`"
-                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut border-2 border-line bg-c-green hover:bg-c-green/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5"
+                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut brut-control brut-press bg-success text-success-ink font-black text-xs"
               >
                 <span>Bắt đầu gõ</span>
                 <ArrowRight class="w-3.5 h-3.5 stroke-[3]" />
@@ -386,7 +386,7 @@ const getTopicIcon = (iconName: string) => {
 
               <NuxtLink
                 :to="`/go-cau/${topic.slug}`"
-                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut border-2 border-line bg-warn hover:bg-warn/90 text-on-tone font-black text-xs shadow-brut-sm transition-transform active:translate-y-0.5"
+                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut brut-control brut-press bg-success text-success-ink font-black text-xs"
               >
                 <span>Bắt đầu gõ</span>
                 <ArrowRight class="w-3.5 h-3.5 stroke-[3]" />

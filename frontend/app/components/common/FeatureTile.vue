@@ -11,6 +11,7 @@ defineProps<{
   colorVar?: string
 }>()
 
+// Màu chức năng chỉ dùng cho chấm tròn cạnh tiêu đề; nền tile, ô icon và stat badge giữ màu trung tính
 const featureColorMap: Record<string, { bg: string; soft: string; ink: string }> = {
   'go-cau': { bg: 'var(--c-green)', soft: 'var(--c-green-soft)', ink: 'var(--c-green-ink)' },
   'video-podcast': { bg: 'var(--c-blue)', soft: 'var(--c-blue-soft)', ink: 'var(--c-blue-ink)' },
@@ -32,18 +33,14 @@ const featureColorMap: Record<string, { bg: string; soft: string; ink: string }>
   >
     <!-- Top Row: Icon + Stat pill -->
     <div class="flex items-center justify-between gap-3 mb-4">
-      <div
-        class="flex h-12 w-12 items-center justify-center rounded-brut border-[1px] border-line text-ink transition-transform group-hover:scale-105"
-        :style="{ backgroundColor: featureColorMap[feature]?.bg || 'var(--feature)' }"
-      >
-        <component :is="icon" v-if="icon" class="h-6 w-6 text-on-tone" :stroke-width="2.5" />
+      <div class="flex h-12 w-12 items-center justify-center rounded-brut border-[1px] border-line bg-surface-2 text-ink">
+        <component :is="icon" v-if="icon" class="h-6 w-6" :stroke-width="2.5" aria-hidden="true" />
         <span v-else class="font-display font-black text-sm">LA</span>
       </div>
 
       <div
         v-if="statBadge"
-        class="inline-flex items-center gap-1 rounded-brut border border-line px-2 py-0.5 font-mono text-xs font-black"
-        :style="{ backgroundColor: featureColorMap[feature]?.soft || 'var(--surface-2)', color: featureColorMap[feature]?.ink || 'var(--ink)' }"
+        class="inline-flex items-center gap-1 rounded-brut border-[1px] border-line bg-surface-2 px-2 py-0.5 font-mono text-xs font-black text-ink"
       >
         {{ statBadge }}
       </div>
@@ -52,7 +49,12 @@ const featureColorMap: Record<string, { bg: string; soft: string; ink: string }>
     <!-- Middle: Title + Description -->
     <div class="space-y-1.5 flex-1">
       <div class="flex items-center justify-between">
-        <h3 class="font-display text-lg font-black tracking-tight text-ink group-hover:text-ink">
+        <h3 class="flex items-center gap-2 font-display text-lg font-black tracking-tight text-ink">
+          <span
+            class="h-2 w-2 shrink-0 rounded-full"
+            :style="{ backgroundColor: featureColorMap[feature]?.bg || colorVar || 'var(--feature)' }"
+            aria-hidden="true"
+          />
           {{ title }}
         </h3>
         <ArrowUpRight class="h-4 w-4 text-ink-soft opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" :stroke-width="2.5" />

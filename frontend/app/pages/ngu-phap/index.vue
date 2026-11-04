@@ -269,7 +269,7 @@ const totalStats = computed(() => {
               <!-- Footer hành động -->
               <div class="mt-4 pt-3 border-t-2 border-line/30 flex items-center justify-between text-xs font-bold text-ink">
                 <span class="text-ink-soft font-mono">{{ point.summary }}</span>
-                <span class="inline-flex items-center gap-1 text-on-tone bg-warn px-2.5 py-1 rounded-brut border border-line shadow-brut-sm font-black group-hover:translate-x-0.5 transition-transform">
+                <span class="inline-flex items-center gap-1 bg-success text-success-ink px-2.5 py-1 rounded-brut border-[1px] border-line font-black">
                   <span>Vào học</span>
                   <ArrowRight class="w-3.5 h-3.5 stroke-[3]" />
                 </span>

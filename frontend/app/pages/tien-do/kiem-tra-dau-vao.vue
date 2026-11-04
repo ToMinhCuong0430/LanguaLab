@@ -228,7 +228,7 @@ const restart = () => {
 
       <p v-if="error" class="rounded-brut border-2 border-bad bg-bad/10 p-2 text-xs font-bold text-bad" role="alert">{{ error }}</p>
 
-      <BaseButton variant="primary" size="md" :disabled="!selected.length || isLoading" @click="start">
+      <BaseButton variant="success" size="md" :disabled="!selected.length || isLoading" @click="start">
         <span>{{ isLoading ? 'Đang tải câu hỏi...' : `Bắt đầu (${selected.length} kỹ năng)` }}</span>
       </BaseButton>
     </section>

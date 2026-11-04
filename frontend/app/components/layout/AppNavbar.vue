@@ -45,7 +45,7 @@ const chooseTheme = (value: (typeof themeOptions)[number]['value']) => {
   isThemeMenuOpen.value = false
 }
 
-// Feature color map for inline styles
+// Màu nhận diện 8 chức năng: chỉ dùng cho chấm tròn cạnh nhãn, không tô nền chip
 const featureColorMap: Record<string, string> = {
   'home':              'var(--c-blue)',
   'go-cau':            'var(--c-green)',
@@ -60,13 +60,6 @@ const featureColorMap: Record<string, string> = {
 
 function getFeatureColor(feature: string) {
   return featureColorMap[feature] ?? 'var(--c-blue)'
-}
-
-function getFeatureInk(feature: string) {
-  if (feature === 'home' || feature === 'video-podcast' || !featureColorMap[feature]) {
-    return '#FFFFFF'
-  }
-  return 'var(--ink)'
 }
 
 const closeMobileMenu = () => { isMobileMenuOpen.value = false }
@@ -130,16 +123,11 @@ onUnmounted(() => {
           :to="item.path"
           class="nav-chip"
           :class="{ 'nav-chip--active': isActive(item.path) }"
-          :style="isActive(item.path) ? { backgroundColor: getFeatureColor(item.feature), color: getFeatureInk(item.feature), borderColor: 'var(--line)' } : {}"
           :aria-current="isActive(item.path) ? 'page' : undefined"
         >
-          <span
-            class="nav-chip__icon"
-            :style="{ backgroundColor: getFeatureColor(item.feature) }"
-          >
-            <component :is="item.icon" class="h-3.5 w-3.5" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'var(--ink)' }" :stroke-width="2.5" />
-          </span>
-          <span class="nav-chip__label" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'inherit' }">{{ item.shortTitle }}</span>
+          <!-- Màu chức năng chỉ còn là chấm 8px cạnh nhãn -->
+          <span class="nav-chip__dot" :style="{ backgroundColor: getFeatureColor(item.feature) }" aria-hidden="true" />
+          <span class="nav-chip__label">{{ item.shortTitle }}</span>
         </NuxtLink>
       </nav>
 
@@ -335,13 +323,11 @@ onUnmounted(() => {
           :to="item.path"
           class="mobile-nav-chip"
           :class="{ 'mobile-nav-chip--active': isActive(item.path) }"
-          :style="isActive(item.path) ? { backgroundColor: getFeatureColor(item.feature), color: getFeatureInk(item.feature) } : {}"
+          :aria-current="isActive(item.path) ? 'page' : undefined"
           @click="closeMobileMenu"
         >
-          <span class="mobile-nav-chip__icon" :style="{ backgroundColor: isActive(item.path) ? 'rgba(0,0,0,0.15)' : getFeatureColor(item.feature) }">
-            <component :is="item.icon" class="h-4 w-4" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'var(--ink)' }" :stroke-width="2.5" />
-          </span>
-          <span class="text-xs font-bold leading-tight" :style="{ color: isActive(item.path) ? getFeatureInk(item.feature) : 'inherit' }">{{ item.shortTitle }}</span>
+          <span class="nav-chip__dot" :style="{ backgroundColor: getFeatureColor(item.feature) }" aria-hidden="true" />
+          <span class="text-xs font-bold leading-tight">{{ item.shortTitle }}</span>
         </NuxtLink>
       </nav>
     </div>
@@ -355,8 +341,9 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
-  border: 2px solid transparent;
+  min-height: 36px;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid transparent;
   border-radius: var(--radius);
   text-decoration: none;
   font-family: var(--font-display);
@@ -373,19 +360,15 @@ onUnmounted(() => {
 }
 
 .nav-chip--active {
+  background: var(--surface-2);
   color: var(--ink);
-  border-color: var(--line) !important;
-  box-shadow: 2px 2px 0 var(--line);
+  border-color: var(--line);
 }
 
-.nav-chip__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  border: 1.5px solid var(--line);
+.nav-chip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
   flex-shrink: 0;
 }
 
@@ -440,33 +423,22 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-height: 44px;
   padding: 0.6rem 0.75rem;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   text-decoration: none;
   color: var(--ink);
-  box-shadow: 2px 2px 0 var(--line);
-  transition: transform 0.08s ease;
+  transition: background-color 0.1s ease;
 }
 
 .mobile-nav-chip:hover {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 var(--line);
+  background: var(--surface-2);
 }
 
 .mobile-nav-chip--active {
+  background: var(--surface-2);
   color: var(--ink);
-}
-
-.mobile-nav-chip__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
-  border: 1.5px solid var(--line);
-  flex-shrink: 0;
 }
 </style>

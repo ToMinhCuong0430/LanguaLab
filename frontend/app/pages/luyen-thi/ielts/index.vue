@@ -120,7 +120,7 @@ const ieltsGuideSteps: GuideStep[] = [
         <div class="pt-2">
           <BaseButton
             to="/luyen-thi/ielts/reading"
-            variant="secondary"
+            variant="success"
             size="sm"
             block
           >

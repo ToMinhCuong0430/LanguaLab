@@ -449,7 +449,7 @@ const handleAddWord = () => {
             </ul>
             <BaseButton
               :to="{ path: `/tu-vung/the/${activeSet.id}`, query: studyMode === 'srs' ? { mode: 'srs' } : {} }"
-              variant="primary"
+              variant="success"
               size="md"
               block
             >

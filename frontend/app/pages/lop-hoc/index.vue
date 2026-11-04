@@ -197,8 +197,8 @@ const dueLabel = (due: string | null) => {
               </div>
               <NuxtLink
                 :to="`/luyen-thi/ielts/lam-bai/${a.test_id}`"
-                class="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-brut border-2 border-line px-4 font-display text-sm font-black brut-press"
-                :class="a.status.done ? 'bg-surface-2 text-ink' : 'bg-warn text-on-tone shadow-brut-sm'"
+                class="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-brut brut-control brut-press px-4 font-display text-sm font-black"
+                :class="a.status.done ? 'bg-surface text-ink' : 'bg-success text-success-ink'"
               >
                 {{ a.status.done ? 'Làm lại' : 'Làm bài' }} <ArrowUpRight class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
               </NuxtLink>

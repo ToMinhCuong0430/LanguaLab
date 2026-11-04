@@ -152,9 +152,10 @@ const attrs = computed(() =>
   color: var(--on-tone);
 }
 
+/* Màu hành động học: mọi nút Bắt đầu / Tiếp tục / Kiểm tra */
 .base-btn--success {
-  background: var(--ok);
-  color: var(--on-tone);
+  background: var(--success);
+  color: var(--success-ink);
 }
 
 .base-btn--danger {

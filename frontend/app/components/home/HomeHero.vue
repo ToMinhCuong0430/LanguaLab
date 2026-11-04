@@ -175,12 +175,11 @@ const examButtonInfo = computed(() => {
           </p>
         </div>
 
-        <!-- Hai nút hành động cùng hàng: "Học ngay" (vàng) & "Luyện đề IELTS" (nền kem) -->
+        <!-- Hai nút hành động cùng hàng: "Học ngay" (màu hành động --success) & "Luyện đề IELTS" (nền kem) -->
         <div class="flex flex-wrap items-center gap-3 pt-1">
           <!-- Nút chính: Học ngay (truyền icon ArrowRight qua slot #right) -->
           <BaseButton
-            tone="yellow"
-            variant="solid"
+            variant="success"
             :to="learnNowPath"
             class="whitespace-nowrap min-h-[44px] text-base"
           >

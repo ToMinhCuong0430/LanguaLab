@@ -525,7 +525,7 @@ const formatTime = (secs: number) => {
             </div>
 
             <div class="flex justify-between items-center pt-2">
-              <BaseButton variant="secondary" size="sm" @click="checkDictation">
+              <BaseButton variant="success" size="sm" @click="checkDictation">
                 Kiểm tra đáp án
               </BaseButton>
               <BaseButton variant="primary" size="sm" @click="nextDictation">

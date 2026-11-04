@@ -141,7 +141,7 @@ const pct = (v: number) => `${Math.round(v * 100)}%`
         Làm bài kiểm tra đầu vào khoảng 15 phút để biết band hiện tại và nhận lộ trình học phù hợp.
       </p>
       <div class="flex justify-center pt-2">
-        <BaseButton to="/tien-do/kiem-tra-dau-vao" variant="primary" size="md">
+        <BaseButton to="/tien-do/kiem-tra-dau-vao" variant="success" size="md">
           <ClipboardCheck class="h-4 w-4" :stroke-width="2.5" />
           <span>Làm bài kiểm tra đầu vào</span>
         </BaseButton>
@@ -220,7 +220,7 @@ const pct = (v: number) => `${Math.round(v * 100)}%`
 
           <NuxtLink
             to="/tien-do/lo-trinh"
-            class="flex min-h-[44px] items-center justify-between gap-2 rounded-brut border-2 border-line bg-warn px-3 font-display text-sm font-black text-on-tone shadow-brut-sm brut-press"
+            class="flex min-h-[44px] items-center justify-between gap-2 rounded-brut brut-control brut-press bg-success text-success-ink px-3 font-display text-sm font-black"
           >
             {{ plan ? 'Tiếp tục lộ trình' : 'Tạo lộ trình từ điểm yếu' }}
             <ArrowRight class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
