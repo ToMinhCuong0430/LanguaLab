@@ -226,7 +226,7 @@ const getSlideIcon = (type?: string) => {
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                class="shadow-brut brut-press min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-[3px] border-line bg-surface p-1 text-ink hover:bg-surface-2 cursor-pointer"
                 :aria-label="isPaused ? 'Tiếp tục bảng tin' : 'Tạm dừng bảng tin'"
                 :title="isPaused ? 'Tiếp tục' : 'Tạm dừng'"
                 @click="isPaused = !isPaused"
@@ -236,7 +236,7 @@ const getSlideIcon = (type?: string) => {
               </button>
               <button
                 type="button"
-                class="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-2 border-line bg-surface p-1 text-ink hover:bg-surface-2 shadow-brut-sm cursor-pointer"
+                class="shadow-brut brut-press min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-brut border-[3px] border-line bg-surface p-1 text-ink hover:bg-surface-2 cursor-pointer"
                 aria-label="Đóng bảng tin story"
                 @click="closeStory"
               >
@@ -262,7 +262,7 @@ const getSlideIcon = (type?: string) => {
         />
 
         <!-- Icon nổi bật hình khối neo-brutalism -->
-        <div class="relative z-20 mx-auto flex h-20 w-20 items-center justify-center rounded-brut-lg border-[3px] border-line bg-warn text-on-tone shadow-brut">
+        <div class="relative z-20 mx-auto flex h-20 w-20 items-center justify-center rounded-brut-lg border-[1px] border-line bg-warn text-on-tone">
           <component
             :is="getSlideIcon(currentSlide.iconType)"
             class="h-10 w-10"
@@ -276,7 +276,7 @@ const getSlideIcon = (type?: string) => {
           </h3>
 
           <!-- Highlight cực đậm -->
-          <div class="inline-block rounded-brut border-[3px] border-line bg-accent px-4 py-2 font-display text-3xl sm:text-4xl font-black text-accent-ink shadow-brut">
+          <div class="inline-block rounded-brut border-[1px] border-line bg-accent px-4 py-2 font-display text-3xl sm:text-4xl font-black text-accent-ink">
             {{ currentSlide.highlight }}
           </div>
         </div>
@@ -286,7 +286,7 @@ const getSlideIcon = (type?: string) => {
         </p>
 
         <div v-if="currentSlide.statBadge" class="relative z-20 inline-block">
-          <span class="rounded border-2 border-line bg-ok px-3 py-1 font-display text-xs font-black text-on-tone shadow-brut-sm">
+          <span class="rounded border-[1px] border-line bg-ok px-3 py-1 font-display text-xs font-black text-on-tone">
             {{ currentSlide.statBadge }}
           </span>
         </div>

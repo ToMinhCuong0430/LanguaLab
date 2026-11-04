@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <section
-    class="rounded-brut-lg border-[3px] border-line bg-surface p-5 sm:p-6 shadow-brut space-y-5"
+    class="rounded-brut-lg border-[1px] border-line bg-surface p-5 sm:p-6 space-y-5"
     aria-labelledby="home-continue-title"
   >
     <template v-if="lesson">
@@ -48,7 +48,7 @@ defineProps<{
 
     <template v-else>
       <div class="flex items-start gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-brut border-2 border-line bg-c-green text-on-tone shadow-brut-sm">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-brut border-[1px] border-line bg-c-green text-on-tone">
           <Keyboard class="h-6 w-6" :stroke-width="2.5" aria-hidden="true" />
         </div>
         <div class="space-y-1">

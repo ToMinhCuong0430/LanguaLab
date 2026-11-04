@@ -145,27 +145,29 @@ const getTopicIcon = (iconName: string) => {
             <div
               v-for="node in roadmapNodes"
               :key="node.id"
-              class="relative z-10 flex flex-col items-center group cursor-pointer"
+              class="relative z-10 flex flex-col items-center"
             >
               <!-- Nút chặng đang mở nổi bật to hơn, viền dày, nhãn "Bạn ở đây" -->
-              <div v-if="node.status === 'active'" class="absolute -top-7 rounded-brut border-2 border-line bg-warn px-2 py-0.5 text-[10px] font-black uppercase text-on-tone shadow-[1px_1px_0_var(--line)] animate-bounce whitespace-nowrap">
+              <div v-if="node.status === 'active'" class="absolute -top-7 rounded-brut border-[1px] border-line bg-warn px-2 py-0.5 text-[10px] font-black uppercase text-on-tone animate-bounce whitespace-nowrap">
                 Bạn ở đây
               </div>
 
-              <!-- Node Circle Button -->
-              <div
-                class="rounded-full flex items-center justify-center font-black text-sm shadow-brut transition-all duration-200 group-hover:-translate-y-1"
-                :class="[
-                  node.status === 'active'
-                    ? 'w-16 h-16 border-[4px] border-line bg-c-green text-on-tone ring-4 ring-c-green/40'
-                    : node.status === 'completed'
-                      ? 'w-12 h-12 border-[3px] border-line bg-c-green text-on-tone'
-                      : 'w-12 h-12 border-[3px] border-line bg-surface-2 text-ink-soft/60 cursor-not-allowed',
-                ]"
+              <!-- Node đang mở là control bấm được (viền dày, bóng cứng, lõm khi nhấn) dẫn tới danh sách chủ đề; node khác tĩnh -->
+              <NuxtLink
+                v-if="node.status === 'active'"
+                to="#life-topics-group"
+                class="brut-control brut-press flex h-16 w-16 items-center justify-center rounded-full bg-c-green font-display text-base font-black text-on-tone ring-4 ring-c-green/40"
+                :aria-label="`Chặng ${node.level}: ${node.title}. Xem các chủ đề để luyện`"
               >
-                <CheckCircle v-if="node.status === 'completed'" class="w-6 h-6 stroke-[3]" />
-                <span v-else-if="node.status === 'active'" class="text-base font-black font-display">{{ node.level }}</span>
-                <Lock v-else class="w-4 h-4 opacity-50" />
+                {{ node.level }}
+              </NuxtLink>
+              <div
+                v-else
+                class="flex h-12 w-12 items-center justify-center rounded-full border-[1px] border-line text-sm font-black"
+                :class="node.status === 'completed' ? 'bg-c-green text-on-tone' : 'bg-surface-2 text-ink-soft'"
+              >
+                <CheckCircle v-if="node.status === 'completed'" class="w-6 h-6 stroke-[3]" aria-hidden="true" />
+                <Lock v-else class="w-4 h-4 opacity-50" aria-hidden="true" />
               </div>
 
               <!-- Node Info Card below -->
@@ -195,24 +197,25 @@ const getTopicIcon = (iconName: string) => {
             :key="node.id"
             class="relative z-10 flex items-start gap-4"
           >
-            <!-- Circle Button -->
-            <div
-              class="rounded-full flex items-center justify-center flex-shrink-0 shadow-brut"
-              :class="[
-                node.status === 'active'
-                  ? 'w-12 h-12 border-[3px] border-line bg-c-green text-on-tone ring-4 ring-c-green/40'
-                  : node.status === 'completed'
-                    ? 'w-9 h-9 border-2 border-line bg-c-green text-on-tone'
-                    : 'w-9 h-9 border-2 border-line bg-surface-2 text-ink-soft/60',
-              ]"
+            <NuxtLink
+              v-if="node.status === 'active'"
+              to="#life-topics-group"
+              class="brut-control brut-press flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-c-green font-display text-xs font-black text-on-tone ring-4 ring-c-green/40"
+              :aria-label="`Chặng ${node.level}: ${node.title}. Xem các chủ đề để luyện`"
             >
-              <CheckCircle v-if="node.status === 'completed'" class="w-4 h-4 stroke-[3]" />
-              <span v-else-if="node.status === 'active'" class="text-xs font-black font-display">{{ node.level }}</span>
-              <Lock v-else class="w-3.5 h-3.5 opacity-50" />
+              {{ node.level }}
+            </NuxtLink>
+            <div
+              v-else
+              class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-[1px] border-line"
+              :class="node.status === 'completed' ? 'bg-c-green text-on-tone' : 'bg-surface-2 text-ink-soft'"
+            >
+              <CheckCircle v-if="node.status === 'completed'" class="w-4 h-4 stroke-[3]" aria-hidden="true" />
+              <Lock v-else class="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
             </div>
 
             <!-- Content -->
-            <div class="flex-1 rounded-brut border-2 border-line bg-surface p-3 shadow-brut-sm">
+            <div class="flex-1 rounded-brut border-[1px] border-line bg-surface p-3">
               <div class="flex items-center justify-between mb-1">
                 <span
                   class="rounded border border-line px-1.5 py-0.2 text-[10px] font-black uppercase"

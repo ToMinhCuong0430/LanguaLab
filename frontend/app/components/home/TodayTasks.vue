@@ -13,7 +13,7 @@ const isOpen = ref(false)
 </script>
 
 <template>
-  <section id="home-today-tasks" class="rounded-brut-lg border-[3px] border-line bg-surface shadow-brut">
+  <section id="home-today-tasks" class="rounded-brut-lg border-[1px] border-line bg-surface">
     <h2 class="m-0">
       <button
         type="button"

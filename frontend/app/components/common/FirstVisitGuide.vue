@@ -109,7 +109,7 @@ onUnmounted(() => {
     <!-- Nút nhỏ ở góc để người dùng mở lại hướng dẫn: bo tròn trên mobile, có chữ trên desktop -->
     <button
       type="button"
-      class="first-visit-fab fixed bottom-4 right-4 z-30 inline-flex items-center justify-center gap-1.5 rounded-full sm:rounded-brut border-2 border-line bg-surface p-2.5 sm:px-3 sm:py-2 text-xs font-display font-bold text-ink shadow-brut brut-press"
+      class="first-visit-fab fixed bottom-4 right-4 z-30 inline-flex items-center justify-center gap-1.5 rounded-full sm:rounded-brut border-[3px] border-line bg-surface p-2.5 sm:px-3 sm:py-2 text-xs font-display font-bold text-ink shadow-brut brut-press"
       title="Xem lại hướng dẫn trang này"
       aria-label="Xem lại hướng dẫn trang này"
       @click="openGuideManually"

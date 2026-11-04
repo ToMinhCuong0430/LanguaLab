@@ -15,7 +15,7 @@ withDefaults(
 
 <template>
   <section
-    class="relative overflow-hidden border-[3px] border-line rounded-brut-lg shadow-brut"
+    class="relative overflow-hidden border-[1px] border-line rounded-brut-lg"
     :data-feature="feature"
     :style="feature ? { backgroundColor: 'var(--feature)', color: 'var(--ink)' } : { backgroundColor: 'var(--surface)' }"
   >
@@ -26,7 +26,7 @@ withDefaults(
           <!-- Icon chip -->
           <div
             v-if="$slots.icon"
-            class="flex-shrink-0 p-2.5 rounded-brut border-2 border-line bg-surface text-ink shadow-brut-sm"
+            class="flex-shrink-0 p-2.5 rounded-brut border-[1px] border-line bg-surface text-ink"
           >
             <slot name="icon" />
           </div>
@@ -35,7 +35,7 @@ withDefaults(
             <!-- Badge -->
             <div v-if="badgeText" class="inline-block">
               <span
-                class="inline-flex items-center gap-1.5 font-display text-xs font-black uppercase tracking-wide px-2.5 py-1 rounded-brut border-2 border-line shadow-[2px_2px_0_var(--line)]"
+                class="inline-flex items-center gap-1.5 font-display text-xs font-black uppercase tracking-wide px-2.5 py-1 rounded-brut border-[1px] border-line"
                 :style="feature ? { backgroundColor: 'rgba(0,0,0,0.12)', color: 'var(--ink)' } : { backgroundColor: 'var(--warn)', color: 'var(--on-tone)' }"
               >
                 {{ badgeText }}

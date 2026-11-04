@@ -49,14 +49,14 @@ const statCards = computed(() => [
         <div
           v-for="item in statCards"
           :key="item.label"
-          class="flex flex-col justify-between rounded-brut-lg border-2 border-line p-4 shadow-brut transition-transform hover:-translate-y-0.5"
+          class="flex flex-col justify-between rounded-brut-lg border-[1px] border-line p-4 transition-transform hover:-translate-y-0.5"
           :class="item.bg"
         >
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-black uppercase tracking-wider">
               {{ item.label }}
             </span>
-            <div class="p-1.5 rounded-brut border-2 border-line bg-surface text-ink shadow-[1px_1px_0_var(--line)]">
+            <div class="p-1.5 rounded-brut border-[1px] border-line bg-surface text-ink">
               <component :is="item.icon" class="h-5 w-5" :stroke-width="2.5" />
             </div>
           </div>

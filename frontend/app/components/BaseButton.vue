@@ -96,14 +96,10 @@ const attrs = computed(() =>
   outline-offset: 2px;
 }
 
-.base-btn:hover:not(:disabled) {
+/* Nhấn: dịch xuống-phải 2px, bóng còn 2px (nút "lõm" xuống) */
+.base-btn:active:not(:disabled) {
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-sm);
-}
-
-.base-btn:active:not(:disabled) {
-  transform: translate(4px, 4px);
-  box-shadow: 0 0 0 var(--line);
 }
 
 /* Kích cỡ (Touch target >= 44px chuẩn ui-ux-pro-max) */

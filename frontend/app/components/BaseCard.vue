@@ -53,9 +53,10 @@ withDefaults(
   --card-ink: var(--ink);
   background: var(--card-bg);
   color: var(--card-ink);
-  border: var(--bw) solid var(--line);
+  /* Card tĩnh: viền 1px, không bóng (bóng cứng chỉ dành cho control bấm được) */
+  border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  box-shadow: none;
   overflow: hidden;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
@@ -110,10 +111,13 @@ withDefaults(
 }
 
 .base-card--interactive {
+  /* Card bấm được là một control: viền dày + bóng cứng, nhấn thì lõm xuống */
   cursor: pointer;
+  border-width: var(--bw);
+  box-shadow: var(--shadow);
 }
 
-.base-card--interactive:hover {
+.base-card--interactive:active {
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-sm);
 }
@@ -122,7 +126,7 @@ withDefaults(
   padding: 1rem 1.25rem;
   font-family: var(--font-display);
   font-weight: 700;
-  border-bottom: var(--bw) solid var(--line);
+  border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -134,6 +138,6 @@ withDefaults(
 
 .base-card__footer {
   padding: 0.85rem 1.25rem;
-  border-top: var(--bw) solid var(--line);
+  border-top: 1px solid var(--line);
 }
 </style>

@@ -73,7 +73,7 @@ const resolvedTone = computed<NewTone>(() =>
   line-height: 1;
   border-radius: var(--radius);
   white-space: nowrap;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   transition: background 0.15s, color 0.15s;
 }
 

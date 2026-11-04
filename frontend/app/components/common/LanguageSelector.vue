@@ -30,7 +30,7 @@ const selectLang = (lang: LearningLanguage) => {
 </script>
 
 <template>
-  <div class="inline-flex items-center gap-1.5 p-1.5 rounded-brut border-2 border-line bg-surface shadow-brut-sm">
+  <div class="inline-flex items-center gap-1.5 p-1.5 rounded-brut border-[1px] border-line bg-surface">
     <div class="flex items-center gap-1 px-2 py-1 text-xs font-black uppercase text-ink-soft select-none">
       <Globe class="w-3.5 h-3.5 text-ink" :stroke-width="2.5" />
       <span class="hidden sm:inline">Mục tiêu:</span>
@@ -46,7 +46,7 @@ const selectLang = (lang: LearningLanguage) => {
         class="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-brut border-2 transition-all cursor-pointer"
         :class="[
           currentLang === item.code
-            ? 'border-line shadow-brut-sm font-black'
+            ? 'border-line font-black'
             : 'bg-surface hover:bg-surface-2 text-ink border-transparent hover:border-line',
         ]"
         :style="currentLang === item.code ? { backgroundColor: langColorMap[item.code]?.bg || 'var(--warn)', color: langColorMap[item.code]?.text || 'var(--ink)' } : {}"

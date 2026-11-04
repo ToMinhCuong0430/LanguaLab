@@ -32,7 +32,7 @@ const ieltsSkills = [
       <!-- 1. THẺ IELTS TO NỔI BẬT VỚI 4 Ô KỸ NĂNG PREVIEW -->
       <div
         v-if="ieltsExam"
-        class="rounded-brut-lg border-[3px] border-line bg-surface p-5 sm:p-7 shadow-brut transition-all hover:shadow-brut-lg"
+        class="rounded-brut-lg border-[1px] border-line bg-surface p-5 sm:p-7 transition-all"
       >
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b-2 border-line pb-6 mb-6">
           <div class="space-y-2">
@@ -78,10 +78,10 @@ const ieltsSkills = [
             v-for="skill in ieltsSkills"
             :key="skill.name"
             to="/luyen-thi/ielts"
-            class="group flex items-center gap-3 rounded-brut border-2 border-line bg-surface p-3.5 shadow-brut-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all text-decoration-none"
+            class="shadow-brut brut-press group flex items-center gap-3 rounded-brut border-[3px] border-line bg-surface p-3.5 transition-all text-decoration-none"
           >
             <div
-              class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-brut border-2 border-line shadow-[1px_1px_0_var(--line)]"
+              class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-brut border-[1px] border-line"
               :class="skill.color"
             >
               <component :is="skill.icon" class="h-5 w-5" :stroke-width="2.5" />

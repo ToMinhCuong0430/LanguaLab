@@ -118,7 +118,7 @@ const examButtonInfo = computed(() => {
 <template>
   <section
     id="home-hero-banner"
-    class="home-hero-root relative overflow-hidden rounded-brut-lg border-[3px] border-line shadow-[6px_6px_0px_#11141D]"
+    class="home-hero-root relative overflow-hidden rounded-brut-lg border-[1px] border-line"
     :data-period="currentPeriod"
     :style="{
       backgroundColor: periodConfig.bgColor,
@@ -154,7 +154,7 @@ const examButtonInfo = computed(() => {
             {{ BRAND_NAME }}
           </span>
           <span
-            class="px-2.5 py-0.5 rounded-brut border-2 border-line font-display text-[11px] font-black tracking-wide shadow-brut-sm"
+            class="px-2.5 py-0.5 rounded-brut border-[1px] border-line font-display text-[11px] font-black tracking-wide"
             :style="{ backgroundColor: periodConfig.tagBg, color: periodConfig.tagInk }"
           >
             {{ periodConfig.tagLabel }}
@@ -193,7 +193,7 @@ const examButtonInfo = computed(() => {
           <!-- Nút phụ: Luyện đề IELTS / Luyện thi chứng chỉ -->
           <NuxtLink
             :to="examButtonInfo.path"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-brut border-[2.5px] border-line bg-[#FFFBF0] text-[#11141D] font-display font-bold text-sm shadow-brut hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 whitespace-nowrap min-h-[44px] transition-transform"
+            class="shadow-brut brut-press inline-flex items-center gap-2 px-4 py-2.5 rounded-brut border-[3px] border-line bg-[#FFFBF0] text-[#11141D] font-display font-bold text-sm active:translate-x-0.5 whitespace-nowrap min-h-[44px] transition-transform"
           >
             <span>{{ examButtonInfo.title }}</span>
             <ArrowUpRight class="w-4 h-4 shrink-0" />
@@ -202,7 +202,7 @@ const examButtonInfo = computed(() => {
 
         <!-- Dòng chip mục tiêu: Biểu tượng tia sét trong vòng tròn vàng + 50 XP + Động viên -->
         <div class="flex items-center gap-2.5 pt-1">
-          <div class="w-7 h-7 rounded-full bg-[#FFC700] border-2 border-line flex items-center justify-center shrink-0 shadow-brut-sm">
+          <div class="w-7 h-7 rounded-full bg-[#FFC700] border-[1px] border-line flex items-center justify-center shrink-0">
             <Zap class="w-4 h-4 text-[#11141D] fill-[#11141D]" />
           </div>
           <div class="flex flex-wrap items-baseline gap-1.5 text-xs sm:text-sm">

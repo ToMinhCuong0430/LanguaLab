@@ -294,26 +294,30 @@ h1, h2, h3, h4, h5, h6 {
   color: #11141D;
 }
 
-/* Tiện ích hiệu ứng nút / card neo-brutalism */
+/* Tiện ích neo-brutalism.
+ * Bóng cứng chỉ dành cho control bấm được (nút, node lộ trình đang mở, nút action của layout lesson):
+ * viền 3px + bóng 4px 4px 0, nhấn thì dịch xuống-phải 2px và bóng còn 2px.
+ * Card, section, badge, chip tĩnh: viền 1px, không bóng. */
 @layer utilities {
+  /* Khối tĩnh */
   .brut-box {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  /* Control bấm được: viền dày + bóng cứng + hiệu ứng nhấn */
+  .brut-control {
     border: var(--bw) solid var(--line);
     box-shadow: var(--shadow);
-    border-radius: var(--radius);
   }
 
   .brut-press {
     transition: transform 0.08s ease, box-shadow 0.08s ease;
   }
 
-  .brut-press:hover:not(:disabled) {
+  .brut-press:active:not(:disabled):not([aria-disabled='true']) {
     transform: translate(2px, 2px);
     box-shadow: var(--shadow-sm);
-  }
-
-  .brut-press:active:not(:disabled) {
-    transform: translate(4px, 4px);
-    box-shadow: 0 0 0 var(--line);
   }
 }
 

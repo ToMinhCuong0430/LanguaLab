@@ -27,13 +27,13 @@ const featureColorMap: Record<string, { bg: string; soft: string; ink: string }>
 <template>
   <NuxtLink
     :to="to"
-    class="group relative flex flex-col justify-between rounded-brut-lg border-[3px] border-line bg-surface p-5 shadow-brut transition-all duration-100 hover:translate-x-1 hover:translate-y-1 hover:shadow-brut-sm text-decoration-none"
+    class="shadow-brut brut-press group relative flex flex-col justify-between rounded-brut-lg border-[3px] border-line bg-surface p-5 transition-all duration-100 text-decoration-none"
     :data-feature="feature"
   >
     <!-- Top Row: Icon + Stat pill -->
     <div class="flex items-center justify-between gap-3 mb-4">
       <div
-        class="flex h-12 w-12 items-center justify-center rounded-brut border-2 border-line shadow-brut-sm text-ink transition-transform group-hover:scale-105"
+        class="flex h-12 w-12 items-center justify-center rounded-brut border-[1px] border-line text-ink transition-transform group-hover:scale-105"
         :style="{ backgroundColor: featureColorMap[feature]?.bg || 'var(--feature)' }"
       >
         <component :is="icon" v-if="icon" class="h-6 w-6 text-on-tone" :stroke-width="2.5" />

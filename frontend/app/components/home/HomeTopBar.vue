@@ -130,7 +130,7 @@ onUnmounted(() => {
 <template>
   <div
     id="home-top-bar"
-    class="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-brut-lg border-[3px] border-line bg-surface p-3.5 sm:p-4 shadow-brut relative z-30"
+    class="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-brut-lg border-[1px] border-line bg-surface p-3.5 sm:p-4 relative z-30"
   >
     <!-- Ô tìm kiếm nhanh toàn cục có Dropdown & Phím tắt -->
     <div ref="searchContainerRef" class="flex-1 max-w-md relative">
@@ -163,7 +163,7 @@ onUnmounted(() => {
       <!-- Dropdown kết quả tìm kiếm -->
       <div
         v-if="isSearchOpen"
-        class="absolute left-0 top-12 z-50 w-full rounded-brut-lg border-[3px] border-line bg-surface shadow-brut-lg overflow-hidden max-h-[420px] overflow-y-auto"
+        class="absolute left-0 top-12 z-50 w-full rounded-brut-lg border-[1px] border-line bg-surface overflow-hidden max-h-[420px] overflow-y-auto"
       >
         <!-- Đang tìm kiếm -->
         <div v-if="isSearching && results.length === 0" class="p-6 text-center text-xs text-ink-soft flex items-center justify-center gap-2">
@@ -230,7 +230,7 @@ onUnmounted(() => {
       <div class="flex items-center gap-1.5">
         <!-- Khối hiển thị số ngày streak -->
         <div
-          class="flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm"
+          class="flex items-center gap-1.5 rounded-brut border-[1px] border-line bg-surface-2 px-3 py-1.5 font-display text-sm font-black text-ink"
           title="Chuỗi ngày học liên tục"
         >
           <Flame class="h-4 w-4 text-bad fill-bad animate-pulse" :stroke-width="2.5" />
@@ -240,7 +240,7 @@ onUnmounted(() => {
         <!-- Nút điểm danh hôm nay -->
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-brut border-2 border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all shadow-brut-sm cursor-pointer brut-press"
+          class="inline-flex items-center gap-1.5 rounded-brut border-[3px] border-line min-h-[44px] px-3.5 py-2 font-display text-xs font-bold transition-all cursor-pointer shadow-brut brut-press"
           :class="user.checkedInToday ? 'bg-ok text-on-tone' : 'bg-warn text-on-tone'"
           :disabled="user.checkedInToday"
           @click="toggleCheckIn"
@@ -252,7 +252,7 @@ onUnmounted(() => {
 
       <!-- Khối hiển thị XP -->
       <div
-        class="flex items-center gap-1.5 rounded-brut border-2 border-line bg-surface-2 min-h-[44px] px-3 py-1.5 font-display text-sm font-black text-ink shadow-brut-sm"
+        class="flex items-center gap-1.5 rounded-brut border-[1px] border-line bg-surface-2 min-h-[44px] px-3 py-1.5 font-display text-sm font-black text-ink"
         title="Tổng điểm kinh nghiệm tích luỹ"
       >
         <Zap class="h-4 w-4 text-warn fill-warn" :stroke-width="2.5" />
@@ -263,7 +263,7 @@ onUnmounted(() => {
       <div ref="notificationRef" class="relative">
         <button
           type="button"
-          class="relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-2 border-line bg-surface shadow-brut-sm transition-all hover:bg-surface-2 cursor-pointer brut-press"
+          class="relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-brut border-[3px] border-line bg-surface transition-all hover:bg-surface-2 cursor-pointer shadow-brut brut-press"
           :aria-expanded="isNotificationOpen"
           aria-label="Thông báo học tập"
           @click="toggleNotification"
@@ -280,7 +280,7 @@ onUnmounted(() => {
         <!-- Menu dropdown thông báo -->
         <div
           v-if="isNotificationOpen"
-          class="absolute right-0 top-11 z-50 w-80 sm:w-96 rounded-brut-lg border-[3px] border-line bg-surface p-4 shadow-brut-lg"
+          class="absolute right-0 top-11 z-50 w-80 sm:w-96 rounded-brut-lg border-[1px] border-line bg-surface p-4"
         >
           <div class="flex items-center justify-between border-b-2 border-line pb-3 mb-3">
             <h3 class="font-display font-black text-sm text-ink">Thông báo học tập</h3>
@@ -310,7 +310,7 @@ onUnmounted(() => {
               v-for="item in notifications"
               :key="item.id"
               class="group flex items-start gap-2.5 rounded-brut border-2 p-2.5 transition-all cursor-pointer"
-              :class="item.isRead ? 'border-transparent bg-surface-2/40 opacity-75' : 'border-line bg-surface shadow-brut-sm'"
+              :class="item.isRead ? 'border-transparent bg-surface-2/40 opacity-75' : 'border-line bg-surface'"
               @click="markNotificationAsRead(item.id)"
             >
               <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-line bg-surface-2 text-xs">

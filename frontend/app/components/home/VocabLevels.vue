@@ -41,14 +41,14 @@ const levelColors: Record<number, { bg: string; soft: string; ink: string }> = {
         v-for="lvl in vocabLevels"
         :key="lvl.level"
         to="/tu-vung"
-        class="group flex flex-col justify-between rounded-brut-lg border-2 border-line p-3.5 shadow-brut-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all text-decoration-none"
+        class="shadow-brut brut-press group flex flex-col justify-between rounded-brut-lg border-[3px] border-line p-3.5 transition-all text-decoration-none"
         :style="{ backgroundColor: levelColors[lvl.level]?.soft || 'var(--surface)' }"
       >
         <div>
           <!-- Header: Code + Progress Circle -->
           <div class="flex items-center justify-between mb-2">
             <span
-              class="rounded-brut border-2 border-line px-2 py-0.5 font-display text-xs font-black shadow-[1px_1px_0_var(--line)]"
+              class="rounded-brut border-[1px] border-line px-2 py-0.5 font-display text-xs font-black"
               :class="levelColors[lvl.level]?.bg === 'var(--c-blue)' ? 'text-white' : 'text-on-tone'"
               :style="{ backgroundColor: levelColors[lvl.level]?.bg || 'var(--warn)' }"
             >

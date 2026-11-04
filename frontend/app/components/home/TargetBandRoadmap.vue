@@ -54,9 +54,9 @@ const { targetBandRoadmap } = useHomeData()
             class="rounded-brut border-2 border-line p-3 transition-all"
             :class="[
               step.isCurrent
-                ? 'bg-warn text-on-tone shadow-brut ring-2 ring-line'
+                ? 'bg-warn text-on-tone ring-2 ring-line'
                 : step.isPassed
-                  ? 'bg-surface-2 text-ink shadow-brut-sm'
+                  ? 'bg-surface-2 text-ink'
                   : 'bg-surface text-ink-soft border-dashed',
             ]"
           >

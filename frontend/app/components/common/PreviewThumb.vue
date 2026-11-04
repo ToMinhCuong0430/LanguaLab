@@ -25,7 +25,7 @@ const handleImageError = () => {
 
 <template>
   <div
-    class="relative w-full overflow-hidden rounded-brut border-2 border-line bg-surface-2 shadow-brut-sm group-hover:border-line"
+    class="relative w-full overflow-hidden rounded-brut border-[1px] border-line bg-surface-2 group-hover:border-line"
     :class="[
       aspectRatio === '16:9' ? 'aspect-video' : '',
       aspectRatio === '4:3' ? 'aspect-[4/3]' : '',
@@ -49,7 +49,7 @@ const handleImageError = () => {
       :style="{ backgroundColor: type === 'podcast' ? 'var(--c-violet-soft)' : 'var(--c-blue-soft)' }"
     >
       <div
-        class="flex h-12 w-12 items-center justify-center rounded-brut border-2 border-line mb-2 shadow-brut-sm"
+        class="flex h-12 w-12 items-center justify-center rounded-brut border-[1px] border-line mb-2"
         :style="{ backgroundColor: type === 'podcast' ? 'var(--c-violet)' : 'var(--c-blue)' }"
       >
         <Headphones v-if="type === 'podcast'" class="h-6 w-6 text-white" :stroke-width="2.5" />
@@ -62,7 +62,7 @@ const handleImageError = () => {
 
     <!-- Play Button Overlay -->
     <div class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/10 transition-opacity group-hover:bg-black/20">
-      <div class="flex h-10 w-10 items-center justify-center rounded-brut border-2 border-line bg-warn text-on-tone shadow-brut-sm transition-transform group-hover:scale-110">
+      <div class="flex h-10 w-10 items-center justify-center rounded-brut border-[1px] border-line bg-warn text-on-tone transition-transform group-hover:scale-110">
         <Play class="h-5 w-5 fill-current ml-0.5" :stroke-width="2.5" />
       </div>
     </div>
@@ -74,7 +74,7 @@ const handleImageError = () => {
 
     <!-- Bottom Right: Duration -->
     <div v-if="duration" class="absolute bottom-2 right-2">
-      <span class="rounded-brut border border-line bg-ink px-1.5 py-0.5 font-mono text-[11px] font-bold text-white shadow-[1px_1px_0_var(--line)]">
+      <span class="rounded-brut border-[1px] border-line bg-ink px-1.5 py-0.5 font-mono text-[11px] font-bold text-white">
         {{ duration }}
       </span>
     </div>

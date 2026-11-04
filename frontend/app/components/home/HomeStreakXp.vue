@@ -12,7 +12,7 @@ const emit = defineEmits<{ checkIn: [] }>()
 <template>
   <div id="home-streak" class="grid grid-cols-3 gap-2">
     <div
-      class="flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-brut border-2 border-line bg-surface px-2 font-display text-sm font-black text-ink shadow-brut-sm tabular-nums"
+      class="flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-brut border-[1px] border-line bg-surface px-2 font-display text-sm font-black text-ink tabular-nums"
       title="Chuỗi ngày học liên tục"
     >
       <Flame class="h-4 w-4 text-bad fill-bad" :stroke-width="2.5" aria-hidden="true" />
@@ -20,7 +20,7 @@ const emit = defineEmits<{ checkIn: [] }>()
     </div>
 
     <div
-      class="flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-brut border-2 border-line bg-surface px-2 font-display text-sm font-black text-ink shadow-brut-sm tabular-nums"
+      class="flex min-h-[44px] items-center justify-center gap-1.5 whitespace-nowrap rounded-brut border-[1px] border-line bg-surface px-2 font-display text-sm font-black text-ink tabular-nums"
       title="Tổng điểm kinh nghiệm tích luỹ"
     >
       <Zap class="h-4 w-4 text-warn fill-warn" :stroke-width="2.5" aria-hidden="true" />
@@ -29,7 +29,7 @@ const emit = defineEmits<{ checkIn: [] }>()
 
     <button
       type="button"
-      class="inline-flex min-h-[44px] items-center justify-center gap-1 whitespace-nowrap rounded-brut border-2 border-line px-2 font-display text-xs font-bold text-on-tone shadow-brut-sm brut-press cursor-pointer disabled:cursor-default"
+      class="inline-flex min-h-[44px] items-center justify-center gap-1 whitespace-nowrap rounded-brut border-[3px] border-line px-2 font-display text-xs font-bold text-on-tone shadow-brut brut-press cursor-pointer disabled:cursor-default"
       :class="user.checkedInToday ? 'bg-ok' : 'bg-warn'"
       :disabled="user.checkedInToday"
       :title="user.checkedInToday ? undefined : 'Điểm danh hôm nay để nhận 20 XP'"
