@@ -8,14 +8,11 @@ import {
   Mail,
   Users,
   Briefcase,
-  Compass,
-  ArrowRight,
-  Zap,
+  ChevronRight,
 } from '@lucide/vue'
 import { useLanguage } from '~/composables/useLanguage'
-import { useTypingPractice } from '~/composables/useTypingPractice'
+import { useTypingPractice, type RoadmapNode, type TypingTopic } from '~/composables/useTypingPractice'
 import LanguageSelector from '~/components/common/LanguageSelector.vue'
-import PageBanner from '~/components/common/PageBanner.vue'
 import FirstVisitGuide, { type GuideStep } from '~/components/common/FirstVisitGuide.vue'
 import { BRAND_NAME } from '~/constants/brand'
 
@@ -23,33 +20,21 @@ useHead({
   title: `Gõ câu phản xạ - Bản đồ lộ trình & Chủ đề - ${BRAND_NAME}`,
 })
 
-const { currentLang, currentLanguageOption } = useLanguage()
+const { currentLang } = useLanguage()
 const { roadmapNodes, lifeTopics, workTopics, isLoading, errorMessage, fetchTypingData } = useTypingPractice(currentLang)
 
 const guideSteps: GuideStep[] = [
   {
-    title: 'Bộ chọn ngôn ngữ mục tiêu',
-    description: 'Chuyển đổi giữa lộ trình Tiếng Anh (A1 - C1), Tiếng Trung (HSK 1 - 6) và Tiếng Nhật (JLPT N5 - N1).',
+    title: 'Chọn ngôn ngữ',
+    description: 'Đổi giữa lộ trình Tiếng Anh (A1 - C1), Tiếng Trung (HSK 1 - 6) và Tiếng Nhật (JLPT N5 - N1).',
     targetId: 'typing-lang-selector',
     badge: 'Bước 1',
   },
   {
-    title: 'Bản đồ chặng lộ trình phản xạ',
-    description: 'Các chặng được mở khoá tuần tự. Chặng đang mở sẽ hiển thị nhãn Bạn ở đây nổi bật.',
-    targetId: 'roadmap-node-map',
+    title: 'Bạn ở đây',
+    description: 'Chặng đang mở được đánh dấu "Bạn ở đây". Bấm Học để vào bài gõ câu tiếp theo của chặng này.',
+    targetId: 'typing-current-node',
     badge: 'Bước 2',
-  },
-  {
-    title: 'Tình huống đời sống hàng ngày',
-    description: 'Thực hành các mẫu câu phản xạ giao tiếp với câu preview mẫu tô màu trực tiếp.',
-    targetId: 'life-topics-group',
-    badge: 'Bước 3',
-  },
-  {
-    title: 'Môi trường làm việc chuyên nghiệp',
-    description: 'Rèn luyện tốc độ gõ email chuẩn ngữ pháp, báo cáo tiến độ và họp công sở.',
-    targetId: 'work-topics-group',
-    badge: 'Bước 4',
   },
 ]
 
@@ -63,338 +48,139 @@ const getTopicIcon = (iconName: string) => {
     default: return Keyboard
   }
 }
+
+// Cấp độ chủ đề là một khoảng ("A2 - B1", "HSK 2 - 3", "N5 - N4"): tách thành các mốc để so với chặng
+const levelTokens = (level: string) => {
+  const parts = level.split(/\s*[-–]\s*/).map((p) => p.trim().toUpperCase()).filter(Boolean)
+  const prefix = parts[0]?.match(/^([A-Z]+)\s+\d/)?.[1]
+  return parts.map((p) => (prefix && /^\d+$/.test(p) ? `${prefix} ${p}` : p))
+}
+
+interface PathUnit {
+  node: RoadmapNode | null // null = chủ đề không khớp chặng nào
+  topics: TypingTopic[]
+}
+
+// Gộp chủ đề đời sống và công sở thành unit theo chặng thấp nhất mà khoảng cấp độ của chủ đề chạm tới.
+// Chủ đề vẫn mở được ở mọi chặng như trước; chỉ node chặng khoá không có link.
+const units = computed<PathUnit[]>(() => {
+  const list: PathUnit[] = roadmapNodes.value.map((node) => ({ node, topics: [] }))
+  const others: TypingTopic[] = []
+  for (const topic of [...lifeTopics.value, ...workTopics.value]) {
+    const tokens = levelTokens(topic.level || '')
+    const idx = roadmapNodes.value.findIndex((n) => tokens.includes(n.level.toUpperCase()))
+    if (idx >= 0) list[idx]!.topics.push(topic)
+    else others.push(topic)
+  }
+  if (others.length) list.push({ node: null, topics: others })
+  return list
+})
+
+// "Học" mở chủ đề gần nhất tính từ chặng đang mở trở đi (chặng đang mở chưa có chủ đề thì lấy unit kế tiếp)
+const learnTopic = computed<TypingTopic | null>(() => {
+  const start = Math.max(0, units.value.findIndex((u) => u.node?.status === 'active'))
+  const next = units.value.slice(start).find((u) => u.topics.length) ?? units.value.find((u) => u.topics.length)
+  return next?.topics[0] ?? null
+})
+const GROUP_LABEL: Record<TypingTopic['group'], string> = { life: 'Đời sống', work: 'Công sở' }
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-8" data-feature="go-cau">
+  <div class="mx-auto w-full max-w-[560px] px-4 py-6 space-y-6" data-feature="go-cau">
     <FirstVisitGuide page-key="go_cau_index_guide" :steps="guideSteps" />
 
-    <!-- Top Bar with Language Selector -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div id="typing-lang-selector">
+    <div class="space-y-3">
+      <h1 class="font-display text-2xl font-black text-ink">Gõ câu</h1>
+      <!-- Bộ chọn ngôn ngữ: một hàng ngay trên đường đi, cuộn ngang trong khung nếu chật -->
+      <div id="typing-lang-selector" class="max-w-full overflow-x-auto">
         <LanguageSelector />
       </div>
-
-      <div class="flex items-center gap-2 text-xs font-bold text-ink-soft">
-        <span class="px-2.5 py-1 bg-surface-2 border border-line rounded-brut">Bản đồ lộ trình tương tác</span>
-        <span class="px-2.5 py-1 bg-surface-2 border border-line rounded-brut">Hỗ trợ gõ IME</span>
-      </div>
     </div>
 
-    <!-- Page Banner -->
-    <PageBanner
-      feature="go-cau"
-      title="Gõ câu phản xạ theo lộ trình"
-      description="Rèn luyện kỹ năng dịch thoát ý, độ nhạy ngữ pháp và tốc độ gõ phím trực tiếp bằng ngôn ngữ bản xứ mà không cần dịch nhẩm."
-      badge-text="Phản xạ tốc độ"
-      badge-tone="warn"
-    >
-      <template #icon>
-        <Keyboard class="h-6 w-6 text-on-tone" :stroke-width="2.5" />
-      </template>
-
-      <template #actions>
-        <div class="flex items-center gap-2">
-          <BaseBadge tone="accent" size="sm">
-            {{ currentLanguageOption.name }} • {{ roadmapNodes.length }} chặng
-          </BaseBadge>
-          <BaseBadge tone="ok" size="sm">
-            {{ lifeTopics.length + workTopics.length }} chủ đề mở
-          </BaseBadge>
-        </div>
-      </template>
-    </PageBanner>
-
-    <!-- Error State with Retry -->
-    <div v-if="errorMessage" class="p-4 bg-warn-soft border-2 border-line rounded-brut shadow-brut flex items-center justify-between">
+    <div v-if="errorMessage" class="flex items-center justify-between gap-3 rounded-brut border-[1px] border-line bg-surface p-3" role="alert">
       <span class="text-xs font-bold text-ink">{{ errorMessage }}</span>
-      <BaseButton tone="warn" size="sm" @click="fetchTypingData">Thử lại</BaseButton>
+      <BaseButton variant="secondary" size="sm" @click="fetchTypingData">Thử lại</BaseButton>
     </div>
 
-    <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-6 bg-surface border-2 border-line rounded-brut shadow-brut space-y-4">
-      <BaseSkeleton class="h-6 w-1/4 rounded-brut" />
-      <BaseSkeleton class="h-24 w-full rounded-brut" />
+    <div v-if="isLoading" class="space-y-3">
+      <BaseSkeleton height="4rem" rounded="lg" :count="4" />
     </div>
 
-    <!-- SECTION 1: LỘ TRÌNH ĐỀ XUẤT DẠNG BẢN ĐỒ NỐI NÚT (RESPONSIVE: DỌC TRÊN MOBILE, NGANG TRÊN DESKTOP) -->
-    <BaseCard id="roadmap-node-map" tone="surface">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Compass class="w-5 h-5 text-c-green-ink" :stroke-width="2.5" />
-            <span class="font-black text-base">Lộ trình đề xuất theo cấp độ</span>
-          </div>
-          <BaseBadge tone="warn" size="sm">
-            Mục tiêu: {{ currentLanguageOption.levelLabels[2] || 'B1' }}
-          </BaseBadge>
-        </div>
-      </template>
+    <!-- Lộ trình: một đường dọc, mỗi chặng là một node tròn kèm unit chủ đề của chặng đó -->
+    <ol v-else class="relative" aria-label="Lộ trình gõ câu">
+      <span class="absolute bottom-6 left-[27px] top-6 w-1 rounded-full bg-surface-2" aria-hidden="true" />
 
-      <div class="py-4">
-        <p class="text-xs text-ink-soft font-bold mb-6">
-          Vượt qua các mốc bài tập gõ câu để mở khoá chặng tiếp theo và nâng cao phản xạ tự nhiên:
-        </p>
-
-        <!-- Bản đồ chặng: Trên Mobile là đường dọc, Trên SM+ là đường ngang -->
-        <div class="hidden sm:block relative overflow-x-auto pb-6 pt-2">
-          <div class="min-w-[620px] flex items-center justify-between relative px-6">
-            <div class="absolute left-10 right-10 top-1/2 -translate-y-1/2 h-2 bg-line z-0" />
-
-            <!-- Roadmap Nodes -->
+      <li v-for="(unit, uIdx) in units" :key="unit.node?.id || `others-${uIdx}`" class="relative pb-8 last:pb-0">
+        <!-- Node chặng -->
+        <div class="flex items-start gap-4">
+          <div class="flex w-14 shrink-0 justify-center">
             <div
-              v-for="node in roadmapNodes"
-              :key="node.id"
-              class="relative z-10 flex flex-col items-center"
+              v-if="unit.node?.status === 'active'"
+              id="typing-current-node"
+              class="brut-control relative z-10 flex h-14 w-14 items-center justify-center rounded-full bg-success font-display text-sm font-black text-success-ink"
             >
-              <!-- Nút chặng đang mở nổi bật to hơn, viền dày, nhãn "Bạn ở đây" -->
-              <div v-if="node.status === 'active'" class="absolute -top-7 rounded-brut border-[1px] border-line bg-warn px-2 py-0.5 text-[10px] font-black uppercase text-on-tone animate-bounce whitespace-nowrap">
-                Bạn ở đây
-              </div>
+              {{ unit.node.level }}
+            </div>
+            <div
+              v-else-if="unit.node?.status === 'completed'"
+              class="relative z-10 mt-1 flex h-12 w-12 items-center justify-center rounded-full bg-success text-success-ink"
+              :aria-label="`Chặng ${unit.node.level} đã xong`"
+            >
+              <CheckCircle class="h-6 w-6" :stroke-width="2.5" aria-hidden="true" />
+            </div>
+            <div
+              v-else-if="unit.node"
+              class="relative z-10 mt-1 flex h-12 w-12 items-center justify-center rounded-full border-[1px] border-line bg-surface-2 text-ink-soft"
+              :aria-label="`Chặng ${unit.node.level} đang khoá`"
+            >
+              <Lock class="h-5 w-5" :stroke-width="2.5" aria-hidden="true" />
+            </div>
+            <div v-else class="relative z-10 mt-2 h-10 w-10 rounded-full border-[1px] border-line bg-surface" aria-hidden="true" />
+          </div>
 
-              <!-- Node đang mở là control bấm được (viền dày, bóng cứng, lõm khi nhấn) dẫn tới danh sách chủ đề; node khác tĩnh -->
-              <NuxtLink
-                v-if="node.status === 'active'"
-                to="#life-topics-group"
-                class="brut-control brut-press flex h-16 w-16 items-center justify-center rounded-full bg-c-green font-display text-base font-black text-on-tone ring-4 ring-c-green/40"
-                :aria-label="`Chặng ${node.level}: ${node.title}. Xem các chủ đề để luyện`"
-              >
-                {{ node.level }}
-              </NuxtLink>
-              <div
-                v-else
-                class="flex h-12 w-12 items-center justify-center rounded-full border-[1px] border-line text-sm font-black"
-                :class="node.status === 'completed' ? 'bg-c-green text-on-tone' : 'bg-surface-2 text-ink-soft'"
-              >
-                <CheckCircle v-if="node.status === 'completed'" class="w-6 h-6 stroke-[3]" aria-hidden="true" />
-                <Lock v-else class="w-4 h-4 opacity-50" aria-hidden="true" />
-              </div>
+          <!-- Tiêu đề unit -->
+          <div class="min-w-0 flex-1 pt-1">
+            <p v-if="unit.node?.status === 'active'" class="mb-1 inline-block rounded-brut border-[1px] border-line bg-warn px-2 py-0.5 text-[11px] font-black text-on-tone">
+              Bạn ở đây
+            </p>
+            <h2 class="font-display text-base font-black leading-snug text-ink">
+              <template v-if="unit.node">Chặng {{ unit.node.level }}: {{ unit.node.title }}</template>
+              <template v-else>Chủ đề khác</template>
+            </h2>
+            <p class="text-xs font-bold text-ink-soft">
+              <template v-if="unit.node?.status === 'completed'">Đã xong. </template>
+              <template v-else-if="unit.node?.status === 'locked'">Mở khi bạn đạt {{ unit.node.xpRequired }} XP. </template>
+              {{ unit.topics.length ? `${unit.topics.length} chủ đề` : 'Chưa có chủ đề' }}
+            </p>
 
-              <!-- Node Info Card below -->
-              <div class="mt-3 text-center max-w-[120px]">
-                <div
-                  class="inline-block px-1.5 py-0.5 rounded-brut border border-line text-[10px] font-black uppercase mb-1"
-                  :class="node.status === 'completed' ? 'bg-c-green-soft text-c-green-ink' : node.status === 'active' ? 'bg-warn text-on-tone' : 'bg-surface-2 text-ink-soft'"
-                >
-                  {{ node.level }}
-                </div>
-                <p class="text-xs font-bold text-ink leading-tight line-clamp-2">
-                  {{ node.title }}
-                </p>
-                <p class="text-[10px] text-ink-soft font-mono mt-0.5">
-                  {{ node.status === 'completed' ? 'Đã xong' : node.status === 'active' ? 'Đang thực hiện' : 'Khoá' }}
-                </p>
-              </div>
+            <div v-if="unit.node?.status === 'active' && learnTopic" class="mt-3">
+              <BaseButton :to="`/go-cau/${learnTopic.slug}`" variant="success" size="md" block>
+                <span>Học</span>
+                <template #right><ChevronRight class="h-4 w-4" :stroke-width="2.5" /></template>
+              </BaseButton>
             </div>
           </div>
         </div>
 
-        <!-- Mobile Layout: Đường dọc nối các nút -->
-        <div class="sm:hidden relative pl-6 space-y-6">
-          <div class="absolute left-10 top-4 bottom-4 w-1 bg-line z-0" />
-          <div
-            v-for="node in roadmapNodes"
-            :key="node.id"
-            class="relative z-10 flex items-start gap-4"
-          >
+        <!-- Unit: các chủ đề đời sống + công sở của chặng -->
+        <ul v-if="unit.topics.length" class="mt-3 space-y-2 pl-[72px]">
+          <li v-for="topic in unit.topics" :key="topic.id">
             <NuxtLink
-              v-if="node.status === 'active'"
-              to="#life-topics-group"
-              class="brut-control brut-press flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-c-green font-display text-xs font-black text-on-tone ring-4 ring-c-green/40"
-              :aria-label="`Chặng ${node.level}: ${node.title}. Xem các chủ đề để luyện`"
+              :to="`/go-cau/${topic.slug}`"
+              class="group flex min-h-[56px] items-center gap-3 rounded-brut border-[1px] border-line bg-surface px-3 py-2 hover:bg-surface-2"
             >
-              {{ node.level }}
+              <component :is="getTopicIcon(topic.iconName)" class="h-5 w-5 shrink-0 text-ink" :stroke-width="2.5" aria-hidden="true" />
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-display text-sm font-bold text-ink group-hover:underline">{{ topic.title }}</p>
+                <p class="text-[11px] font-bold text-ink-soft">
+                  {{ GROUP_LABEL[topic.group] }}, {{ topic.sentences.length }} câu, {{ topic.level }}
+                </p>
+              </div>
+              <ChevronRight class="h-4 w-4 shrink-0 text-ink-soft" aria-hidden="true" />
             </NuxtLink>
-            <div
-              v-else
-              class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-[1px] border-line"
-              :class="node.status === 'completed' ? 'bg-c-green text-on-tone' : 'bg-surface-2 text-ink-soft'"
-            >
-              <CheckCircle v-if="node.status === 'completed'" class="w-4 h-4 stroke-[3]" aria-hidden="true" />
-              <Lock v-else class="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
-            </div>
-
-            <!-- Content -->
-            <div class="flex-1 rounded-brut border-[1px] border-line bg-surface p-3">
-              <div class="flex items-center justify-between mb-1">
-                <span
-                  class="rounded border border-line px-1.5 py-0.2 text-[10px] font-black uppercase"
-                  :class="node.status === 'active' ? 'bg-warn text-on-tone' : 'bg-surface-2 text-ink'"
-                >
-                  {{ node.level }}
-                </span>
-                <span v-if="node.status === 'active'" class="text-[10px] font-black text-c-green-ink uppercase">
-                  Bạn ở đây
-                </span>
-              </div>
-              <h4 class="font-display text-sm font-bold text-ink">
-                {{ node.title }}
-              </h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </BaseCard>
-
-    <!-- SECTION 2: DANH SÁCH CHỦ ĐỀ CÓ PREVIEW CÂU MẪU TÔ SẴN -->
-    <div class="space-y-8">
-      <!-- NHÓM 1: TÌNH HUỐNG ĐỜI SỐNG (MÀU NHẤN: GREEN/MARK) -->
-      <section id="life-topics-group" class="space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-line pb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-1.5 bg-c-green text-on-tone rounded-brut border-2 border-line shadow-brut-sm font-black text-xs">
-              01
-            </span>
-            <h2 class="text-xl sm:text-2xl font-black text-ink font-display">
-              Tình huống đời sống hàng ngày
-            </h2>
-          </div>
-          <BaseBadge tone="surface" size="sm">
-            {{ lifeTopics.length }} chủ đề
-          </BaseBadge>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div
-            v-for="topic in lifeTopics"
-            :key="topic.id"
-            class="p-5 rounded-brut-lg border-[3px] border-line bg-surface shadow-brut flex flex-col justify-between hover:-translate-y-1 hover:shadow-brut-lg transition-all border-l-[6px] border-l-c-green"
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <div class="p-2 rounded-brut border-2 border-line bg-c-green-soft text-c-green-ink shadow-brut-sm">
-                    <component :is="getTopicIcon(topic.iconName)" class="w-5 h-5 stroke-[2.5]" />
-                  </div>
-                  <h3 class="text-lg font-black text-ink font-display">
-                    {{ topic.title }}
-                  </h3>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <span class="h-2.5 w-2.5 rounded-full border border-line bg-ok" title="Độ khó cơ bản" />
-                  <BaseBadge tone="warn" size="sm">{{ topic.level }}</BaseBadge>
-                </div>
-              </div>
-
-              <p class="text-xs sm:text-sm text-ink-soft font-medium leading-relaxed">
-                {{ topic.description }}
-              </p>
-
-              <!-- PREVIEW CÂU MẪU (1 DÒNG TÔ PHẦN ĐẦU NHƯ ĐANG GÕ) -->
-              <div class="rounded-brut border-2 border-line bg-surface-2 p-3 space-y-1.5">
-                <span class="text-[10px] font-black uppercase text-ink-soft tracking-wider block">
-                  Xem trước câu mẫu:
-                </span>
-                <p class="font-mono text-xs sm:text-sm text-ink font-bold line-clamp-1 leading-snug">
-                  <span class="bg-c-green/30 text-c-green-ink px-1 rounded border border-c-green/40 font-black">
-                    {{ (topic.sentences[0]?.targetText || 'Could you please').split(' ').slice(0, 2).join(' ') }}
-                  </span>
-                  <span> {{ (topic.sentences[0]?.targetText || '').split(' ').slice(2).join(' ') }}</span>
-                </p>
-                <p class="text-[11px] font-medium text-ink-soft italic line-clamp-1">
-                  Nghĩa: "{{ topic.sentences[0]?.viTranslation || 'Xin vui lòng hỗ trợ...' }}"
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-4 pt-3 border-t-2 border-line/40 flex items-center justify-between">
-              <div class="flex items-center gap-3 text-xs font-mono font-bold text-ink-soft">
-                <span>{{ topic.sentences.length }} câu</span>
-                <span>•</span>
-                <span class="text-ok font-black" v-if="topic.bestWpm">WPM tốt nhất: {{ topic.bestWpm }}</span>
-              </div>
-
-              <NuxtLink
-                :to="`/go-cau/${topic.slug}`"
-                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut brut-control brut-press bg-success text-success-ink font-black text-xs"
-              >
-                <span>Bắt đầu gõ</span>
-                <ArrowRight class="w-3.5 h-3.5 stroke-[3]" />
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- NHÓM 2: MÔI TRƯỜNG LÀM VIỆC (MÀU NHẤN: BLUE/CORAL) -->
-      <section id="work-topics-group" class="space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-line pb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-1.5 bg-c-blue text-white rounded-brut border-2 border-line shadow-brut-sm font-black text-xs">
-              02
-            </span>
-            <h2 class="text-xl sm:text-2xl font-black text-ink font-display">
-              Môi trường làm việc & Công sở
-            </h2>
-          </div>
-          <BaseBadge tone="surface" size="sm">
-            {{ workTopics.length }} chủ đề
-          </BaseBadge>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div
-            v-for="topic in workTopics"
-            :key="topic.id"
-            class="p-5 rounded-brut-lg border-[3px] border-line bg-surface shadow-brut flex flex-col justify-between hover:-translate-y-1 hover:shadow-brut-lg transition-all border-l-[6px] border-l-c-blue"
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <div class="p-2 rounded-brut border-2 border-line bg-c-blue-soft text-c-blue-ink shadow-brut-sm">
-                    <component :is="getTopicIcon(topic.iconName)" class="w-5 h-5 stroke-[2.5]" />
-                  </div>
-                  <h3 class="text-lg font-black text-ink font-display">
-                    {{ topic.title }}
-                  </h3>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <span class="h-2.5 w-2.5 rounded-full border border-line bg-warn" title="Độ khó trung cấp" />
-                  <BaseBadge tone="accent" size="sm">{{ topic.level }}</BaseBadge>
-                </div>
-              </div>
-
-              <p class="text-xs sm:text-sm text-ink-soft font-medium leading-relaxed">
-                {{ topic.description }}
-              </p>
-
-              <!-- PREVIEW CÂU MẪU CÔNG SỞ -->
-              <div class="rounded-brut border-2 border-line bg-surface-2 p-3 space-y-1.5">
-                <span class="text-[10px] font-black uppercase text-ink-soft tracking-wider block">
-                  Xem trước câu mẫu:
-                </span>
-                <p class="font-mono text-xs sm:text-sm text-ink font-bold line-clamp-1 leading-snug">
-                  <span class="bg-c-blue/25 text-c-blue-ink px-1 rounded border border-c-blue/40 font-black">
-                    {{ (topic.sentences[0]?.targetText || 'I am writing to').split(' ').slice(0, 3).join(' ') }}
-                  </span>
-                  <span> {{ (topic.sentences[0]?.targetText || '').split(' ').slice(3).join(' ') }}</span>
-                </p>
-                <p class="text-[11px] font-medium text-ink-soft italic line-clamp-1">
-                  Nghĩa: "{{ topic.sentences[0]?.viTranslation || 'Tôi viết email này để thảo luận...' }}"
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-4 pt-3 border-t-2 border-line/40 flex items-center justify-between">
-              <div class="flex items-center gap-3 text-xs font-mono font-bold text-ink-soft">
-                <span>{{ topic.sentences.length }} câu</span>
-                <span>•</span>
-                <span class="text-c-blue-ink font-black" v-if="topic.bestWpm">WPM tốt nhất: {{ topic.bestWpm }}</span>
-              </div>
-
-              <NuxtLink
-                :to="`/go-cau/${topic.slug}`"
-                class="inline-flex items-center min-h-[44px] gap-1 px-4 py-2 rounded-brut brut-control brut-press bg-success text-success-ink font-black text-xs"
-              >
-                <span>Bắt đầu gõ</span>
-                <ArrowRight class="w-3.5 h-3.5 stroke-[3]" />
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+          </li>
+        </ul>
+      </li>
+    </ol>
   </div>
 </template>
